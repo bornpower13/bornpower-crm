@@ -42,14 +42,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .aGrid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 /* LAYOUT */
 #app{display:none;}
-#sidebar{width:var(--sidebar);min-height:100vh;background:var(--navy);position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:50;}
+#sidebar{width:var(--sidebar);height:100vh;background:var(--navy);position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:50;overflow:hidden;}
 .sLogo{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.07);}
 .sUser{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;cursor:pointer;}
 .sUser:hover{background:rgba(255,255,255,.04);}
 .sAv{width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--navy);flex-shrink:0;}
 .sUname{font-size:12px;font-weight:600;color:rgba(255,255,255,.85);}
 .sRole{font-size:10px;color:var(--gold);margin-top:1px;}
-#sidebar nav{padding:6px 0;flex:1;overflow-y:auto;}
+#sidebar nav{padding:6px 0;flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent;}
+#sidebar nav::-webkit-scrollbar{width:4px;}
+#sidebar nav::-webkit-scrollbar-track{background:transparent;}
+#sidebar nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px;}
 .navSection{padding:8px 12px 4px;font-size:10px;font-weight:600;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.07em;}
 #sidebar nav a{display:flex;align-items:center;gap:9px;padding:9px 14px;color:rgba(255,255,255,.5);font-size:13px;font-weight:500;cursor:pointer;border-left:2px solid transparent;transition:.15s;text-decoration:none;}
 #sidebar nav a:hover{color:#fff;background:rgba(255,255,255,.05);}
@@ -368,6 +371,10 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div id="authOk" class="authOk"></div>
       <div class="afield"><label>Email</label><input type="email" id="aEmail" placeholder="votre@email.com"></div>
       <div class="afield"><label>Mot de passe</label><input type="password" id="aPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;margin-top:4px">
+        <input type="checkbox" id="rememberMe" style="width:15px;height:15px;accent-color:var(--gold);cursor:pointer" checked>
+        <label for="rememberMe" style="font-size:13px;color:rgba(255,255,255,.6);cursor:pointer">Rester connecté</label>
+      </div>
       <button class="authBtn" onclick="doLogin()">Se connecter</button>
       <div class="authSwitch">Pas de compte ? <a onclick="showRegister()">Créer un compte</a></div>
     </div>
@@ -1208,6 +1215,7 @@ function doRegister(){
 }
 function doLogout(){
   curUserObj=null;curUser=null;
+  try{localStorage.removeItem('bp_session');}catch(e){}
   g('app').style.display='none';
   g('authScreen').style.display='flex';
   g('aPass').value='';
@@ -2560,7 +2568,44 @@ document.addEventListener('DOMContentLoaded',function(){
     });
   }
   
-  g('aEmail').value='contact@bornpower.fr';
+  // Auto-login from saved session
+  try{
+    var session=JSON.parse(localStorage.getItem('bp_session')||'null');
+    if(session&&session.ts){
+      var age=(Date.now()-session.ts)/(1000*60*60*24);
+      if(age<30){ // session valid for 30 days
+        // Sync accounts then auto-login
+        var tryAutoLogin=function(){
+          var acc=findAccount(session.email);
+          if(acc&&acc.status==='active'){
+            curUserObj=acc;curUser=acc.id;
+            if(fbReady){
+              loadFromFirebase(function(){
+                g('authScreen').style.display='none';
+                g('app').style.display='block';
+                initApp();
+              });
+            } else {
+              load();
+              g('authScreen').style.display='none';
+              g('app').style.display='block';
+              initApp();
+            }
+          } else {
+            localStorage.removeItem('bp_session');
+            g('aEmail').value='contact@bornpower.fr';
+          }
+        };
+        if(fbReady&&db){loadAccountsFromFirebase(function(){tryAutoLogin();});}
+        else{tryAutoLogin();}
+      } else {
+        localStorage.removeItem('bp_session');
+        g('aEmail').value='contact@bornpower.fr';
+      }
+    } else {
+      g('aEmail').value='contact@bornpower.fr';
+    }
+  }catch(e){g('aEmail').value='contact@bornpower.fr';}
 });
 
 </script>
