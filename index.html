@@ -952,6 +952,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script>
 var KEY='bpcrm_v2';
 var ACCOUNTS_KEY='bp_accounts_v2';
@@ -980,10 +981,12 @@ var firebaseConfig={
   appId:"1:1040984120416:web:30e6dedad959746fd7f705"
 };
 var fbApp=null,db=null,fbReady=false;
+var fbAuth=null;
 function initFirebase(){
   try{
     fbApp=firebase.initializeApp(firebaseConfig);
     db=firebase.firestore();
+    fbAuth=firebase.auth();
     fbReady=true;
     console.log('Firebase OK');
   }catch(e){console.log('Firebase error:',e);fbReady=false;}
@@ -1067,9 +1070,7 @@ var FIREBASE_ACCOUNTS_COLLECTION='crm_accounts';
 function saveAccounts(a){
   try{localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(a));}catch(e){}
   if(fbReady&&db){
-    db.collection(FIREBASE_ACCOUNTS_COLLECTION).doc('main').set({accounts:a,updatedAt:new Date().toISOString()})
-      .then(function(){console.log('Accounts synced to Firebase');})
-      .catch(function(e){console.log('Accounts sync error:',e);});
+    db.collection(FIREBASE_ACCOUNTS_COLLECTION).doc('main').set({accounts:a,updatedAt:new Date().toISOString()}).catch(function(e){console.log('saveAccounts error:',e);});
   }
 }
 function loadAccountsFromFirebase(callback){
@@ -1144,8 +1145,8 @@ function doLogin(){
   if(!email||!pass){showAuthErr('Remplissez tous les champs.');return;}
   var acc=findAccount(email);
   if(!acc||acc.pass!==pass){showAuthErr('Email ou mot de passe incorrect.');return;}
-  if(acc.status==='pending'){showAuthErr('Compte en attente de validation par l\'administrateur.');return;}
-  if(acc.status==='blocked'){showAuthErr('Compte bloqué. Contactez l\'administrateur.');return;}
+  if(acc.status==='pending'){showAuthErr("Compte en attente de validation par l'administrateur.");return;}
+  if(acc.status==='blocked'){showAuthErr("Compte bloqué. Contactez l'administrateur.");return;}
   curUserObj=acc;curUser=acc.id;
   g('authScreen').style.display='none';
   g('app').style.display='block';
@@ -1165,21 +1166,45 @@ function doRegister(){
   if(!prenom||!nom||!email||!pass){err.textContent='Tous les champs * sont requis.';err.style.display='block';return;}
   if(pass.length<6){err.textContent='Mot de passe trop court (6 car. min).';err.style.display='block';return;}
   if(pass!==pass2){err.textContent='Les mots de passe ne correspondent pas.';err.style.display='block';return;}
-  if(findAccount(email)){err.textContent='Un compte avec cet email existe déjà.';err.style.display='block';return;}
+
   var accounts=loadAccounts();
   var colorIdx=accounts.length%COLS.length;
-  var newAcc={id:'u_'+Date.now(),name:prenom+' '+nom,prenom:prenom,nom:nom,email:email,tel:tel,spec:spec,pass:pass,role:role,avatar:prenom[0].toUpperCase()+nom[0].toUpperCase(),color:COLS[colorIdx],status:'pending',createdAt:new Date().toLocaleDateString('fr-FR')};
-  accounts.push(newAcc);
-  saveAccounts(accounts);
-  if(role==='installer'||role==='dirtech'){
-    load();
-    DB.installateurs.push({id:DB.nextId++,prenom:prenom,nom:nom,tel:tel,email:email,spec:spec,dispo:'Disponible',color:COLS[colorIdx],notes:'',userId:newAcc.id});
-    save();
+  var uid='u_'+Date.now();
+  var newAcc={id:uid,name:prenom+' '+nom,prenom:prenom,nom:nom,email:email,tel:tel,spec:spec,pass:pass,role:role,avatar:prenom[0].toUpperCase()+nom[0].toUpperCase(),color:COLS[colorIdx],status:'pending',createdAt:new Date().toLocaleDateString('fr-FR')};
+
+  // Save to Firebase first if available
+  if(fbReady&&db){
+    db.collection(FIREBASE_ACCOUNTS_COLLECTION).doc('main').get().then(function(doc){
+      var existingAccounts=doc.exists&&doc.data().accounts?doc.data().accounts:[];
+      var alreadyExists=existingAccounts.find(function(a){return a.email.toLowerCase()===email;});
+      if(alreadyExists){err.textContent='Un compte avec cet email existe déjà.';err.style.display='block';return;}
+      existingAccounts.push(newAcc);
+      db.collection(FIREBASE_ACCOUNTS_COLLECTION).doc('main').set({accounts:existingAccounts,updatedAt:new Date().toISOString()}).then(function(){
+        try{localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(existingAccounts));}catch(e){}
+        if(role==='installer'||role==='dirtech'){
+          load();
+          DB.installateurs.push({id:DB.nextId++,prenom:prenom,nom:nom,tel:tel,email:email,spec:spec,dispo:'Disponible',color:COLS[colorIdx],notes:'',userId:uid});
+          save();
+        }
+        showLogin();
+        g('aEmail').value=email;
+        g('authOk').textContent="Compte créé ! En attente de validation par l'administrateur.";
+        g('authOk').style.display='block';
+      }).catch(function(e){err.textContent='Erreur: '+e.message;err.style.display='block';});
+    }).catch(function(e){
+      // Fallback to local
+      if(findAccount(email)){err.textContent='Un compte avec cet email existe déjà.';err.style.display='block';return;}
+      accounts.push(newAcc);saveAccounts(accounts);
+      showLogin();g('aEmail').value=email;
+      g('authOk').textContent='Compte créé (mode local).';g('authOk').style.display='block';
+    });
+  } else {
+    if(findAccount(email)){err.textContent='Un compte avec cet email existe déjà.';err.style.display='block';return;}
+    accounts.push(newAcc);saveAccounts(accounts);
+    if(role==='installer'||role==='dirtech'){load();DB.installateurs.push({id:DB.nextId++,prenom:prenom,nom:nom,tel:tel,email:email,spec:spec,dispo:'Disponible',color:COLS[colorIdx],notes:'',userId:uid});save();}
+    showLogin();g('aEmail').value=email;
+    g('authOk').textContent='Compte créé ! En attente de validation.';g('authOk').style.display='block';
   }
-  showLogin();
-  g('aEmail').value=email;
-  g('authOk').textContent='Compte créé ! En attente de validation.';
-  g('authOk').style.display='block';
 }
 function doLogout(){
   curUserObj=null;curUser=null;
@@ -2524,11 +2549,13 @@ document.addEventListener('DOMContentLoaded',function(){
     fbListen(FIREBASE_ACCOUNTS_COLLECTION,function(data){
       if(data&&data.accounts){
         try{localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(data.accounts));}catch(e){}
-        // Refresh users page if open
         var activePg=document.querySelector('.pg.on');
         if(activePg&&activePg.id==='pgUsers')renderUsers();
-        // Refresh nav badge
-        if(curUserObj&&isAdmin())buildNav();
+        if(curUserObj&&isAdmin()){
+          buildNav();
+          var pending=data.accounts.filter(function(a){return a.status==='pending';}).length;
+          if(pending>0)toast(pending+' nouveau(x) compte(s) en attente de validation !');
+        }
       }
     });
   }
