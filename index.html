@@ -705,6 +705,8 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 
 <div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
 var KEY='bpcrm_v2';
 var ACCOUNTS_KEY='bp_accounts_v2';
@@ -722,6 +724,106 @@ var ADMIN={id:'florian',name:'Florian',prenom:'Florian',nom:'',email:'contact@bo
 
 var DB={installations:[],installateurs:[],materiel:[],mouvements:[],opportunites:[],contacts:[],devis:[],prospects:[],activites:[],nextId:1};
 var curUserObj=null;
+
+// ── FIREBASE ──
+var firebaseConfig={
+  apiKey:"AIzaSyAK7ggTwWj02STFsUA8mtmwp-z1wNt561Y",
+  authDomain:"bornpower-crm.firebaseapp.com",
+  projectId:"bornpower-crm",
+  storageBucket:"bornpower-crm.firebasestorage.app",
+  messagingSenderId:"1040984120416",
+  appId:"1:1040984120416:web:30e6dedad959746fd7f705"
+};
+var fbApp=null,db=null,fbReady=false;
+function initFirebase(){
+  try{
+    fbApp=firebase.initializeApp(firebaseConfig);
+    db=firebase.firestore();
+    fbReady=true;
+    console.log('Firebase OK');
+  }catch(e){console.log('Firebase error:',e);fbReady=false;}
+}
+
+// Save to Firestore
+function fbSave(collection,data){
+  if(!fbReady||!db)return;
+  db.collection(collection).doc('main').set(data).catch(function(e){console.log('fbSave error:',e);});
+}
+
+// Load from Firestore
+function fbLoad(collection,callback){
+  if(!fbReady||!db){callback(null);return;}
+  db.collection(collection).doc('main').get().then(function(doc){
+    if(doc.exists){callback(doc.data());}else{callback(null);}
+  }).catch(function(e){console.log('fbLoad error:',e);callback(null);});
+}
+
+// Listen realtime
+function fbListen(collection,callback){
+  if(!fbReady||!db)return;
+  db.collection(collection).doc('main').onSnapshot(function(doc){
+    if(doc.exists){callback(doc.data());}
+  });
+}
+
+// Override save/load to use Firebase + localStorage
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}
+  if(fbReady){
+    fbSave('crm_data',{
+      installations:DB.installations,
+      installateurs:DB.installateurs,
+      materiel:DB.materiel,
+      opportunites:DB.opportunites,
+      contacts:DB.contacts,
+      devis:DB.devis,
+      prospects:DB.prospects,
+      activites:DB.activites,
+      nextId:DB.nextId,
+      updatedAt:new Date().toISOString()
+    });
+  }
+}
+
+function load(){
+  try{var d=localStorage.getItem(KEY);if(d){DB=JSON.parse(d);}}catch(e){}
+}
+
+function loadFromFirebase(callback){
+  fbLoad('crm_data',function(data){
+    if(data){
+      DB.installations=data.installations||[];
+      DB.installateurs=data.installateurs||[];
+      DB.materiel=data.materiel||[];
+      DB.opportunites=data.opportunites||[];
+      DB.contacts=data.contacts||[];
+      DB.devis=data.devis||[];
+      DB.prospects=data.prospects||[];
+      DB.activites=data.activites||[];
+      DB.nextId=data.nextId||DB.nextId;
+      try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}
+    }
+    if(callback)callback();
+  });
+}
+
+// Save accounts to Firebase too
+var FIREBASE_ACCOUNTS_COLLECTION='crm_accounts';
+function saveAccounts(a){
+  try{localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(a));}catch(e){}
+  if(fbReady){fbSave(FIREBASE_ACCOUNTS_COLLECTION,{accounts:a,updatedAt:new Date().toISOString()});}
+}
+function loadAccounts(){
+  try{return JSON.parse(localStorage.getItem(ACCOUNTS_KEY))||[];}catch(e){return[];}
+}
+function syncAccountsFromFirebase(callback){
+  fbLoad(FIREBASE_ACCOUNTS_COLLECTION,function(data){
+    if(data&&data.accounts){
+      try{localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(data.accounts));}catch(e){}
+    }
+    if(callback)callback();
+  });
+}
 var curUser=null;
 var planMonth=new Date();
 var curUserTab='all';
@@ -735,10 +837,7 @@ function g(id){return document.getElementById(id);}
 function toast(msg){var t=g('toast');t.textContent=msg;t.classList.add('on');setTimeout(function(){t.classList.remove('on');},2500);}
 function fmtD(s){if(!s)return '--';var p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
 function fmtE(n){return (n||0).toLocaleString('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0});}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}}
-function load(){try{var d=localStorage.getItem(KEY);if(d){DB=JSON.parse(d);}}catch(e){}}
-function loadAccounts(){try{return JSON.parse(localStorage.getItem(ACCOUNTS_KEY))||[];}catch(e){return[];}}
-function saveAccounts(a){try{localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(a));}catch(e){}}
+// save/load/accounts handled by Firebase block above
 function findAccount(email){
   if(email.toLowerCase()===ADMIN.email)return ADMIN;
   return loadAccounts().find(function(a){return a.email.toLowerCase()===email.toLowerCase();})||null;
@@ -1621,8 +1720,62 @@ function importSirene(data){
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',function(){
-  ['mInst','mFiche','mProf','mMat','mMvt','mOpp','mContact','mDevis'].forEach(function(id){var el=g(id);if(el)el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('on');});});
+  ['mInst','mFiche','mProf','mMat','mMvt','mOpp','mContact','mDevis','mProspect'].forEach(function(id){var el=g(id);if(el)el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('on');});});
+  
+  // Init Firebase
+  initFirebase();
+  
+  // Load local first (instant)
   load();
+  
+  // Then sync from Firebase
+  if(fbReady){
+    g('authScreen').innerHTML+='<div id="syncMsg" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:8px 16px;border-radius:20px;font-size:12px;">Synchronisation...</div>';
+    syncAccountsFromFirebase(function(){
+      loadFromFirebase(function(){
+        var sm=g('syncMsg');if(sm)sm.remove();
+      });
+    });
+    // Listen for realtime updates
+    fbListen('crm_data',function(data){
+      if(!curUserObj)return; // not logged in yet
+      DB.installations=data.installations||DB.installations;
+      DB.installateurs=data.installateurs||DB.installateurs;
+      DB.materiel=data.materiel||DB.materiel;
+      DB.opportunites=data.opportunites||DB.opportunites;
+      DB.contacts=data.contacts||DB.contacts;
+      DB.devis=data.devis||DB.devis;
+      DB.prospects=data.prospects||DB.prospects;
+      DB.activites=data.activites||DB.activites;
+      DB.nextId=data.nextId||DB.nextId;
+      // Refresh current page
+      var activePg=document.querySelector('.pg.on');
+      if(activePg){
+        var id=activePg.id;
+        if(id==='pgDash')renderDash();
+        if(id==='pgDashComm')renderDashComm();
+        if(id==='pgDashDT')renderDashDT();
+        if(id==='pgPipeline')renderPipeline();
+        if(id==='pgContacts')renderContacts();
+        if(id==='pgDevis')renderDevis();
+        if(id==='pgInst')renderT();
+        if(id==='pgStock')renderS();
+        if(id==='pgProfils')renderProfils();
+        if(id==='pgProspects')renderProspects();
+      }
+    });
+    fbListen(FIREBASE_ACCOUNTS_COLLECTION,function(data){
+      if(data&&data.accounts){
+        try{localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(data.accounts));}catch(e){}
+        // Refresh users page if open
+        var activePg=document.querySelector('.pg.on');
+        if(activePg&&activePg.id==='pgUsers')renderUsers();
+        // Refresh nav badge
+        if(curUserObj&&isAdmin())buildNav();
+      }
+    });
+  }
+  
   g('aEmail').value='contact@bornpower.fr';
 });
 
