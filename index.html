@@ -704,6 +704,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="tbar">
         <div class="srch"><input id="instSearch" oninput="renderT()" placeholder="Rechercher..."></div>
         <select class="fsl" id="instStatF" onchange="renderT()"><option value="">Tous statuts</option><option>Planifiée</option><option>En cours</option><option>Terminée</option><option>En pause</option><option>Annulée</option></select>
+        <select class="fsl" id="instBienF" onchange="renderT()"><option value="">Tous types de bien</option><option>Maison individuelle</option><option>Copropriété</option><option>Entreprise</option><option>Parking</option><option>Bâtiment commercial</option></select>
         <select class="fsl" id="instInstF" onchange="renderT()"><option value="">Tous installateurs</option></select>
         <div style="margin-left:auto;display:flex;gap:6px;">
           <button class="btn bGhost" onclick="exportCSV()">CSV</button>
@@ -953,7 +954,10 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="fi"><label>Client *</label><input id="mIclient" placeholder="Nom du client"></div>
       <div class="fi"><label>Adresse</label><input id="mIadresse" placeholder="Adresse"></div>
       <div class="fi"><label>Téléphone</label><input id="mItel" placeholder="06 00 00 00 00"></div>
-      <div class="fi"><label>Type</label><select id="mItype"><option>Panneaux solaires</option><option>Borne de recharge</option><option>Éclairage LED</option><option>Climatisation</option><option>Autre</option></select></div>
+      <div class="fi"><label>Type de travaux</label><select id="mItype"><option>Panneaux solaires</option><option>Borne de recharge</option><option>Éclairage LED</option><option>Climatisation</option><option>Autre</option></select></div>
+      <div class="fi"><label>Type de bien</label><select id="mIbien"><option>Maison individuelle</option><option>Copropriété</option><option>Entreprise</option><option>Parking</option><option>Bâtiment commercial</option><option>Autre</option></select></div>
+      <div class="fi"><label>Nb de bornes</label><input id="mInbbornes" type="number" min="0" placeholder="0"></div>
+      <div class="fi"><label>Puissance par borne</label><select id="mIpuissance"><option value="">--</option><option>3.7 kW</option><option>7.4 kW</option><option>11 kW</option><option>22 kW</option><option>50 kW</option><option>150 kW+</option></select></div>
       <div class="fi"><label>Installateur</label><select id="mIinst"></select></div>
       <div class="fi"><label>Statut</label><select id="mIstat"><option>Planifiée</option><option>En cours</option><option>Terminée</option><option>En pause</option><option>Annulée</option></select></div>
       <div class="fi"><label>Début</label><input id="mIdeb" type="date"></div>
@@ -1889,7 +1893,7 @@ function renderT(){
       +'<td><strong>'+r.chantier+'</strong></td>'
       +'<td>'+r.client+'</td>'
       +'<td><div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:50%;background:'+col+'"></div>'+r.installateur+'</div></td>'
-      +'<td>'+r.type+'</td>'
+      +'<td><div>'+r.type+'</div>'+(r.typeBien?'<div style="font-size:11px;color:var(--muted)">'+r.typeBien+(r.nbBornes?' &middot; '+r.nbBornes+' borne(s)':'')+'</div>':'')+'</td>'
       +'<td><span class="bdg '+(BDGS[r.statut]||'')+'">'+r.statut+'</span></td>'
       +'<td>'+fmtD(r.dateDebut)+'</td>'
       +'<td>'+fmtD(r.dateFin)+'</td>'
@@ -1908,6 +1912,9 @@ function openIM(idx){
   g('mIchantier').value=r.chantier||'';g('mIclient').value=r.client||'';
   g('mIadresse').value=r.adresse||'';g('mItel').value=r.tel||'';
   g('mItype').value=r.type||'Panneaux solaires';g('mIstat').value=r.statut||'Planifiée';
+  g('mIbien').value=r.typeBien||'Maison individuelle';
+  g('mInbbornes').value=r.nbBornes||0;
+  g('mIpuissance').value=r.puissance||'';
   g('mIdeb').value=r.dateDebut||'';g('mIfin').value=r.dateFin||'';
   g('mImontant').value=r.montant||'';g('mInotes').value=r.notes||'';
   g('mIacompte').value=r.acompte||0;g('mIpaiement').value=r.paiementStatut||'En attente';
@@ -1947,7 +1954,7 @@ function saveI(){
     var sel=row.querySelector('select'),qty=row.querySelector('input[type=number]');
     if(sel)mats.push({nom:sel.value,qty:parseFloat(qty.value)||1,unit:'unité(s)'});
   });
-  var row={id:eInst>=0?DB.installations[eInst].id:DB.nextId++,chantier:ch,client:cl,adresse:g('mIadresse').value,tel:g('mItel').value,type:g('mItype').value,installateur:g('mIinst').value,statut:g('mIstat').value,dateDebut:g('mIdeb').value,dateFin:g('mIfin').value,montant:parseFloat(g('mImontant').value)||0,materiaux:mats,notes:g('mInotes').value,signature:eInst>=0?DB.installations[eInst].signature:'',modifiedBy:curUserObj?curUserObj.name:'',assignedDirtech:isDirtech()&&curUserObj?curUserObj.id:eInst>=0&&DB.installations[eInst].assignedDirtech?DB.installations[eInst].assignedDirtech:'',acompte:parseFloat(g('mIacompte').value)||0,paiementStatut:g('mIpaiement').value,checklist:eInst>=0&&DB.installations[eInst].checklist?DB.installations[eInst].checklist:[],photos:eInst>=0&&DB.installations[eInst].photos?DB.installations[eInst].photos:[],devisPDF:eInst>=0&&DB.installations[eInst].devisPDF?DB.installations[eInst].devisPDF:null,devisPDFName:eInst>=0&&DB.installations[eInst].devisPDFName?DB.installations[eInst].devisPDFName:''};
+  var row={id:eInst>=0?DB.installations[eInst].id:DB.nextId++,chantier:ch,client:cl,adresse:g('mIadresse').value,tel:g('mItel').value,type:g('mItype').value,typeBien:g('mIbien').value,nbBornes:parseInt(g('mInbbornes').value)||0,puissance:g('mIpuissance').value,installateur:g('mIinst').value,statut:g('mIstat').value,dateDebut:g('mIdeb').value,dateFin:g('mIfin').value,montant:parseFloat(g('mImontant').value)||0,materiaux:mats,notes:g('mInotes').value,signature:eInst>=0?DB.installations[eInst].signature:'',modifiedBy:curUserObj?curUserObj.name:'',assignedDirtech:isDirtech()&&curUserObj?curUserObj.id:eInst>=0&&DB.installations[eInst].assignedDirtech?DB.installations[eInst].assignedDirtech:'',acompte:parseFloat(g('mIacompte').value)||0,paiementStatut:g('mIpaiement').value,checklist:eInst>=0&&DB.installations[eInst].checklist?DB.installations[eInst].checklist:[],photos:eInst>=0&&DB.installations[eInst].photos?DB.installations[eInst].photos:[],devisPDF:eInst>=0&&DB.installations[eInst].devisPDF?DB.installations[eInst].devisPDF:null,devisPDFName:eInst>=0&&DB.installations[eInst].devisPDFName?DB.installations[eInst].devisPDFName:''};
   if(eInst>=0)DB.installations[eInst]=row;else DB.installations.push(row);
   addActivite('install','Installation "'+ch+'" '+(eInst>=0?'modifiée':'créée'));
   save();closeIM();renderT();renderP();toast('Installation enregistrée !');
