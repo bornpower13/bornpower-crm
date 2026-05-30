@@ -2,8 +2,16 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>BornPower CRM</title>
+<meta name="description" content="BornPower CRM - Tableau de bord commercial et installations">
+<meta name="theme-color" content="#222651">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BornPower">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23222651'/><text y='.9em' font-size='80' x='10'>⚡</text></svg>">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root{
@@ -412,6 +420,8 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 </div>
 
 <!-- APP -->
+<button id="menuToggle" onclick="toggleMobileMenu()">☰</button>
+<div id="sidebarOverlay" onclick="toggleMobileMenu()"></div>
 <div id="app">
   <div id="sidebar">
     <div class="sLogo">
@@ -733,6 +743,16 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
     </div>
 
   </div>
+</div>
+
+<!-- PWA INSTALL BANNER -->
+<div id="pwaInstallBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);padding:14px 16px;z-index:300;border-top:1px solid rgba(255,255,255,.1);display:none;align-items:center;gap:12px;">
+  <div style="flex:1">
+    <div style="font-size:13px;font-weight:600;color:#fff">Installer BornPower CRM</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">Accès rapide depuis votre écran d'accueil</div>
+  </div>
+  <button onclick="installPWA()" style="background:var(--gold);border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--navy);cursor:pointer;font-family:inherit">Installer</button>
+  <button onclick="g('pwaInstallBanner').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:18px;padding:4px">✕</button>
 </div>
 
 <!-- NOTIF PANEL -->
@@ -2508,8 +2528,47 @@ function renderFinance(){
 }
 
 
+// ── PWA ──
+var deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();
+  deferredPrompt=e;
+  var banner=g('pwaInstallBanner');
+  if(banner)banner.style.display='flex';
+});
+window.addEventListener('appinstalled',function(){
+  var banner=g('pwaInstallBanner');
+  if(banner)banner.style.display='none';
+  deferredPrompt=null;
+  toast('Application installée !');
+});
+function toggleMobileMenu(){
+  var sidebar=g('sidebar');
+  var overlay=g('sidebarOverlay');
+  if(sidebar){sidebar.classList.toggle('open');}
+  if(overlay){overlay.classList.toggle('on');}
+}
+
+function installPWA(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(result){
+    if(result.outcome==='accepted'){toast('Installation en cours...');}
+    deferredPrompt=null;
+    var banner=g('pwaInstallBanner');
+    if(banner)banner.style.display='none';
+  });
+}
+
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',function(){
+  // Register Service Worker for PWA
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').then(function(reg){
+      console.log('SW registered');
+    }).catch(function(e){console.log('SW error:',e);});
+  }
+
   ['mInst','mFiche','mProf','mMat','mMvt','mOpp','mContact','mDevis','mProspect'].forEach(function(id){var el=g(id);if(el)el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('on');});});
   
   // Init Firebase
