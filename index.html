@@ -1309,6 +1309,12 @@ function buildNav(){
 function nav(id){
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
   document.querySelectorAll('#navLinks a').forEach(function(a){a.classList.remove('on');});
+  // Close mobile menu when navigating
+  if(isMobile()){
+    var sidebar=g('sidebar');var overlay=g('sidebarOverlay');
+    if(sidebar)sidebar.classList.remove('open');
+    if(overlay)overlay.classList.remove('on');
+  }
   var pg=g(id);if(pg)pg.classList.add('on');
   var lk=g(id+'nav');if(lk)lk.classList.add('on');
   if(id==='pgDash')renderDash();
@@ -1339,6 +1345,7 @@ function initApp(){
   var first={admin:'pgDash',dirtech:'pgDashDT',commercial:'pgDashComm',installer:'pgInst'}[getRole()]||'pgInst';
   nav(first);
   updateNotifBadge();
+  applyMobileLayout();
 }
 
 // ── HELPERS ──
@@ -2545,12 +2552,39 @@ window.addEventListener('appinstalled',function(){
   deferredPrompt=null;
   toast('Application installée !');
 });
+function isMobile(){return window.innerWidth<=768;}
+
 function toggleMobileMenu(){
   var sidebar=g('sidebar');
   var overlay=g('sidebarOverlay');
   if(sidebar){sidebar.classList.toggle('open');}
   if(overlay){overlay.classList.toggle('on');}
 }
+
+function applyMobileLayout(){
+  var mobile=isMobile();
+  var sidebar=g('sidebar');
+  var main=g('main');
+  var toggle=g('menuToggle');
+  var topbar=g('mobileTopBar');
+  if(mobile){
+    if(sidebar){sidebar.style.transform='translateX(-100%)';sidebar.style.width='280px';sidebar.style.position='fixed';sidebar.style.zIndex='50';sidebar.style.height='100vh';}
+    if(main){main.style.marginLeft='0';main.style.paddingTop='56px';}
+    if(toggle){toggle.style.display='flex';}
+    if(topbar){topbar.style.display='flex';}
+  } else {
+    if(sidebar){sidebar.style.transform='';sidebar.style.width='220px';}
+    if(main){main.style.marginLeft='220px';main.style.paddingTop='24px';}
+    if(toggle){toggle.style.display='none';}
+    if(topbar){topbar.style.display='none';}
+    // close overlay if open
+    var overlay=g('sidebarOverlay');
+    if(overlay)overlay.classList.remove('on');
+    sidebar.classList.remove('open');
+  }
+}
+
+window.addEventListener('resize', applyMobileLayout);
 
 function installPWA(){
   if(!deferredPrompt)return;
@@ -2573,6 +2607,7 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 
   ['mInst','mFiche','mProf','mMat','mMvt','mOpp','mContact','mDevis','mProspect'].forEach(function(id){var el=g(id);if(el)el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('on');});});
+  applyMobileLayout();
   
   // Init Firebase
   initFirebase();
