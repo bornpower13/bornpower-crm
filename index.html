@@ -811,7 +811,24 @@ function loadFromFirebase(callback){
 var FIREBASE_ACCOUNTS_COLLECTION='crm_accounts';
 function saveAccounts(a){
   try{localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(a));}catch(e){}
-  if(fbReady){fbSave(FIREBASE_ACCOUNTS_COLLECTION,{accounts:a,updatedAt:new Date().toISOString()});}
+  if(fbReady&&db){
+    db.collection(FIREBASE_ACCOUNTS_COLLECTION).doc('main').set({accounts:a,updatedAt:new Date().toISOString()})
+      .then(function(){console.log('Accounts synced to Firebase');})
+      .catch(function(e){console.log('Accounts sync error:',e);});
+  }
+}
+function loadAccountsFromFirebase(callback){
+  if(!fbReady||!db){if(callback)callback();return;}
+  db.collection(FIREBASE_ACCOUNTS_COLLECTION).doc('main').get()
+    .then(function(doc){
+      if(doc.exists&&doc.data().accounts){
+        var fbAccounts=doc.data().accounts;
+        try{localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(fbAccounts));}catch(e){}
+        console.log('Accounts loaded from Firebase:',fbAccounts.length);
+      }
+      if(callback)callback();
+    })
+    .catch(function(e){console.log('loadAccountsFromFirebase error:',e);if(callback)callback();});
 }
 function loadAccounts(){
   try{return JSON.parse(localStorage.getItem(ACCOUNTS_KEY))||[];}catch(e){return[];}
@@ -1731,7 +1748,7 @@ document.addEventListener('DOMContentLoaded',function(){
   // Then sync from Firebase
   if(fbReady){
     g('authScreen').innerHTML+='<div id="syncMsg" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:8px 16px;border-radius:20px;font-size:12px;">Synchronisation...</div>';
-    syncAccountsFromFirebase(function(){
+    loadAccountsFromFirebase(function(){
       loadFromFirebase(function(){
         var sm=g('syncMsg');if(sm)sm.remove();
       });
