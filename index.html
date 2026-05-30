@@ -299,6 +299,34 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 .rankPos.third{background:#d97706;color:#fff;}
 .myRankRow{background:var(--gold3)!important;}
 
+
+/* HISTORIQUE ÉCHANGES */
+.echangeItem{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.echangeItem:last-child{border-bottom:none;}
+.echangeIco{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:var(--bg);}
+.echangeTxt{font-size:13px;color:var(--text);flex:1;}
+.echangeMeta{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* CHECKLIST */
+.checkStep{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.checkStep:last-child{border-bottom:none;}
+.checkStep input[type=checkbox]{width:18px;height:18px;margin-top:2px;accent-color:var(--navy);cursor:pointer;flex-shrink:0;}
+.checkStep.done .checkLabel{text-decoration:line-through;color:var(--muted);}
+.checkLabel{font-size:13px;color:var(--text);}
+
+/* PAIEMENTS */
+.payCard{background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--border);padding:16px;margin-bottom:10px;}
+.payCardH{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.payBar{height:8px;background:#e8eaf0;border-radius:4px;overflow:hidden;margin:8px 0;}
+.payBarF{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--green));}
+
+/* PHOTOS */
+.photoGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:10px;}
+.photoCard{border-radius:10px;overflow:hidden;border:1px solid var(--border);position:relative;aspect-ratio:1;}
+.photoCard img{width:100%;height:100%;object-fit:cover;}
+.photoCard .photoDel{position:absolute;top:4px;right:4px;background:rgba(220,38,38,.8);border:none;border-radius:50%;width:22px;height:22px;color:#fff;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;}
+.photoLabel{font-size:10px;font-weight:600;position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.5);color:#fff;padding:3px 6px;text-align:center;}
+
 .toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:var(--gold2);padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;opacity:0;transform:translateY(6px);transition:.22s;pointer-events:none;z-index:999;}
 .toast.on{opacity:1;transform:translateY(0);}
 
@@ -405,6 +433,118 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
           <option value="installer">Installateur</option>
         </select>
       </div>
+<div class="afield" id="rDeptsField" style="display:none">
+  <label>Départements d'intervention</label>
+  <div style="display:flex;gap:8px;margin-bottom:6px">
+    <select id="rDeptSelect" style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 11px;font-size:13px;color:#fff;outline:none;font-family:inherit">
+      <option value="" style="color:#000">-- Sélectionner --</option>
+<option value="01 - Ain" style="color:#000">01 - Ain</option>
+<option value="02 - Aisne" style="color:#000">02 - Aisne</option>
+<option value="03 - Allier" style="color:#000">03 - Allier</option>
+<option value="04 - Alpes-de-Haute-Provence" style="color:#000">04 - Alpes-de-Haute-Provence</option>
+<option value="05 - Hautes-Alpes" style="color:#000">05 - Hautes-Alpes</option>
+<option value="06 - Alpes-Maritimes" style="color:#000">06 - Alpes-Maritimes</option>
+<option value="07 - Ardèche" style="color:#000">07 - Ardèche</option>
+<option value="08 - Ardennes" style="color:#000">08 - Ardennes</option>
+<option value="09 - Ariège" style="color:#000">09 - Ariège</option>
+<option value="10 - Aube" style="color:#000">10 - Aube</option>
+<option value="11 - Aude" style="color:#000">11 - Aude</option>
+<option value="12 - Aveyron" style="color:#000">12 - Aveyron</option>
+<option value="13 - Bouches-du-Rhône" style="color:#000">13 - Bouches-du-Rhône</option>
+<option value="14 - Calvados" style="color:#000">14 - Calvados</option>
+<option value="15 - Cantal" style="color:#000">15 - Cantal</option>
+<option value="16 - Charente" style="color:#000">16 - Charente</option>
+<option value="17 - Charente-Maritime" style="color:#000">17 - Charente-Maritime</option>
+<option value="18 - Cher" style="color:#000">18 - Cher</option>
+<option value="19 - Corrèze" style="color:#000">19 - Corrèze</option>
+<option value="21 - Côte-d'Or" style="color:#000">21 - Côte-d'Or</option>
+<option value="22 - Côtes-d'Armor" style="color:#000">22 - Côtes-d'Armor</option>
+<option value="23 - Creuse" style="color:#000">23 - Creuse</option>
+<option value="24 - Dordogne" style="color:#000">24 - Dordogne</option>
+<option value="25 - Doubs" style="color:#000">25 - Doubs</option>
+<option value="26 - Drôme" style="color:#000">26 - Drôme</option>
+<option value="27 - Eure" style="color:#000">27 - Eure</option>
+<option value="28 - Eure-et-Loir" style="color:#000">28 - Eure-et-Loir</option>
+<option value="29 - Finistère" style="color:#000">29 - Finistère</option>
+<option value="2A - Corse-du-Sud" style="color:#000">2A - Corse-du-Sud</option>
+<option value="2B - Haute-Corse" style="color:#000">2B - Haute-Corse</option>
+<option value="30 - Gard" style="color:#000">30 - Gard</option>
+<option value="31 - Haute-Garonne" style="color:#000">31 - Haute-Garonne</option>
+<option value="32 - Gers" style="color:#000">32 - Gers</option>
+<option value="33 - Gironde" style="color:#000">33 - Gironde</option>
+<option value="34 - Hérault" style="color:#000">34 - Hérault</option>
+<option value="35 - Ille-et-Vilaine" style="color:#000">35 - Ille-et-Vilaine</option>
+<option value="36 - Indre" style="color:#000">36 - Indre</option>
+<option value="37 - Indre-et-Loire" style="color:#000">37 - Indre-et-Loire</option>
+<option value="38 - Isère" style="color:#000">38 - Isère</option>
+<option value="39 - Jura" style="color:#000">39 - Jura</option>
+<option value="40 - Landes" style="color:#000">40 - Landes</option>
+<option value="41 - Loir-et-Cher" style="color:#000">41 - Loir-et-Cher</option>
+<option value="42 - Loire" style="color:#000">42 - Loire</option>
+<option value="43 - Haute-Loire" style="color:#000">43 - Haute-Loire</option>
+<option value="44 - Loire-Atlantique" style="color:#000">44 - Loire-Atlantique</option>
+<option value="45 - Loiret" style="color:#000">45 - Loiret</option>
+<option value="46 - Lot" style="color:#000">46 - Lot</option>
+<option value="47 - Lot-et-Garonne" style="color:#000">47 - Lot-et-Garonne</option>
+<option value="48 - Lozère" style="color:#000">48 - Lozère</option>
+<option value="49 - Maine-et-Loire" style="color:#000">49 - Maine-et-Loire</option>
+<option value="50 - Manche" style="color:#000">50 - Manche</option>
+<option value="51 - Marne" style="color:#000">51 - Marne</option>
+<option value="52 - Haute-Marne" style="color:#000">52 - Haute-Marne</option>
+<option value="53 - Mayenne" style="color:#000">53 - Mayenne</option>
+<option value="54 - Meurthe-et-Moselle" style="color:#000">54 - Meurthe-et-Moselle</option>
+<option value="55 - Meuse" style="color:#000">55 - Meuse</option>
+<option value="56 - Morbihan" style="color:#000">56 - Morbihan</option>
+<option value="57 - Moselle" style="color:#000">57 - Moselle</option>
+<option value="58 - Nièvre" style="color:#000">58 - Nièvre</option>
+<option value="59 - Nord" style="color:#000">59 - Nord</option>
+<option value="60 - Oise" style="color:#000">60 - Oise</option>
+<option value="61 - Orne" style="color:#000">61 - Orne</option>
+<option value="62 - Pas-de-Calais" style="color:#000">62 - Pas-de-Calais</option>
+<option value="63 - Puy-de-Dôme" style="color:#000">63 - Puy-de-Dôme</option>
+<option value="64 - Pyrénées-Atlantiques" style="color:#000">64 - Pyrénées-Atlantiques</option>
+<option value="65 - Hautes-Pyrénées" style="color:#000">65 - Hautes-Pyrénées</option>
+<option value="66 - Pyrénées-Orientales" style="color:#000">66 - Pyrénées-Orientales</option>
+<option value="67 - Bas-Rhin" style="color:#000">67 - Bas-Rhin</option>
+<option value="68 - Haut-Rhin" style="color:#000">68 - Haut-Rhin</option>
+<option value="69 - Rhône" style="color:#000">69 - Rhône</option>
+<option value="70 - Haute-Saône" style="color:#000">70 - Haute-Saône</option>
+<option value="71 - Saône-et-Loire" style="color:#000">71 - Saône-et-Loire</option>
+<option value="72 - Sarthe" style="color:#000">72 - Sarthe</option>
+<option value="73 - Savoie" style="color:#000">73 - Savoie</option>
+<option value="74 - Haute-Savoie" style="color:#000">74 - Haute-Savoie</option>
+<option value="75 - Paris" style="color:#000">75 - Paris</option>
+<option value="76 - Seine-Maritime" style="color:#000">76 - Seine-Maritime</option>
+<option value="77 - Seine-et-Marne" style="color:#000">77 - Seine-et-Marne</option>
+<option value="78 - Yvelines" style="color:#000">78 - Yvelines</option>
+<option value="79 - Deux-Sèvres" style="color:#000">79 - Deux-Sèvres</option>
+<option value="80 - Somme" style="color:#000">80 - Somme</option>
+<option value="81 - Tarn" style="color:#000">81 - Tarn</option>
+<option value="82 - Tarn-et-Garonne" style="color:#000">82 - Tarn-et-Garonne</option>
+<option value="83 - Var" style="color:#000">83 - Var</option>
+<option value="84 - Vaucluse" style="color:#000">84 - Vaucluse</option>
+<option value="85 - Vendée" style="color:#000">85 - Vendée</option>
+<option value="86 - Vienne" style="color:#000">86 - Vienne</option>
+<option value="87 - Haute-Vienne" style="color:#000">87 - Haute-Vienne</option>
+<option value="88 - Vosges" style="color:#000">88 - Vosges</option>
+<option value="89 - Yonne" style="color:#000">89 - Yonne</option>
+<option value="90 - Territoire de Belfort" style="color:#000">90 - Territoire de Belfort</option>
+<option value="91 - Essonne" style="color:#000">91 - Essonne</option>
+<option value="92 - Hauts-de-Seine" style="color:#000">92 - Hauts-de-Seine</option>
+<option value="93 - Seine-Saint-Denis" style="color:#000">93 - Seine-Saint-Denis</option>
+<option value="94 - Val-de-Marne" style="color:#000">94 - Val-de-Marne</option>
+<option value="95 - Val-d'Oise" style="color:#000">95 - Val-d'Oise</option>
+<option value="971 - Guadeloupe" style="color:#000">971 - Guadeloupe</option>
+<option value="972 - Martinique" style="color:#000">972 - Martinique</option>
+<option value="973 - Guyane" style="color:#000">973 - Guyane</option>
+<option value="974 - La Réunion" style="color:#000">974 - La Réunion</option>
+<option value="976 - Mayotte" style="color:#000">976 - Mayotte</option>
+    </select>
+    <button type="button" onclick="addRegDept()" style="background:var(--gold);border:none;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:600;color:var(--navy);cursor:pointer;font-family:inherit;flex-shrink:0">+</button>
+  </div>
+  <div id="rDeptTags" style="display:flex;flex-wrap:wrap;gap:6px;padding:4px 0"></div>
+  <input type="hidden" id="rDepts">
+</div>
       <div class="afield" id="rSpecField" style="display:none"><label>Spécialité</label>
         <select id="rSpec">
           <option>Panneaux solaires</option><option>Borne de recharge</option>
@@ -628,6 +768,12 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       </table></div>
     </div>
 
+    <!-- COMMERCIAUX -->
+    <div class="pg" id="pgCommerciaux">
+      <div class="pgHead"><div><h1>Commerciaux</h1><p class="sub">Équipe commerciale</p></div></div>
+      <div id="commerciauxGrid" class="pgrid"></div>
+    </div>
+
     <!-- SAV -->
     <div class="pg" id="pgSAV">
       <div class="pgHead">
@@ -791,6 +937,20 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="fi full"><div id="mImatrows"></div><button class="addrowbtn" onclick="addMR()">+ Ajouter matériel</button></div>
       <hr class="sep"><div class="seclbl">Notes</div>
       <div class="fi full"><textarea id="mInotes" placeholder="Notes..."></textarea></div>
+      <hr class="sep"><div class="seclbl">Devis Tiime (PDF)</div>
+      <div class="fi full">
+        <div id="mIdevisPreview" style="margin-bottom:8px"></div>
+        <label class="btn bGhost" style="cursor:pointer;display:inline-flex">
+          📎 Joindre le devis PDF
+          <input type="file" accept="application/pdf" id="mIdevisPDF" style="display:none" onchange="loadDevisPDF(this)">
+        </label>
+        <button class="btn bDanger" id="mIdevisDelBtn" onclick="removeDevisPDF()" style="display:none;margin-left:8px">Supprimer</button>
+      </div>
+      <hr class="sep"><div class="seclbl">Paiement</div>
+      <div class="fi"><label>Acompte reçu (€)</label><input id="mIacompte" type="number" placeholder="0" min="0"></div>
+      <div class="fi"><label>Statut paiement</label>
+        <select id="mIpaiement"><option>En attente</option><option>Acompte reçu</option><option>Payé</option><option>En retard</option></select>
+      </div>
     </div>
     <div class="mf"><button class="btn bGhost" onclick="closeIM()">Annuler</button><button class="btn bPrimary" onclick="saveI()">Enregistrer</button></div>
   </div>
@@ -815,6 +975,118 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="fi"><label>Spécialité</label><select id="mPspec"><option>Panneaux solaires</option><option>Borne de recharge</option><option>Éclairage LED</option><option>Polyvalent</option><option>Climatisation</option><option>Autre</option></select></div>
       <div class="fi"><label>Disponibilité</label><select id="mPdispo"><option>Disponible</option><option>Occupé</option><option>Congés</option><option>Formation</option></select></div>
       <div class="fi full"><label>Couleur</label><div class="colopts" id="mPcols"></div></div>
+<div class="fi full" id="mPdeptsField">
+  <label>Départements d'intervention</label>
+  <div style="display:flex;gap:8px;margin-bottom:6px">
+    <select id="mPdeptSelect" style="flex:1;border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;outline:none;font-family:inherit;background:var(--white)">
+      <option value="">-- Sélectionner un département --</option>
+<option value="01 - Ain">01 - Ain</option>
+<option value="02 - Aisne">02 - Aisne</option>
+<option value="03 - Allier">03 - Allier</option>
+<option value="04 - Alpes-de-Haute-Provence">04 - Alpes-de-Haute-Provence</option>
+<option value="05 - Hautes-Alpes">05 - Hautes-Alpes</option>
+<option value="06 - Alpes-Maritimes">06 - Alpes-Maritimes</option>
+<option value="07 - Ardèche">07 - Ardèche</option>
+<option value="08 - Ardennes">08 - Ardennes</option>
+<option value="09 - Ariège">09 - Ariège</option>
+<option value="10 - Aube">10 - Aube</option>
+<option value="11 - Aude">11 - Aude</option>
+<option value="12 - Aveyron">12 - Aveyron</option>
+<option value="13 - Bouches-du-Rhône">13 - Bouches-du-Rhône</option>
+<option value="14 - Calvados">14 - Calvados</option>
+<option value="15 - Cantal">15 - Cantal</option>
+<option value="16 - Charente">16 - Charente</option>
+<option value="17 - Charente-Maritime">17 - Charente-Maritime</option>
+<option value="18 - Cher">18 - Cher</option>
+<option value="19 - Corrèze">19 - Corrèze</option>
+<option value="21 - Côte-d'Or">21 - Côte-d'Or</option>
+<option value="22 - Côtes-d'Armor">22 - Côtes-d'Armor</option>
+<option value="23 - Creuse">23 - Creuse</option>
+<option value="24 - Dordogne">24 - Dordogne</option>
+<option value="25 - Doubs">25 - Doubs</option>
+<option value="26 - Drôme">26 - Drôme</option>
+<option value="27 - Eure">27 - Eure</option>
+<option value="28 - Eure-et-Loir">28 - Eure-et-Loir</option>
+<option value="29 - Finistère">29 - Finistère</option>
+<option value="2A - Corse-du-Sud">2A - Corse-du-Sud</option>
+<option value="2B - Haute-Corse">2B - Haute-Corse</option>
+<option value="30 - Gard">30 - Gard</option>
+<option value="31 - Haute-Garonne">31 - Haute-Garonne</option>
+<option value="32 - Gers">32 - Gers</option>
+<option value="33 - Gironde">33 - Gironde</option>
+<option value="34 - Hérault">34 - Hérault</option>
+<option value="35 - Ille-et-Vilaine">35 - Ille-et-Vilaine</option>
+<option value="36 - Indre">36 - Indre</option>
+<option value="37 - Indre-et-Loire">37 - Indre-et-Loire</option>
+<option value="38 - Isère">38 - Isère</option>
+<option value="39 - Jura">39 - Jura</option>
+<option value="40 - Landes">40 - Landes</option>
+<option value="41 - Loir-et-Cher">41 - Loir-et-Cher</option>
+<option value="42 - Loire">42 - Loire</option>
+<option value="43 - Haute-Loire">43 - Haute-Loire</option>
+<option value="44 - Loire-Atlantique">44 - Loire-Atlantique</option>
+<option value="45 - Loiret">45 - Loiret</option>
+<option value="46 - Lot">46 - Lot</option>
+<option value="47 - Lot-et-Garonne">47 - Lot-et-Garonne</option>
+<option value="48 - Lozère">48 - Lozère</option>
+<option value="49 - Maine-et-Loire">49 - Maine-et-Loire</option>
+<option value="50 - Manche">50 - Manche</option>
+<option value="51 - Marne">51 - Marne</option>
+<option value="52 - Haute-Marne">52 - Haute-Marne</option>
+<option value="53 - Mayenne">53 - Mayenne</option>
+<option value="54 - Meurthe-et-Moselle">54 - Meurthe-et-Moselle</option>
+<option value="55 - Meuse">55 - Meuse</option>
+<option value="56 - Morbihan">56 - Morbihan</option>
+<option value="57 - Moselle">57 - Moselle</option>
+<option value="58 - Nièvre">58 - Nièvre</option>
+<option value="59 - Nord">59 - Nord</option>
+<option value="60 - Oise">60 - Oise</option>
+<option value="61 - Orne">61 - Orne</option>
+<option value="62 - Pas-de-Calais">62 - Pas-de-Calais</option>
+<option value="63 - Puy-de-Dôme">63 - Puy-de-Dôme</option>
+<option value="64 - Pyrénées-Atlantiques">64 - Pyrénées-Atlantiques</option>
+<option value="65 - Hautes-Pyrénées">65 - Hautes-Pyrénées</option>
+<option value="66 - Pyrénées-Orientales">66 - Pyrénées-Orientales</option>
+<option value="67 - Bas-Rhin">67 - Bas-Rhin</option>
+<option value="68 - Haut-Rhin">68 - Haut-Rhin</option>
+<option value="69 - Rhône">69 - Rhône</option>
+<option value="70 - Haute-Saône">70 - Haute-Saône</option>
+<option value="71 - Saône-et-Loire">71 - Saône-et-Loire</option>
+<option value="72 - Sarthe">72 - Sarthe</option>
+<option value="73 - Savoie">73 - Savoie</option>
+<option value="74 - Haute-Savoie">74 - Haute-Savoie</option>
+<option value="75 - Paris">75 - Paris</option>
+<option value="76 - Seine-Maritime">76 - Seine-Maritime</option>
+<option value="77 - Seine-et-Marne">77 - Seine-et-Marne</option>
+<option value="78 - Yvelines">78 - Yvelines</option>
+<option value="79 - Deux-Sèvres">79 - Deux-Sèvres</option>
+<option value="80 - Somme">80 - Somme</option>
+<option value="81 - Tarn">81 - Tarn</option>
+<option value="82 - Tarn-et-Garonne">82 - Tarn-et-Garonne</option>
+<option value="83 - Var">83 - Var</option>
+<option value="84 - Vaucluse">84 - Vaucluse</option>
+<option value="85 - Vendée">85 - Vendée</option>
+<option value="86 - Vienne">86 - Vienne</option>
+<option value="87 - Haute-Vienne">87 - Haute-Vienne</option>
+<option value="88 - Vosges">88 - Vosges</option>
+<option value="89 - Yonne">89 - Yonne</option>
+<option value="90 - Territoire de Belfort">90 - Territoire de Belfort</option>
+<option value="91 - Essonne">91 - Essonne</option>
+<option value="92 - Hauts-de-Seine">92 - Hauts-de-Seine</option>
+<option value="93 - Seine-Saint-Denis">93 - Seine-Saint-Denis</option>
+<option value="94 - Val-de-Marne">94 - Val-de-Marne</option>
+<option value="95 - Val-d'Oise">95 - Val-d'Oise</option>
+<option value="971 - Guadeloupe">971 - Guadeloupe</option>
+<option value="972 - Martinique">972 - Martinique</option>
+<option value="973 - Guyane">973 - Guyane</option>
+<option value="974 - La Réunion">974 - La Réunion</option>
+<option value="976 - Mayotte">976 - Mayotte</option>
+    </select>
+    <button type="button" class="btn bPrimary" onclick="addDept()" style="flex-shrink:0">+ Ajouter</button>
+  </div>
+  <div id="mPdeptTags" style="display:flex;flex-wrap:wrap;gap:6px;min-height:28px;padding:4px 0"></div>
+  <input type="hidden" id="mPdepts">
+</div>
       <div class="fi full"><label>Notes</label><textarea id="mPnotes" placeholder="Notes..."></textarea></div>
     </div>
     <div class="mf"><button class="btn bGhost" onclick="closePM()">Annuler</button><button class="btn bPrimary" onclick="saveP()">Enregistrer</button></div>
@@ -867,7 +1139,35 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="fi"><label>Source</label><select id="mOsource"><option>Bouche à oreille</option><option>Site web</option><option>Réseaux sociaux</option><option>Prospection téléphonique</option><option>Partenaire</option><option>Autre</option></select></div>
       <div class="fi full"><label>Notes</label><textarea id="mOnotes" placeholder="Notes..."></textarea></div>
     </div>
-    <div class="mf"><button class="btn bGhost" onclick="closeOppModal()">Annuler</button><button class="btn bPrimary" onclick="saveOpp()">Enregistrer</button></div>
+    <div class="mf"><button class="btn bGhost" onclick="closeOppModal()">Annuler</button>
+      <button class="btn bSuccess" id="mOppConvertBtn" onclick="convertOppToInst()" style="display:none">⚡ Convertir en installation</button>
+      <button class="btn bPrimary" onclick="saveOpp()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORIQUE OPP -->
+<div class="ov" id="mOppDetail">
+  <div class="modal lg">
+    <div class="mh"><h2 id="mOppDetailT">Historique opportunité</h2><button class="mcl" onclick="g('mOppDetail').classList.remove('on')">&#10005;</button></div>
+    <div id="mOppDetailBody"></div>
+    <hr style="margin:14px 0;border:none;border-top:1px solid var(--border)">
+    <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Ajouter un échange</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+      <select id="echangeType" style="border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:13px;outline:none;font-family:inherit;background:var(--white)">
+        <option value="📞">📞 Appel</option>
+        <option value="📧">📧 Email</option>
+        <option value="🤝">🤝 RDV</option>
+        <option value="💬">💬 Message</option>
+        <option value="📋">📋 Devis envoyé</option>
+        <option value="✅">✅ Relance</option>
+      </select>
+      <input id="echangeDate" type="date" style="border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:13px;outline:none;font-family:inherit">
+    </div>
+    <div style="display:flex;gap:8px">
+      <input id="echangeInput" placeholder="Décrivez l'échange..." style="flex:1;border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;outline:none;font-family:inherit">
+      <button class="btn bPrimary" onclick="addEchange()">Ajouter</button>
+    </div>
   </div>
 </div>
 
@@ -1157,7 +1457,9 @@ function isInstaller(){return getRole()==='installer';}
 function toggleSpecField(){
   var role=g('rRole')?g('rRole').value:'installer';
   var sf=g('rSpecField');
+  var df=g('rDeptsField');
   if(sf)sf.style.display=(role==='installer'||role==='dirtech')?'block':'none';
+  if(df)df.style.display=(role==='installer'||role==='dirtech')?'block':'none';
 }
 function showLogin(){
   g('authCardLogin').style.display='block';
@@ -1202,7 +1504,8 @@ function doRegister(){
   var accounts=loadAccounts();
   var colorIdx=accounts.length%COLS.length;
   var uid='u_'+Date.now();
-  var newAcc={id:uid,name:prenom+' '+nom,prenom:prenom,nom:nom,email:email,tel:tel,spec:spec,pass:pass,role:role,avatar:prenom[0].toUpperCase()+nom[0].toUpperCase(),color:COLS[colorIdx],status:'pending',createdAt:new Date().toLocaleDateString('fr-FR')};
+  var depts=g('rDepts')?g('rDepts').value:'';
+  var newAcc={id:uid,name:prenom+' '+nom,prenom:prenom,nom:nom,email:email,tel:tel,spec:spec,depts:depts,pass:pass,role:role,avatar:prenom[0].toUpperCase()+nom[0].toUpperCase(),color:COLS[colorIdx],status:'pending',createdAt:new Date().toLocaleDateString('fr-FR')};
 
   // Save to Firebase first if available
   if(fbReady&&db){
@@ -1266,7 +1569,7 @@ function changePassword(){
 // ── NAVIGATION ──
 var NAV={
   admin:[
-    {s:'Commercial'},{id:'pgDash',ico:'📊',lbl:'Tableau de bord'},{id:'pgPipeline',ico:'🎯',lbl:'Pipeline'},{id:'pgProspects',ico:'🔍',lbl:'Prospects'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},{id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgObjectifs',ico:'🎯',lbl:'Objectifs CA'},{id:'pgRapports',ico:'📈',lbl:'Rapports'},
+    {s:'Commercial'},{id:'pgDash',ico:'📊',lbl:'Tableau de bord'},{id:'pgPipeline',ico:'🎯',lbl:'Pipeline'},{id:'pgProspects',ico:'🔍',lbl:'Prospects'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},{id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgObjectifs',ico:'🎯',lbl:'Objectifs CA'},{id:'pgRapports',ico:'📈',lbl:'Rapports'},{id:'pgCommerciaux',ico:'💼',lbl:'Commerciaux'},
     {s:'Installateurs'},{id:'pgInst',ico:'⚡',lbl:'Installations'},{id:'pgSAV',ico:'🔧',lbl:'SAV'},{id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgStock',ico:'📦',lbl:'Stock'},{id:'pgProfils',ico:'👷',lbl:'Installateurs'},
     {s:'Gestion'},{id:'pgRH',ico:'👥',lbl:'RH'},{id:'pgFinance',ico:'💰',lbl:'Finance'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
@@ -1324,6 +1627,7 @@ function nav(id){
   if(id==='pgDashDT')renderDashDT();
   if(id==='pgPipeline')renderPipeline();
   if(id==='pgProspects')renderProspects();
+  if(id==='pgCommerciaux')renderCommerciaux();
   if(id==='pgSAV')renderSAV();
   if(id==='pgChat')renderChat();
   if(id==='pgMonCA')renderMonCA();
@@ -1438,7 +1742,7 @@ function renderPipeline(){
     var col=ECOLS[etape]||'#888';
     var col2=document.createElement('div');col2.className='pipeCol';
     col2.innerHTML='<div class="pipeColH" style="border-left:3px solid '+col+'"><span class="pipeLabel">'+etape+'</span><span class="pipeCnt" style="background:'+col+'22;color:'+col+'">'+opps.length+'</span></div>'
-      +'<div class="pipeColB">'+opps.map(function(o){var idx=DB.opportunites.indexOf(o);return '<div class="pCard" onclick="openOppModal('+idx+')"><div class="pCardNm">'+o.nom+'</div><div class="pCardSub">'+o.client+'</div><div style="display:flex;justify-content:space-between;margin-top:5px"><span class="pCardAmt">'+fmtE(o.montant)+'</span><span style="font-size:11px;color:var(--muted)">'+o.proba+'%</span></div></div>';}).join('')+'</div>';
+      +'<div class="pipeColB">'+opps.map(function(o){var idx=DB.opportunites.indexOf(o);return '<div class="pCard"><div class="pCardNm" onclick="openOppModal('+idx+')" style="cursor:pointer">'+o.nom+'</div><div class="pCardSub">'+o.client+'</div><div style="display:flex;justify-content:space-between;margin-top:5px;align-items:center"><span class="pCardAmt">'+fmtE(o.montant)+'</span><span style="font-size:11px;color:var(--muted)">'+o.proba+'%</span></div><div style="margin-top:6px;display:flex;gap:4px"><button class="act" style="font-size:11px;padding:3px 7px" onclick="openOppDetail('+idx+')">📋 Historique</button><button class="act" style="font-size:11px;padding:3px 7px" onclick="openOppModal('+idx+')">✏️</button></div></div>';}).join('')+'</div>';
     board.appendChild(col2);
   });
 }
@@ -1564,9 +1868,11 @@ function renderT(){
       +'<td>'+fmtD(r.dateDebut)+'</td>'
       +'<td>'+fmtD(r.dateFin)+'</td>'
       +'<td>'+(r.signature&&r.signature.length>50?'<span style="color:var(--green);font-weight:600;font-size:12px">✓ Signé</span>':'<span style="color:var(--muted);font-size:12px">—</span>')+'</td>'
-      +'<td class="acts"><button class="act" onclick="openFiche('+idx+')">👁</button>'
-        +(!isInstaller()?'<button class="act" onclick="openIM('+idx+')">✏️</button>':'')
-        +(isAdmin()?'<button class="act dl" onclick="delI('+idx+')">🗑</button>':'')
+      +'<td class="acts"><button class="act" onclick="openFiche('+idx+')" title="Fiche">👁</button>'
+        +'<button class="act" onclick="openChecklist('+idx+')" title="Checklist">☑️</button>'
+        +'<button class="act" onclick="openPhotos('+idx+')" title="Photos">📷</button>'
+        +(!isInstaller()?'<button class="act" onclick="openIM('+idx+')" title="Modifier">✏️</button>':'')
+        +(isAdmin()?'<button class="act dl" onclick="delI('+idx+')" title="Supprimer">🗑</button>':'')
       +'</td></tr>';
   }).join('')||'<tr class="emp"><td colspan="10">Aucune installation</td></tr>';
 }
@@ -1578,6 +1884,17 @@ function openIM(idx){
   g('mItype').value=r.type||'Panneaux solaires';g('mIstat').value=r.statut||'Planifiée';
   g('mIdeb').value=r.dateDebut||'';g('mIfin').value=r.dateFin||'';
   g('mImontant').value=r.montant||'';g('mInotes').value=r.notes||'';
+  g('mIacompte').value=r.acompte||0;g('mIpaiement').value=r.paiementStatut||'En attente';
+  var prev=g('mIdevisPreview');var delBtn=g('mIdevisDelBtn');
+  if(prev){
+    if(r.devisPDF){
+      prev.innerHTML='<div style="background:var(--red-bg);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px;font-size:13px"><span style="font-size:18px">📄</span><span style="font-weight:500;color:var(--red)">Devis PDF joint</span></div>';
+      if(delBtn)delBtn.style.display='inline-flex';
+    } else {
+      prev.innerHTML='';
+      if(delBtn)delBtn.style.display='none';
+    }
+  }
   var iSel=g('mIinst');iSel.innerHTML='';
   DB.installateurs.forEach(function(i){var o=document.createElement('option');var nm=instName(i.prenom,i.nom);o.value=nm;o.textContent=nm;iSel.appendChild(o);});
   if(r.installateur)iSel.value=r.installateur;
@@ -1604,7 +1921,7 @@ function saveI(){
     var sel=row.querySelector('select'),qty=row.querySelector('input[type=number]');
     if(sel)mats.push({nom:sel.value,qty:parseFloat(qty.value)||1,unit:'unité(s)'});
   });
-  var row={id:eInst>=0?DB.installations[eInst].id:DB.nextId++,chantier:ch,client:cl,adresse:g('mIadresse').value,tel:g('mItel').value,type:g('mItype').value,installateur:g('mIinst').value,statut:g('mIstat').value,dateDebut:g('mIdeb').value,dateFin:g('mIfin').value,montant:parseFloat(g('mImontant').value)||0,materiaux:mats,notes:g('mInotes').value,signature:eInst>=0?DB.installations[eInst].signature:'',modifiedBy:curUserObj?curUserObj.name:'',assignedDirtech:isDirtech()&&curUserObj?curUserObj.id:eInst>=0&&DB.installations[eInst].assignedDirtech?DB.installations[eInst].assignedDirtech:''};
+  var row={id:eInst>=0?DB.installations[eInst].id:DB.nextId++,chantier:ch,client:cl,adresse:g('mIadresse').value,tel:g('mItel').value,type:g('mItype').value,installateur:g('mIinst').value,statut:g('mIstat').value,dateDebut:g('mIdeb').value,dateFin:g('mIfin').value,montant:parseFloat(g('mImontant').value)||0,materiaux:mats,notes:g('mInotes').value,signature:eInst>=0?DB.installations[eInst].signature:'',modifiedBy:curUserObj?curUserObj.name:'',assignedDirtech:isDirtech()&&curUserObj?curUserObj.id:eInst>=0&&DB.installations[eInst].assignedDirtech?DB.installations[eInst].assignedDirtech:'',acompte:parseFloat(g('mIacompte').value)||0,paiementStatut:g('mIpaiement').value,checklist:eInst>=0&&DB.installations[eInst].checklist?DB.installations[eInst].checklist:[],photos:eInst>=0&&DB.installations[eInst].photos?DB.installations[eInst].photos:[],devisPDF:eInst>=0&&DB.installations[eInst].devisPDF?DB.installations[eInst].devisPDF:null,devisPDFName:eInst>=0&&DB.installations[eInst].devisPDFName?DB.installations[eInst].devisPDFName:''};
   if(eInst>=0)DB.installations[eInst]=row;else DB.installations.push(row);
   addActivite('install','Installation "'+ch+'" '+(eInst>=0?'modifiée':'créée'));
   save();closeIM();renderT();renderP();toast('Installation enregistrée !');
@@ -1631,6 +1948,7 @@ function openFiche(idx){
   html+='</div>';
   if(r.materiaux&&r.materiaux.length){html+='<div style="margin:12px 0"><div class="ficheSectionH">Matériel</div>';r.materiaux.forEach(function(m){html+='<div class="matItem"><span style="font-weight:500">'+m.nom+'</span><span style="background:var(--orange-bg);color:var(--orange);border-radius:6px;padding:2px 8px;font-size:12px;font-weight:600">'+m.qty+' '+m.unit+'</span></div>';});html+='</div>';}
   if(r.notes)html+='<div style="margin-bottom:12px"><div class="ficheSectionH">Notes</div><p style="font-size:13px;background:var(--bg);border-radius:8px;padding:10px">'+r.notes+'</p></div>';
+  if(r.devisPDF){html+='<div style="margin-bottom:12px"><div class="ficheSectionH">Devis Tiime</div><div style="display:flex;gap:8px;align-items:center;background:var(--red-bg);border-radius:8px;padding:10px 12px"><span style="font-size:20px">📄</span><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--red)">'+(r.devisPDFName||'Devis.pdf')+'</div></div><button class="btn bPrimary" style="font-size:12px;padding:5px 10px" onclick="viewDevisPDF('+eFicheIdx+')">Ouvrir</button><a href="'+r.devisPDF+'" download="'+(r.devisPDFName||'Devis.pdf')+'" class="btn bGhost" style="font-size:12px;padding:5px 10px">Télécharger</a></div></div>';}
   html+='<div><div class="ficheSectionH">Signature client</div>';
   if(r.signature&&r.signature.length>50)html+='<img src="'+r.signature+'" style="max-width:100%;border:1px solid var(--border);border-radius:8px;display:block"><p style="font-size:12px;color:var(--green);margin-top:6px;font-weight:600">✓ Signé</p>';
   else html+='<div class="sigBox" onclick="openSig('+idx+')">Cliquer pour recueillir la signature</div>';
@@ -1778,6 +2096,7 @@ function renderProfils(){
       +'</div>'
       +'<div style="font-size:12px;color:var(--muted)">'+p.email+'</div>'
       +'<div style="font-size:12px;color:var(--muted);margin-top:2px">'+p.tel+'</div>'
+      +(p.depts?'<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">'+p.depts.split(',').map(function(d){return '<span style="background:var(--blue-bg);color:var(--blue);border-radius:12px;padding:2px 8px;font-size:11px;font-weight:600">Dép. '+d.trim()+'</span>';}).join('')+'</div>':'')
       +'<div style="font-size:13px;font-weight:600;color:var(--green);margin-top:8px">'+fmtE(ca)+'</div>'
       +(isAdmin()||isDirtech()?'<div style="margin-top:8px"><button class="btn bGhost" style="font-size:12px;padding:5px 10px" onclick="openProfModal('+idx+')">Modifier</button></div>':'')
       +'</div></div>';
@@ -1789,7 +2108,7 @@ function openProfModal(idx){
   g('mProfT').textContent=idx>=0?'Modifier':'Nouvel installateur';
   g('mPp').value=r.prenom||'';g('mPn').value=r.nom||'';g('mPtel').value=r.tel||'';
   g('mPemail').value=r.email||'';g('mPspec').value=r.spec||'Panneaux solaires';
-  g('mPdispo').value=r.dispo||'Disponible';g('mPnotes').value=r.notes||'';
+  g('mPdispo').value=r.dispo||'Disponible';initDeptTags(r.depts||'');g('mPnotes').value=r.notes||'';
   profColSel=r.color||COLS[0];
   g('mPcols').innerHTML=COLS.map(function(c){return '<div class="colopt'+(c===profColSel?' on':'')+'" style="background:'+c+'" onclick="profColSel=\''+c+'\';document.querySelectorAll(\'.colopt\').forEach(function(e){e.classList.toggle(\'on\',e.style.background===\''+c+'\')})"></div>';}).join('');
   g('mProf').classList.add('on');
@@ -1797,7 +2116,7 @@ function openProfModal(idx){
 function closePM(){g('mProf').classList.remove('on');}
 function saveP(){
   var p=g('mPp').value.trim();if(!p){alert('Prénom requis');return;}
-  var row={id:eProfil>=0?DB.installateurs[eProfil].id:DB.nextId++,prenom:p,nom:g('mPn').value,tel:g('mPtel').value,email:g('mPemail').value,spec:g('mPspec').value,dispo:g('mPdispo').value,color:profColSel,notes:g('mPnotes').value};
+  var row={id:eProfil>=0?DB.installateurs[eProfil].id:DB.nextId++,prenom:p,nom:g('mPn').value,tel:g('mPtel').value,email:g('mPemail').value,spec:g('mPspec').value,dispo:g('mPdispo').value,color:profColSel,depts:g('mPdepts').value,notes:g('mPnotes').value};
   if(eProfil>=0)DB.installateurs[eProfil]=row;else DB.installateurs.push(row);
   save();closePM();renderProfils();toast('Installateur enregistré !');
 }
@@ -1810,6 +2129,8 @@ function openOppModal(idx){
   g('mOmontant').value=r.montant||'';g('mOproba').value=r.proba||50;
   g('mOetape').value=r.etape||'Prospection';g('mOclose').value=r.close||'';
   g('mOsource').value=r.source||'Bouche à oreille';g('mOnotes').value=r.notes||'';
+  var convertBtn=g('mOppConvertBtn');
+  if(convertBtn)convertBtn.style.display=(r.etape==='Gagné'&&idx>=0)?'inline-flex':'none';
   g('mOpp').classList.add('on');
 }
 function closeOppModal(){g('mOpp').classList.remove('on');}
@@ -2366,7 +2687,13 @@ function renderMonCA(){
 }
 
 function buildRanking(role){
-  var accounts=[ADMIN].concat(loadAccounts().filter(function(a){return a.status==='active'&&a.role===role;}));
+  var accounts;
+  if(role==='commercial'){
+    accounts=loadAccounts().filter(function(a){return a.status==='active'&&a.role==='commercial';});
+  } else {
+    // terrain = installer + dirtech (not admin)
+    accounts=loadAccounts().filter(function(a){return a.status==='active'&&(a.role==='installer'||a.role==='dirtech');});
+  }
   return accounts.map(function(u){
     var ca=0;
     if(role==='commercial'){
@@ -2374,7 +2701,7 @@ function buildRanking(role){
     } else {
       ca=DB.installations.filter(function(i){return i.installateur===u.name&&i.statut==='Terminée';}).reduce(function(s,i){return s+(i.montant||0);},0);
     }
-    return {id:u.id,name:u.name,avatar:u.avatar||'?',color:u.color||'#888',ca:ca};
+    return {id:u.id,name:u.name,avatar:u.avatar||'?',color:u.color||'#888',ca:ca,role:u.role};
   }).sort(function(a,b){return b.ca-a.ca;});
 }
 
@@ -2415,6 +2742,11 @@ function renderObjectifs(){
 function calcCAForUser(u,mois,an){
   if(u.role==='commercial'){
     return DB.devis.filter(function(d){var dt=new Date(d.date);return (!d.commercialId||d.commercialId===u.id)&&d.statut==='Accepté'&&dt.getMonth()===mois&&dt.getFullYear()===an;}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);
+  }
+  // For admin, dirtech, installer: CA from finished installations
+  if(u.role==='admin'){
+    // Admin sees total CA of all installations
+    return DB.installations.filter(function(i){if(!i.dateFin)return false;var d=new Date(i.dateFin);return i.statut==='Terminée'&&d.getMonth()===mois&&d.getFullYear()===an;}).reduce(function(s,i){return s+(i.montant||0);},0);
   }
   return DB.installations.filter(function(i){if(!i.dateFin)return false;var d=new Date(i.dateFin);return i.installateur===u.name&&i.statut==='Terminée'&&d.getMonth()===mois&&d.getFullYear()===an;}).reduce(function(s,i){return s+(i.montant||0);},0);
 }
@@ -2603,6 +2935,310 @@ function installPWA(){
     var banner=g('pwaInstallBanner');
     if(banner)banner.style.display='none';
   });
+}
+
+
+// ── DEPARTEMENTS ──
+var selectedDepts=[];
+function addDept(){
+  var sel=g('mPdeptSelect');
+  if(!sel||!sel.value)return;
+  if(selectedDepts.indexOf(sel.value)>=0){sel.value='';return;}
+  selectedDepts.push(sel.value);
+  renderDeptTags();
+  g('mPdepts').value=selectedDepts.join(', ');
+  sel.value='';
+}
+function removeDept(d){
+  selectedDepts=selectedDepts.filter(function(x){return x!==d;});
+  renderDeptTags();
+  g('mPdepts').value=selectedDepts.join(', ');
+}
+
+function initDeptTags(val){
+  selectedDepts=val?val.split(',').map(function(d){return d.trim();}).filter(Boolean):[];
+  renderDeptTags();
+  if(g('mPdepts'))g('mPdepts').value=val||'';
+}
+
+var regDepts=[];
+function addRegDept(){
+  var sel=g('rDeptSelect');
+  if(!sel||!sel.value)return;
+  if(regDepts.indexOf(sel.value)>=0){sel.value='';return;}
+  regDepts.push(sel.value);
+  renderRegDeptTags();
+  if(g('rDepts'))g('rDepts').value=regDepts.join(', ');
+  sel.value='';
+}
+
+
+
+// ══ COMMERCIAUX ══
+function renderCommerciaux(){
+  var accounts=loadAccounts().filter(function(a){return a.status==='active'&&a.role==='commercial';});
+  var grid=g('commerciauxGrid');
+  if(!accounts.length){
+    grid.innerHTML='<p style="color:var(--muted);font-size:13px;padding:20px">Aucun commercial actif pour l&#39;instant.</p>';
+    return;
+  }
+  grid.innerHTML=accounts.map(function(u,idx){
+    var myOpps=DB.opportunites.filter(function(o){return !o.commercialId||o.commercialId===u.id;});
+    var myDevis=DB.devis.filter(function(d){return (!d.commercialId||d.commercialId===u.id)&&d.statut==='Accepté';});
+    var caTotal=myDevis.reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);
+    var pipeline=myOpps.filter(function(o){return o.etape!=='Gagné'&&o.etape!=='Perdu';}).reduce(function(s,o){return s+o.montant;},0);
+    var txConv=myOpps.length>0?Math.round(myOpps.filter(function(o){return o.etape==='Gagné';}).length/myOpps.length*100):0;
+    var now=new Date();
+    var caMonth=myDevis.filter(function(d){var dt=new Date(d.date);return dt.getMonth()===now.getMonth()&&dt.getFullYear()===now.getFullYear();}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);
+    return '<div class="pcard">'
+      +'<div class="pcardH">'
+        +'<div class="pcAv" style="background:'+(u.color||'#888')+'">'+u.avatar+'</div>'
+        +'<div><div class="pcNm">'+u.name+'</div>'
+        +'<div class="pcSp">Commercial</div>'
+        +'<span class="bdg roleCommercial">Actif</span></div>'
+      +'</div>'
+      +'<div class="pcardb">'
+        +'<div class="pcStats">'
+          +'<div class="pcSt"><div class="pcStV">'+myOpps.length+'</div><div class="pcStL">Opportunités</div></div>'
+          +'<div class="pcSt"><div class="pcStV">'+txConv+'%</div><div class="pcStL">Conversion</div></div>'
+          +'<div class="pcSt"><div class="pcStV">'+myDevis.length+'</div><div class="pcStL">Devis signés</div></div>'
+        +'</div>'
+        +'<div style="font-size:12px;color:var(--muted)">'+u.email+'</div>'
+        +'<div style="font-size:12px;color:var(--muted);margin-top:2px">'+(u.tel||'')+'</div>'
+        +'<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">'
+          +'<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">CA total</span><span style="font-weight:600;color:var(--green)">'+fmtE(caTotal)+'</span></div>'
+          +'<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">CA ce mois</span><span style="font-weight:600;color:var(--blue)">'+fmtE(caMonth)+'</span></div>'
+          +'<div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">Pipeline actif</span><span style="font-weight:600;color:var(--orange)">'+fmtE(pipeline)+'</span></div>'
+        +'</div>'
+      +'</div></div>';
+  }).join('');
+}
+
+
+// ══ HISTORIQUE ÉCHANGES OPP ══
+var curOppDetailIdx=-1;
+var CHECKLIST_DEFAULT=[
+  'Visite technique effectuée',
+  'Devis envoyé au client',
+  'Devis accepté / bon de commande signé',
+  'Commande matériel passée',
+  'Matériel reçu sur chantier',
+  'Installation réalisée',
+  'Tests et mise en service',
+  'Réception chantier signée par client',
+  'Facture envoyée',
+  'Paiement reçu'
+];
+
+function openOppDetail(idx){
+  curOppDetailIdx=idx;
+  var o=DB.opportunites[idx];if(!o)return;
+  g('mOppDetailT').textContent='Historique — '+o.nom;
+  renderOppDetail();
+  g('mOppDetail').classList.add('on');
+  var d=new Date();
+  g('echangeDate').value=d.toISOString().slice(0,10);
+}
+
+function renderOppDetail(){
+  var o=DB.opportunites[curOppDetailIdx];if(!o)return;
+  var echanges=o.echanges||[];
+  var html='<div style="margin-bottom:14px"><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">'
+    +'<span class="bdg '+(o.etape==='Gagné'?'bTerm':o.etape==='Perdu'?'bAnnul':'bCours')+'">'+o.etape+'</span>'
+    +'<span style="font-size:13px;font-weight:600;color:var(--green)">'+fmtE(o.montant)+'</span>'
+    +'<span style="font-size:12px;color:var(--muted)">'+o.proba+'% &middot; '+o.client+'</span>'
+    +'</div></div>';
+  html+='<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px">'+echanges.length+' échange(s)</div>';
+  if(!echanges.length){html+='<p style="color:var(--muted);font-size:13px;padding:10px 0">Aucun échange enregistré</p>';}
+  else{
+    html+='<div>';
+    echanges.slice().reverse().forEach(function(e,i){
+      html+='<div class="echangeItem"><div class="echangeIco">'+e.ico+'</div>'
+        +'<div><div class="echangeTxt">'+e.txt+'</div>'
+        +'<div class="echangeMeta">'+e.date+' &middot; '+e.author+'</div></div></div>';
+    });
+    html+='</div>';
+  }
+  g('mOppDetailBody').innerHTML=html;
+}
+
+function addEchange(){
+  var txt=g('echangeInput').value.trim();if(!txt)return;
+  var o=DB.opportunites[curOppDetailIdx];if(!o)return;
+  if(!o.echanges)o.echanges=[];
+  var ico=g('echangeType').value;
+  var date=g('echangeDate').value||new Date().toISOString().slice(0,10);
+  o.echanges.push({ico:ico,txt:txt,date:fmtD(date),author:curUserObj?curUserObj.name:'',ts:Date.now()});
+  save();g('echangeInput').value='';renderOppDetail();toast('Échange ajouté !');
+}
+
+function convertOppToInst(){
+  var idx=eOpp;if(idx<0)return;
+  var o=DB.opportunites[idx];if(!o)return;
+  if(!confirm('Convertir cette opportunité en installation ?'))return;
+  var inst={id:DB.nextId++,chantier:o.nom,client:o.client,adresse:'',tel:'',type:'Panneaux solaires',
+    installateur:'',statut:'Planifiée',dateDebut:'',dateFin:'',montant:o.montant,
+    materiaux:[],notes:'Créé depuis opportunité: '+o.nom,signature:'',
+    modifiedBy:curUserObj?curUserObj.name:'',assignedDirtech:'',
+    acompte:0,paiementStatut:'En attente',checklist:[],photos:[]};
+  DB.installations.push(inst);
+  o.etape='Gagné';
+  addActivite('install','Installation créée depuis opportunité "'+o.nom+'"');
+  addActivite('opp','Opportunité "'+o.nom+'" convertie en installation');
+  save();closeOppModal();toast('Installation créée !');nav('pgInst');
+}
+
+// ══ CHECKLIST INSTALLATION ══
+function openChecklist(idx){
+  var r=DB.installations[idx];if(!r)return;
+  if(!r.checklist||!r.checklist.length){
+    r.checklist=CHECKLIST_DEFAULT.map(function(s,i){return {id:i,label:s,done:false};});
+    save();
+  }
+  var done=r.checklist.filter(function(c){return c.done;}).length;
+  var pct=Math.round(done/r.checklist.length*100);
+  var html='<div style="margin-bottom:12px">'
+    +'<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:var(--muted)">Avancement</span><span style="font-size:13px;font-weight:600">'+done+'/'+r.checklist.length+' ('+pct+'%)</span></div>'
+    +'<div class="objBar"><div class="objBarF" style="width:'+pct+'%"></div></div></div>'
+    +r.checklist.map(function(c,i){
+      return '<div class="checkStep'+(c.done?' done':'')+'">'
+        +'<input type="checkbox" '+(c.done?'checked':'')+' onchange="toggleCheck('+idx+','+i+',this.checked)">'
+        +'<span class="checkLabel">'+c.label+'</span></div>';
+    }).join('');
+  document.body.insertAdjacentHTML('beforeend',
+    '<div class="ov on" id="mCheckTemp" onclick="if(event.target===this)this.remove()">'
+    +'<div class="modal"><div class="mh"><h2>Checklist — '+r.chantier+'</h2>'
+    +'<button class="mcl" onclick="g(\'mCheckTemp\').remove()">&#10005;</button></div>'
+    +html+'</div></div>');
+}
+
+function toggleCheck(instIdx,checkIdx,val){
+  DB.installations[instIdx].checklist[checkIdx].done=val;
+  save();
+  // Update display
+  var steps=document.querySelectorAll('#mCheckTemp .checkStep');
+  if(steps[checkIdx]){
+    steps[checkIdx].classList.toggle('done',val);
+  }
+  // Update progress
+  var r=DB.installations[instIdx];
+  var done=r.checklist.filter(function(c){return c.done;}).length;
+  var pct=Math.round(done/r.checklist.length*100);
+  var bar=document.querySelector('#mCheckTemp .objBarF');
+  if(bar)bar.style.width=pct+'%';
+}
+
+// ══ PHOTOS CHANTIER ══
+function openPhotos(idx){
+  var r=DB.installations[idx];if(!r)return;
+  if(!r.photos)r.photos=[];
+  renderPhotosModal(idx);
+}
+
+function renderPhotosModal(idx){
+  var r=DB.installations[idx];
+  var existing=document.getElementById('mPhotosTemp');
+  if(existing)existing.remove();
+  var photos=r.photos||[];
+  var avantPhotos=photos.filter(function(p){return p.type==='avant';});
+  var apresPhotos=photos.filter(function(p){return p.type==='après';});
+  var html='<div class="modal lg"><div class="mh"><h2>Photos — '+r.chantier+'</h2>'
+    +'<button class="mcl" onclick="g(\'mPhotosTemp\').remove()">&#10005;</button></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'
+    +'<div><div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Avant ('+avantPhotos.length+')</div>'
+    +'<div class="photoGrid">'+avantPhotos.map(function(p,i){var pi=photos.indexOf(p);return '<div class="photoCard"><img src="'+p.data+'" alt="avant"><button class="photoDel" onclick="deletePhoto('+idx+','+pi+')">&#10005;</button><div class="photoLabel">Avant</div></div>';}).join('')
+    +'<label style="aspect-ratio:1;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)">'
+    +'<span style="font-size:24px">📷</span>Ajouter<input type="file" accept="image/*" style="display:none" onchange="addPhoto('+idx+',\'avant\',this)">'
+    +'</label></div></div>'
+    +'<div><div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Après ('+apresPhotos.length+')</div>'
+    +'<div class="photoGrid">'+apresPhotos.map(function(p,i){var pi=photos.indexOf(p);return '<div class="photoCard"><img src="'+p.data+'" alt="après"><button class="photoDel" onclick="deletePhoto('+idx+','+pi+')">&#10005;</button><div class="photoLabel">Après</div></div>';}).join('')
+    +'<label style="aspect-ratio:1;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)">'
+    +'<span style="font-size:24px">📷</span>Ajouter<input type="file" accept="image/*" style="display:none" onchange="addPhoto('+idx+',\'après\',this)">'
+    +'</label></div></div>'
+    +'</div></div>';
+  document.body.insertAdjacentHTML('beforeend','<div class="ov on" id="mPhotosTemp" onclick="if(event.target===this)this.remove()">'+html+'</div>');
+}
+
+function addPhoto(instIdx,type,input){
+  var file=input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    if(!DB.installations[instIdx].photos)DB.installations[instIdx].photos=[];
+    DB.installations[instIdx].photos.push({type:type,data:e.target.result,date:new Date().toLocaleDateString('fr-FR')});
+    save();renderPhotosModal(instIdx);toast('Photo ajoutée !');
+  };
+  reader.readAsDataURL(file);
+}
+
+function deletePhoto(instIdx,photoIdx){
+  if(!confirm('Supprimer cette photo ?'))return;
+  DB.installations[instIdx].photos.splice(photoIdx,1);
+  save();renderPhotosModal(instIdx);
+}
+
+// ══ PAIEMENTS AMÉLIORÉS ══
+function renderFinance(){
+  var paiements=DB.installations.filter(function(i){return i.montant>0;}).map(function(i){
+    var acompte=i.acompte||0;
+    var solde=(i.montant||0)-acompte;
+    return {chantier:i.chantier,client:i.client,montant:i.montant,acompte:acompte,solde:solde,statut:i.paiementStatut||'En attente',dateFin:i.dateFin};
+  });
+  var totCA=paiements.reduce(function(s,p){return s+p.montant;},0);
+  var totAcompte=paiements.reduce(function(s,p){return s+p.acompte;},0);
+  var totSolde=paiements.reduce(function(s,p){return s+p.solde;},0);
+  var enRetard=paiements.filter(function(p){return p.statut==='En retard';}).length;
+  g('finKpis').innerHTML=kpi('💰','CA total',fmtE(totCA),'green')+kpi('✅','Acomptes reçus',fmtE(totAcompte),'blue')+kpi('⏳','Soldes restants',fmtE(totSolde),'orange')+kpi('⚠️','En retard',enRetard,'red');
+  g('finPaiements').innerHTML=paiements.length?paiements.map(function(p){
+    var pct=p.montant>0?Math.round(p.acompte/p.montant*100):0;
+    var cls=p.statut==='Payé'?'payPaid':p.statut==='En retard'?'payLate':'payPending';
+    return '<div class="payCard"><div class="payCardH">'
+      +'<div><div style="font-size:13px;font-weight:600;color:var(--navy)">'+p.chantier+'</div>'
+      +'<div style="font-size:11px;color:var(--muted)">'+p.client+'</div></div>'
+      +'<span class="payBadge '+cls+'">'+p.statut+'</span></div>'
+      +'<div class="payBar"><div class="payBarF" style="width:'+pct+'%"></div></div>'
+      +'<div style="display:flex;justify-content:space-between;font-size:12px">'
+        +'<span style="color:var(--muted)">Acompte: <strong>'+fmtE(p.acompte)+'</strong></span>'
+        +'<span style="color:var(--muted)">Solde: <strong style="color:'+(p.solde>0?'var(--orange)':'var(--green)')+'">'+fmtE(p.solde)+'</strong></span>'
+        +'<span style="font-weight:600;color:var(--navy)">Total: '+fmtE(p.montant)+'</span>'
+      +'</div></div>';
+  }).join(''):'<p style="color:var(--muted);font-size:13px">Aucune installation avec montant</p>';
+  var relances=paiements.filter(function(p){return p.statut!=='Payé'&&p.solde>0;}).slice(0,5);
+  g('finRelances').innerHTML=relances.length?relances.map(function(p){
+    return '<div class="finRow"><div><div style="font-size:13px;font-weight:500">'+p.chantier+'</div>'
+      +'<div style="font-size:11px;color:var(--muted)">'+p.client+' &middot; Solde: '+fmtE(p.solde)+'</div></div>'
+      +'<button class="act" onclick="toast(\'Relance envoyée pour '+p.client+'\')" style="font-size:12px">Relancer</button></div>';
+  }).join(''):'<p style="color:var(--muted);font-size:13px;padding:10px 0">Aucune relance en attente ✓</p>';
+}
+
+
+// ══ DEVIS PDF ══
+var currentDevisPDFData=null;
+function loadDevisPDF(input){
+  var file=input.files[0];if(!file)return;
+  if(file.size>5*1024*1024){alert('Fichier trop volumineux (max 5MB)');return;}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    currentDevisPDFData={data:e.target.result,name:file.name};
+    var prev=g('mIdevisPreview');var delBtn=g('mIdevisDelBtn');
+    if(prev)prev.innerHTML='<div style="background:var(--red-bg);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px;font-size:13px"><span style="font-size:18px">📄</span><span style="font-weight:500;color:var(--red)">'+file.name+'</span></div>';
+    if(delBtn)delBtn.style.display='inline-flex';
+    if(eInst>=0){DB.installations[eInst].devisPDF=e.target.result;DB.installations[eInst].devisPDFName=file.name;}
+    toast('PDF joint !');
+  };
+  reader.readAsDataURL(file);
+}
+function removeDevisPDF(){
+  currentDevisPDFData=null;
+  var prev=g('mIdevisPreview');var delBtn=g('mIdevisDelBtn');
+  if(prev)prev.innerHTML='';
+  if(delBtn)delBtn.style.display='none';
+  if(eInst>=0){DB.installations[eInst].devisPDF=null;DB.installations[eInst].devisPDFName='';}
+  save();toast('Devis supprimé');
+}
+function viewDevisPDF(idx){
+  var r=DB.installations[idx];if(!r||!r.devisPDF)return;
+  var win=window.open();
+  win.document.write('<html><body style="margin:0"><embed src="'+r.devisPDF+'" type="application/pdf" width="100%" height="100%"></body></html>');
 }
 
 // ── INIT ──
