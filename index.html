@@ -2017,8 +2017,12 @@ function initApp(){
   // Auto-launch tutorial on first visit
   setTimeout(function(){
     try{
-      var done=localStorage.getItem('bp_tutorial_'+getRole());
-      if(!done){ startTutorial(); }
+      // Only show on very first login ever (not per role)
+      var done=localStorage.getItem('bp_tutorial_done');
+      if(!done){ 
+        startTutorial();
+        localStorage.setItem('bp_tutorial_done','1');
+      }
     }catch(e){}
   }, 800);
   // Show Jarvis only for admin
@@ -2888,7 +2892,7 @@ var TUTORIALS = {
     {
       title: "Bienvenue dans BornPower CRM 👋",
       text: "Bonjour Florian ! Ce tutoriel va te guider en 8 étapes sur les fonctionnalités clés de ton CRM. Tu peux le revoir à tout moment avec le bouton ❓ en haut à droite.",
-      icon: "⚡",
+      icon: "LOGO",
       target: null
     },
     {
@@ -2938,7 +2942,7 @@ var TUTORIALS = {
     {
       title: "Bienvenue Anthony ! 👋",
       text: "Ce tutoriel te guide sur les fonctionnalités disponibles pour ton rôle de Directeur Technique. 5 étapes rapides.",
-      icon: "⚡",
+      icon: "LOGO",
       target: null
     },
     {
@@ -2970,7 +2974,7 @@ var TUTORIALS = {
     {
       title: "Bienvenue ! 👋",
       text: "Ce tutoriel te guide sur tes outils commerciaux. 5 étapes rapides pour être opérationnel.",
-      icon: "💼",
+      icon: "LOGO",
       target: null
     },
     {
@@ -3008,7 +3012,7 @@ var TUTORIALS = {
     {
       title: "Bienvenue ! 👋",
       text: "Ce tutoriel te guide sur tes outils d'installateur. 4 étapes rapides.",
-      icon: "⚡",
+      icon: "LOGO",
       target: null
     },
     {
@@ -3195,11 +3199,19 @@ function showTutorialStep() {
     }
   }
 
+  // Get logo for display
+  var logoEl = document.querySelector('.sLogo img');
+  var logoSrc = logoEl ? logoEl.src : '';
+  
+  var iconHTML = step.icon === 'LOGO' && logoSrc 
+    ? '<img src="'+logoSrc+'" style="height:60px;margin-bottom:8px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))">'
+    : '<div style="font-size:48px;margin-bottom:8px">'+step.icon+'</div>';
+
   var html = '<div id="tutorialOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px">'
     + '<div style="background:#fff;border-radius:20px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden">'
     // Header
     + '<div style="background:linear-gradient(135deg,#222651,#2d3270);padding:24px;text-align:center">'
-      + '<div style="font-size:48px;margin-bottom:8px">' + step.icon + '</div>'
+      + iconHTML
       + '<h2 style="color:#ffe576;font-size:17px;font-weight:700;margin:0">' + step.title + '</h2>'
     + '</div>'
     // Progress bar
@@ -3485,6 +3497,63 @@ function jarvisSpeakText(text, callback) {
   });
 }
 
+var CLAUDE_API_KEY = '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';
+
+function buildJarvisContext() {
+  var now = new Date();
+  var enCours = DB.installations.filter(function(i){ return i.statut === 'En cours'; });
+  var terminees = DB.installations.filter(function(i){ return i.statut === 'Terminée'; });
+  var pipeline = DB.opportunites.filter(function(o){ return o.etape !== 'Gagné' && o.etape !== 'Perdu'; });
+  var devisEnAttente = DB.devis.filter(function(d){ return d.statut === 'Envoyé'; });
+  var prospects = DB.prospects.filter(function(p){ return p.statut !== 'Gagné' && p.statut !== 'Perdu'; });
+  var stockAlertes = DB.materiel.filter(function(m){ return m.stock <= m.seuil; });
+  var impayés = DB.installations.filter(function(i){ return i.montant > 0 && i.paiementStatut !== 'Payé'; });
+  var caTotal = terminees.reduce(function(s,i){ return s+(i.montant||0); }, 0);
+  var retards = getProspectsEnRetard ? getProspectsEnRetard() : [];
+
+  var ctx = 'Tu es JARVIS, assistant IA de Florian Camps, dirigeant de BornPower, specialiste IRVE a Marseille. ';
+  ctx += 'Parle uniquement en francais. Ton: formel, pince-sans-rire, toujours Monsieur, phrases courtes. Comme Jarvis dans Iron Man VF. ';
+  ctx += 'DONNEES BORNPOWER ' + now.toLocaleDateString('fr-FR') + ': ';
+  ctx += 'Installations en cours: ' + enCours.length + ' (' + enCours.map(function(i){return i.chantier+'('+i.installateur+')';}).join(', ') + '). ';
+  ctx += 'Terminees: ' + terminees.length + '. CA total: ' + caTotal.toLocaleString('fr-FR') + 'euros. ';
+  ctx += 'Pipeline: ' + pipeline.length + ' opportunites (' + pipeline.reduce(function(s,o){return s+o.montant;},0).toLocaleString('fr-FR') + 'euros). ';
+  ctx += 'Devis en attente: ' + devisEnAttente.length + '. Prospects actifs: ' + prospects.length + ' dont ' + retards.length + ' en retard. ';
+  ctx += 'Alertes stock: ' + stockAlertes.length + '. Soldes impayes: ' + impayés.length + '. ';
+  ctx += 'Installateurs: ' + DB.installateurs.map(function(i){return i.prenom+' '+i.nom+'('+( i.dispo||'Disponible')+')';}).join(', ') + '. ';
+  ctx += 'SAV ouverts: ' + (DB.savTickets||[]).filter(function(t){return t.statut!=='Resolu';}).length + '. ';
+  ctx += 'Reponds en 1-3 phrases max. Direct et utile.';
+  return ctx;
+}
+
+function askClaude(question, callback) {
+  updateJarvisUI('processing', 'Analyse en cours...');
+  
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': CLAUDE_API_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 300,
+      system: buildJarvisContext(),
+      messages: [{ role: 'user', content: question }]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    var response = data.content && data.content[0] ? data.content[0].text : "Je n'ai pas pu traiter votre demande, Monsieur.";
+    callback(response);
+  })
+  .catch(function(e){
+    console.log('Claude error:', e);
+    callback("Pardonnez-moi, Monsieur. Une erreur de connexion m'empêche de répondre.");
+  });
+}
+
 function processJarvisCommand(transcript) {
   var t = transcript.toLowerCase().trim();
   updateJarvisUI('processing', '"' + transcript + '"');
@@ -3495,13 +3564,9 @@ function processJarvisCommand(transcript) {
     return;
   }
 
-  // Réponses conversationnelles
-  if (t.indexOf('merci') >= 0 || t.indexOf('bien joué') >= 0) { jarvisSpeak('merci'); return; }
-  if (t.indexOf('comment tu vas') >= 0 || t.indexOf('ça va') >= 0) { jarvisSpeak('comment_ca_va'); return; }
-  if (t.indexOf('bravo') >= 0 || t.indexOf('excellent') >= 0) { jarvisSpeak('compliment'); return; }
-  if (t.indexOf('blague') >= 0 || t.indexOf('raconte') >= 0) { jarvisSpeak('blague'); return; }
-  if (t.indexOf('briefing') >= 0 || t.indexOf('point') >= 0 || t.indexOf('résumé') >= 0) { jarvisBriefing(); return; }
-  if (t.indexOf('rappels') >= 0 || t.indexOf('alertes') >= 0) { jarvisCheckRappels(); return; }
+  // Commandes de navigation directes (sans passer par Claude — plus rapide)
+  if (t.indexOf('stop') >= 0 || t.indexOf('arrête') >= 0) { stopJarvis(); jarvisSpeak('stop'); return; }
+  if (t.indexOf('briefing') >= 0 || t.indexOf('point rapide') >= 0) { jarvisBriefing(); return; }
 
   for (var i = 0; i < JARVIS_COMMANDS.length; i++) {
     var cmd = JARVIS_COMMANDS[i];
@@ -3512,8 +3577,14 @@ function processJarvisCommand(transcript) {
       }
     }
   }
-  // Réponse inconnue aléatoire
-  jarvisSpeak(Math.random() > 0.5 ? 'unknown' : 'unknown2');
+
+  // Tout le reste passe par Claude — vraie intelligence
+  var question = transcript.replace(/jarvis[,\s]*/i, '').trim();
+  if (!question) { jarvisSpeak('ready'); return; }
+  
+  askClaude(question, function(response) {
+    jarvisSpeakText(response);
+  });
 }
 
 function startJarvis() {
