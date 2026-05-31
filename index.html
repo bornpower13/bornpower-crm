@@ -655,19 +655,19 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="pgHead"><div><h1>Tableau de bord</h1><p class="sub">Vue d'ensemble</p></div><button class="btn bPrimary" onclick="openIM(-1)">+ Installation</button></div>
       <div class="kpis" id="dashKpis"></div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px;">
-        <div class="card"><div class="cardH"><h3>CA mensuel</h3></div><div class="cardB"><div class="chartWrap"><canvas id="caChart"></canvas></div></div></div>
-        <div class="card"><div class="cardH"><h3>Activité récente</h3></div><div class="cardB" id="actFeed" style="max-height:220px;overflow-y:auto;"></div></div>
+        <div class="card"><div class="cardH"><h3>CA mensuel</h3></div><div class="cardB"><div class="chartWrap"><canvas id="dashChart"></canvas></div></div></div>
+        <div class="card"><div class="cardH"><h3>Activité récente</h3></div><div class="cardB" id="dashActivites" style="max-height:220px;overflow-y:auto;"></div></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div class="card"><div class="cardH"><h3>Top opportunités</h3><button class="btn bGhost" onclick="nav('pgPipeline')">Voir</button></div><div class="cardB" id="dashTopOpps"></div></div>
-        <div class="card"><div class="cardH"><h3>Alertes stock</h3><button class="btn bGhost" onclick="nav('pgStock')">Voir</button></div><div class="cardB" id="dashStockAlerts"></div></div>
+        <div class="card"><div class="cardH"><h3>Alertes stock</h3><button class="btn bGhost" onclick="nav('pgStock')">Voir</button></div><div class="cardB" id="dashStock"></div></div>
       </div>
     </div>
 
     <!-- DASH COMMERCIAL -->
     <div class="pg" id="pgDashComm">
       <div class="pgHead"><div><h1>Mon tableau de bord</h1><p class="sub">Mes performances</p></div><button class="btn bPrimary" onclick="openOppModal(-1)">+ Opportunité</button></div>
-      <div class="kpis" id="commKpis"></div>
+      <div class="kpis" id="dashCommKpis"></div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;">
         <div class="card"><div class="cardH"><h3>Mes opportunités actives</h3></div><div class="cardB" id="commMyOpps"></div></div>
         <div class="card"><div class="cardH"><h3>Mes devis récents</h3></div><div class="cardB" id="commMyDevis"></div></div>
@@ -677,7 +677,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
     <!-- DASH DIRTECH -->
     <div class="pg" id="pgDashDT">
       <div class="pgHead"><div><h1>Tableau de bord terrain</h1><p class="sub">Mon équipe et mes chantiers</p></div><button class="btn bPrimary" onclick="openIM(-1)">+ Installation</button></div>
-      <div class="kpis" id="dtKpis"></div>
+      <div class="kpis" id="dashDTKpis"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div class="card"><div class="cardH"><h3>Chantiers assignés</h3><button class="btn bGhost" onclick="nav('pgInst')">Voir</button></div><div class="cardB" id="dtChantiers"></div></div>
         <div class="card"><div class="cardH"><h3>Mon équipe</h3></div><div class="cardB" id="dtEquipe"></div></div>
@@ -701,7 +701,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       </div>
       <div class="tw"><table>
         <thead><tr><th>Contact</th><th>Société</th><th>Type</th><th>Email</th><th>Téléphone</th><th>Actions</th></tr></thead>
-        <tbody id="contactTbody"></tbody>
+        <tbody id="contactTable"></tbody>
       </table></div>
     </div>
 
@@ -715,7 +715,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       </div>
       <div class="tw"><table>
         <thead><tr><th>N° Devis</th><th>Client</th><th>Objet</th><th>HT</th><th>TTC</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>
-        <tbody id="devisTbody"></tbody>
+        <tbody id="devisTable"></tbody>
         <tfoot><tr><td colspan="3">Total</td><td id="devTotHT"></td><td id="devTotTTC"></td><td colspan="3"></td></tr></tfoot>
       </table></div>
     </div>
@@ -725,7 +725,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="pgHead"><div><h1>Rapports</h1><p class="sub">Analyse de performance</p></div>
         <select class="fsl" id="rapPeriod" onchange="renderRapports()"><option value="3">3 mois</option><option value="6" selected>6 mois</option><option value="12">12 mois</option></select>
       </div>
-      <div class="kpis" id="rapKpis"></div>
+      <div class="kpis" id="rapportKpis"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
         <div class="card"><div class="cardH"><h3>Évolution CA</h3></div><div class="cardB"><div class="chartWrap"><canvas id="rapCAChart"></canvas></div></div></div>
         <div class="card"><div class="cardH"><h3>Funnel conversion</h3></div><div class="cardB" id="rapFunnel"></div></div>
@@ -746,7 +746,8 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
         <select class="fsl" id="instStatF" onchange="renderT()"><option value="">Tous statuts</option><option>Planifiée</option><option>En cours</option><option>Terminée</option><option>En pause</option><option>Annulée</option></select>
         <select class="fsl" id="instBienF" onchange="renderT()"><option value="">Tous types de bien</option><option>Maison individuelle</option><option>Copropriété</option><option>Entreprise</option><option>Parking</option><option>Bâtiment commercial</option></select>
         <select class="fsl" id="instInstF" onchange="renderT()"><option value="">Tous installateurs</option></select>
-        <div style="margin-left:auto;display:flex;gap:6px;">
+        <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
+          <span id="instCount" style="font-size:12px;color:var(--muted)"></span>
           <button class="btn bGhost" onclick="exportCSV()">CSV</button>
           <button class="btn bGhost" onclick="exportJSON()">JSON</button>
           <label class="btn bGhost" style="cursor:pointer">Import<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
@@ -754,7 +755,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       </div>
       <div class="tw"><table>
         <thead><tr><th>ID</th><th>Chantier</th><th>Client</th><th>Installateur</th><th>Type</th><th>Statut</th><th>Début</th><th>Fin</th><th>Signature</th><th>Actions</th></tr></thead>
-        <tbody id="instTbody"></tbody>
+        <tbody id="instTable"></tbody>
       </table></div>
     </div>
 
@@ -780,11 +781,11 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
         <div id="stockAddBtn"></div>
       </div>
       <div class="tbar" style="border-radius:var(--radius-lg);border:1px solid var(--border);margin-bottom:14px;">
-        <div class="srch"><input id="stockSearch" oninput="renderS()" placeholder="Rechercher..."></div>
+        <div class="srch"><input id="stockSearch" oninput="renderS()" placeholder="Rechercher..."></div><span id="stockCount" style="font-size:12px;color:var(--muted);margin-left:8px"></span>
         <select class="fsl" id="stockCatF" onchange="renderS()"><option value="">Toutes catégories</option><option>Panneaux solaires</option><option>Onduleurs</option><option>Cablage</option><option>Bornes</option><option>Éclairage</option><option>Fixation</option><option>Protection</option><option>Autre</option></select>
         <select class="fsl" id="stockStatF" onchange="renderS()"><option value="">Tous niveaux</option><option>OK</option><option>Faible</option><option>Critique</option></select>
       </div>
-      <div class="sgrid" id="stockGrid"></div>
+      <div class="sgrid" id="stockTable"></div>
     </div>
 
     <!-- PROFILS -->
@@ -826,16 +827,16 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       </div>
       <!-- Liste des prospects -->
       <div class="tbar">
-        <div class="srch"><input id="prospectSearch" oninput="renderProspects()" placeholder="Rechercher..."></div>
-        <select class="fsl" id="prospectStatF" onchange="renderProspects()">
+        <div class="srch"><input id="prospSearch" oninput="renderProspects()" placeholder="Rechercher..."></div>
+        <select class="fsl" id="prospStatF" onchange="renderProspects()">
           <option value="">Tous statuts</option>
           <option>Nouveau</option><option>Contacté</option><option>En discussion</option><option>Qualifié</option><option>Non qualifié</option>
         </select>
-        <span id="prospectCount" style="margin-left:auto;font-size:12px;color:var(--muted)"></span>
+        <span id="prospCount" style="margin-left:auto;font-size:12px;color:var(--muted)"></span>
       </div>
       <div class="tw"><table>
         <thead><tr><th>Entreprise</th><th>SIRET</th><th>Activité</th><th>Ville</th><th>Effectif</th><th>Statut</th><th>Contact</th><th>Actions</th></tr></thead>
-        <tbody id="prospectTbody"></tbody>
+        <tbody id="prospTable"></tbody>
       </table></div>
     </div>
 
@@ -975,7 +976,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
         <button class="ptab" id="utabActive" onclick="switchUserTab('active')">Actifs</button>
         <button class="ptab" id="utabBlocked" onclick="switchUserTab('blocked')">Bloqués</button>
       </div>
-      <div id="usersList" style="display:flex;flex-direction:column;gap:10px;"></div>
+      <div id="usersTable" style="display:flex;flex-direction:column;gap:10px;"></div>
     </div>
 
     <!-- MON PROFIL -->
@@ -2449,6 +2450,12 @@ function getVisibleInst(){
   return DB.installations;
 }
 function renderT(){
+  // Add buttons based on role
+  var hb=g('instHeadBtns');
+  if(hb&&!hb.dataset.init){
+    hb.dataset.init='1';
+    if(!isInstaller()){hb.innerHTML='<button class="btn bPrimary" onclick="openIM(-1)">+ Nouvelle installation</button>';}
+  }
   var q=(g('instSearch').value||'').toLowerCase();
   var sf=g('instStatF')?g('instStatF').value:'';
   var inf=g('instInstF')?g('instInstF').value:'';
@@ -2772,7 +2779,10 @@ function renderRapports(){
   g('rapportKpis').innerHTML=kpi('⚡','Total installations',totalInst,'blue')+kpi('✅','Terminées',terminees,'green')+kpi('💰','CA terrain',fmtE(caTotal),'orange')+kpi('🎯','Taux conversion',txConv+'%','purple');
   var byType={};DB.installations.forEach(function(i){byType[i.typeBien||i.type]=(byType[i.typeBien||i.type]||0)+1;});
   var byTypHTML=Object.entries(byType).map(function(e){return '<div class="frow"><span>'+e[0]+'</span><span style="font-weight:600">'+e[1]+'</span></div>';}).join('');
-  g('rapportByType').innerHTML=byTypHTML||'<p style="color:var(--muted);font-size:13px">Aucune donnée</p>';
+  if(g('rapportByType'))g('rapportByType').innerHTML=byTypHTML||'<p style="color:var(--muted);font-size:13px">Aucune donnée</p>';
+  if(g('rapTypeChart'))g('rapTypeChart').innerHTML=byTypHTML||'<p style="color:var(--muted);font-size:13px">Aucune donnée</p>';
+  var instPerf=DB.installateurs.map(function(inst){var nm=instName(inst.prenom,inst.nom);var done=DB.installations.filter(function(i){return i.installateur===nm&&i.statut==='Terminée';}).length;var ca=DB.installations.filter(function(i){return i.installateur===nm&&i.statut==='Terminée';}).reduce(function(s,i){return s+(i.montant||0);},0);return {nm:nm,done:done,ca:ca};}).sort(function(a,b){return b.ca-a.ca;});
+  if(g('rapInstPerf'))g('rapInstPerf').innerHTML=instPerf.length?instPerf.map(function(p){return '<div class="frow"><span>'+p.nm+'</span><span style="font-weight:600;color:var(--green)">'+fmtE(p.ca)+' &middot; '+p.done+' chantier(s)</span></div>';}).join(''):'<p style="color:var(--muted);font-size:13px">Aucun installateur</p>';
 }
 
 // ── USERS ──
