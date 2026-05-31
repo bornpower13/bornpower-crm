@@ -1926,9 +1926,19 @@ function addActivite(type,txt){
 
 function addNotif(type,txt,ico){
   if(!DB.notifications)DB.notifications=[];
-  DB.notifications.unshift({id:DB.nextId++,type:type,txt:txt,ico:ico||'🔔',time:"À l'instant",read:false});
+  var now=new Date();
+  DB.notifications.unshift({id:DB.nextId++,type:type,txt:txt,ico:ico||'🔔',ts:now.getTime(),read:false});
   if(DB.notifications.length>50)DB.notifications=DB.notifications.slice(0,50);
   updateNotifBadge();
+}
+
+function fmtNotifTime(ts){
+  if(!ts)return "À l'instant";
+  var diff=Math.round((Date.now()-ts)/1000);
+  if(diff<60)return "À l'instant";
+  if(diff<3600){var m=Math.round(diff/60);return "Il y a "+m+" min";}
+  if(diff<86400){var h=Math.round(diff/3600);return "Il y a "+h+"h";}
+  var d=Math.round(diff/86400);return "Il y a "+d+" jour"+(d>1?"s":"");
 }
 
 // ── NAV ──
@@ -2068,7 +2078,7 @@ function installPWA(){if(!deferredPrompt)return;deferredPrompt.prompt();deferred
 // ── NOTIFICATIONS ──
 function updateNotifBadge(){var unread=(DB.notifications||[]).filter(function(n){return !n.read;}).length;var dot=g('notifDot');if(dot)dot.classList.toggle('on',unread>0);}
 function toggleNotifPanel(){var panel=g('notifPanel');panel.classList.toggle('on');if(panel.classList.contains('on'))renderNotifPanel();}
-function renderNotifPanel(){var notifs=DB.notifications||[];g('notifList').innerHTML=notifs.length?notifs.map(function(n,i){return '<div class="notifItem'+(n.read?'':' unread')+'" onclick="clickNotif('+i+')">'+'<div class="notifIco" style="background:'+(n.read?'var(--bg)':'var(--blue-bg)')+'">'+n.ico+'</div>'+'<div><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+n.time+'</div></div></div>';}).join(''):'<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">Aucune notification</div>';}
+function renderNotifPanel(){var notifs=DB.notifications||[];g('notifList').innerHTML=notifs.length?notifs.map(function(n,i){return '<div class="notifItem'+(n.read?'':' unread')+'" onclick="clickNotif('+i+')">'+'<div class="notifIco" style="background:'+(n.read?'var(--bg)':'var(--blue-bg)')+'">'+n.ico+'</div>'+'<div><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+fmtNotifTime(n.ts)+'</div></div></div>';}).join(''):'<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">Aucune notification</div>';}
 function clickNotif(i){if(DB.notifications[i])DB.notifications[i].read=true;save();updateNotifBadge();renderNotifPanel();}
 function markAllRead(){(DB.notifications||[]).forEach(function(n){n.read=true;});save();updateNotifBadge();renderNotifPanel();}
 
