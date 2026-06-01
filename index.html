@@ -3538,13 +3538,10 @@ function buildJarvisContext() {
 function askClaude(question, callback) {
   updateJarvisUI('processing', 'Analyse en cours...');
   
-  fetch('https://api.anthropic.com/v1/messages', {
+  fetch('https://jarvis-proxy.tight-snow-5888.workers.dev', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': CLAUDE_API_KEY,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
     },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
