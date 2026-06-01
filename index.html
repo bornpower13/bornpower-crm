@@ -2915,22 +2915,49 @@ function renderRapports(){
 }
 
 // ── USERS ──
+var userTabFilter='all';
+function switchUserTab(tab){
+  userTabFilter=tab;
+  ['All','Pending','Active','Blocked'].forEach(function(t){var b=g('utab'+t);if(b)b.classList.remove('on');});
+  var map={all:'utabAll',pending:'utabPending',active:'utabActive',blocked:'utabBlocked'};
+  var btn=g(map[tab]);if(btn)btn.classList.add('on');
+  renderUsers();
+}
 function renderUsers(){
   var accounts=loadAccounts();
+  // If local is empty but Firebase is ready, reload from Firebase then re-render
+  if((!accounts||!accounts.length)&&fbReady&&db&&!window._usersReloading){
+    window._usersReloading=true;
+    loadAccountsFromFirebase(function(){window._usersReloading=false;renderUsers();});
+    g('usersTable').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Chargement des comptes...</div>';
+    return;
+  }
   var pending=accounts.filter(function(a){return a.status==='pending';}).length;
-  g('usersPendingBadge').textContent=pending>0?pending+' en attente':'';
-  g('usersTable').innerHTML=accounts.map(function(a,i){
-    var sc={active:'bTerm',pending:'bCours',blocked:'bAnnul'}[a.status]||'bPause';
-    return '<tr><td><strong>'+a.name+'</strong><br><span style="font-size:11px;color:var(--muted)">'+a.email+'</span></td>'
-      +'<td><span class="bdg '+(ROLE_CSS[a.role]||'')+'">'+( ROLE_LABELS[a.role]||a.role)+'</span></td>'
-      +'<td><span class="bdg '+sc+'">'+(a.status==='active'?'Actif':a.status==='pending'?'En attente':'Bloqué')+'</span></td>'
-      +'<td>'+(a.createdAt||'--')+'</td>'
-      +'<td class="acts">'
-        +(a.status==='pending'?'<button class="act" style="color:var(--green)" onclick="validateUser('+i+')">✓ Valider</button>':'')
-        +(a.status==='active'?'<button class="act" onclick="blockUser('+i+')">🚫</button>':'')
-        +(a.status==='blocked'?'<button class="act" onclick="unblockUser('+i+')">✓</button>':'')
-        +'<button class="act dl" onclick="deleteUser('+i+')">🗑</button>'
-      +'</td></tr>';
+  // Update tab badge
+  var pc=g('pendingCount');if(pc){if(pending>0){pc.textContent=pending;pc.style.display='inline-block';}else{pc.style.display='none';}}
+  // Filter
+  var filtered=accounts.filter(function(a){
+    if(userTabFilter==='all')return true;
+    return a.status===userTabFilter;
+  });
+  var tbl=g('usersTable');
+  if(!filtered.length){tbl.innerHTML='<div style="text-align:center;padding:50px;color:var(--muted)"><div style="font-size:42px;margin-bottom:12px">👤</div><p style="font-size:15px;font-weight:600">Aucun compte '+(userTabFilter==='pending'?'en attente':userTabFilter==='active'?'actif':userTabFilter==='blocked'?'bloqué':'')+'</p></div>';return;}
+  tbl.innerHTML=filtered.map(function(a){
+    var realIdx=accounts.indexOf(a);
+    var sc={active:'#059669',pending:'#d97706',blocked:'#dc2626'}[a.status]||'#888';
+    var scLabel=a.status==='active'?'Actif':a.status==='pending'?'En attente':'Bloqué';
+    var scBg={active:'#ecfdf5',pending:'#fffbeb',blocked:'#fef2f2'}[a.status]||'#f3f4f6';
+    return '<div style="background:var(--white);border-radius:12px;padding:16px 18px;box-shadow:0 1px 4px rgba(0,0,0,.06);display:flex;align-items:center;gap:14px;flex-wrap:wrap">'
+      +'<div style="width:42px;height:42px;border-radius:50%;background:'+(a.color||'#888')+';color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px">'+((a.name||'?')[0]||'?').toUpperCase()+'</div>'
+      +'<div style="flex:1;min-width:160px"><div style="font-weight:700;font-size:14px;color:var(--navy)">'+a.name+'</div><div style="font-size:12px;color:var(--muted)">'+a.email+'</div></div>'
+      +'<span class="bdg '+(ROLE_CSS[a.role]||'')+'">'+(ROLE_LABELS[a.role]||a.role)+'</span>'
+      +'<span style="background:'+scBg+';color:'+sc+';padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700">'+scLabel+'</span>'
+      +'<div style="display:flex;gap:6px">'
+        +(a.status==='pending'?'<button class="btn bPrimary" style="padding:6px 14px;font-size:13px" onclick="validateUser('+realIdx+')">✓ Valider</button>':'')
+        +(a.status==='active'?'<button class="btn bGhost" style="padding:6px 12px;font-size:13px" onclick="blockUser('+realIdx+')">🚫 Bloquer</button>':'')
+        +(a.status==='blocked'?'<button class="btn bGhost" style="padding:6px 12px;font-size:13px;color:var(--green)" onclick="unblockUser('+realIdx+')">✓ Réactiver</button>':'')
+        +'<button class="btn bGhost" style="padding:6px 10px;font-size:13px;color:var(--red)" onclick="deleteUser('+realIdx+')">🗑</button>'
+      +'</div></div>';
   }).join('');
 }
 function validateUser(i){var a=loadAccounts();if(!a[i])return;a[i].status='active';saveAccounts(a);renderUsers();buildNav();toast('Compte validé !');}
