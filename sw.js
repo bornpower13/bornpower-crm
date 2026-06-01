@@ -1,49 +1,27 @@
-const CACHE_NAME = 'bornpower-crm-v1';
-const urlsToCache = [
-  '/bornpower-crm/',
-  '/bornpower-crm/index.html'
-];
+// BornPower CRM Service Worker
+const CACHE_NAME = 'bornpower-v2';
 
-self.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(urlsToCache);
-    })
-  );
+self.addEventListener('install', function(e) {
   self.skipWaiting();
 });
 
-self.addEventListener('activate', function(event) {
-  event.waitUntil(
-    caches.keys().then(function(cacheNames) {
-      return Promise.all(
-        cacheNames.filter(function(name) {
-          return name !== CACHE_NAME;
-        }).map(function(name) {
-          return caches.delete(name);
-        })
-      );
+self.addEventListener('activate', function(e) {
+  e.waitUntil(
+    caches.keys().then(function(keys) {
+      return Promise.all(keys.map(function(key) {
+        if (key !== CACHE_NAME) return caches.delete(key);
+      }));
     })
   );
-  self.clients.claim();
 });
 
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    fetch(event.request).then(function(response) {
-      // Cache successful responses
-      if(response && response.status === 200) {
-        var responseClone = response.clone();
-        caches.open(CACHE_NAME).then(function(cache) {
-          cache.put(event.request, responseClone);
-        });
-      }
-      return response;
-    }).catch(function() {
-      // Offline fallback
-      return caches.match(event.request).then(function(cached) {
-        return cached || caches.match('/bornpower-crm/index.html');
-      });
+self.addEventListener('fetch', function(e) {
+  // Only cache GET requests
+  if (e.request.method !== 'GET') return;
+  
+  e.respondWith(
+    fetch(e.request).catch(function() {
+      return caches.match(e.request);
     })
   );
 });
