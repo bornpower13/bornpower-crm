@@ -3710,148 +3710,18 @@ function renderCMInst(){
 
 
 // ══════════════════════════════════════════════
-// JARVIS — COMMANDES VOCALES (ADMIN ONLY)
+// JARVIS v2 — ASSISTANT IA VOCAL (ADMIN ONLY)
 // ══════════════════════════════════════════════
 
 var JARVIS_API_KEY = 'sk_4b5757701429c9c616e7346cd1cfa3f9e0aac0ff0c891b17';
 var JARVIS_VOICE_ID = '0arkjPKOuF4KuBQ4zJ1J';
+var CLAUDE_API_KEY = '';
 var jarvisListening = false;
 var jarvisRecognition = null;
 var jarvisAudio = null;
+var jarvisSpeaking = false;
 
-var JARVIS_PHRASES = {
-  // Démarrage — ton formel, légèrement distant
-  boot_matin:   "Systèmes en ligne, Monsieur. Bonjour. Vos installations, vos devis et votre pipeline sont prêts à être consultés.",
-  boot_aprem:   "Bon après-midi, Monsieur. Tous les systèmes sont opérationnels. Je suis à votre disposition.",
-  boot_soir:    "Bonsoir, Monsieur. Il se fait tard. Cela dit, je suis là si vous avez besoin de moi.",
-  boot_nuit:    "Monsieur. Il est assez tard pour travailler. Cela dit, comme vous le souhaitez. Je suis à votre service.",
-
-  ready:        "Je vous écoute, Monsieur.",
-  ready2:       "À vos ordres, Monsieur.",
-  ready3:       "Oui, Monsieur ?",
-
-  // Navigation — pince-sans-rire, concis
-  nav_dash:     "Tableau de bord. Voilà votre empire en un coup d'œil, Monsieur.",
-  nav_pipe:     "Pipeline commercial. Vos opportunités en cours, Monsieur. Je vous laisse apprécier.",
-  nav_devis:    "Module devis. Vos propositions commerciales vous attendent. Travaillons-nous sur un projet secret, Monsieur ?",
-  nav_inst:     "Installations en cours. J'espère que vos chantiers avancent à votre satisfaction, Monsieur.",
-  nav_plan:     "Planning affiché. Votre équipe est bien occupée, si je puis me permettre.",
-  nav_stock:    "Inventaire matériel. Certains articles méritent votre attention, Monsieur.",
-  nav_sav:      "Support technique, Monsieur. Les problèmes ne se résolvent généralement pas seuls.",
-  nav_fin:      "Tableau financier. Les chiffres sont là, Monsieur. À vous de les interpréter.",
-  nav_rh:       "Ressources humaines. Votre équipe reste votre plus grand atout, Monsieur.",
-  nav_recr:     "Recrutement. De nouveaux talents pour renforcer BornPower, Monsieur ?",
-  nav_users:    "Gestion des accès. Des comptes en attente de validation, si ma mémoire est bonne.",
-  nav_chat:     "Messagerie ouverte. Des messages vous attendent peut-être, Monsieur.",
-
-  // Actions
-  new_inst:     "Très bien, Monsieur. Formulaire d'installation prêt. Un nouveau chantier en perspective ?",
-  new_devis:    "Nouveau devis en préparation, Monsieur. J'espère que ce client sera à la hauteur.",
-  new_opp:      "Nouvelle opportunité commerciale. Je vous souhaite bonne chance, Monsieur. Vous en aurez probablement besoin.",
-  new_sav:      "Ticket SAV créé. Un problème de plus à résoudre. Je suis convaincu que vous y arriverez.",
-  stats:        "Analyse des performances. Les résultats sont... intéressants, Monsieur.",
-
-  // Rappels — subtilement sarcastiques
-  rappel_prospect: "Si je puis me permettre, Monsieur. Certains prospects n'ont pas été contactés depuis plus de 7 jours. Votre pipeline mérite peut-être votre attention.",
-  rappel_cert:     "Un rappel, Monsieur. Des certifications de votre équipe approchent de leur expiration. Je vous suggère d'y remédier avant que la situation ne devienne problématique.",
-  rappel_paiement: "Monsieur. Des soldes de chantiers restent impayés. Je me permets de vous le signaler, sachant que cela affecte votre trésorerie.",
-  rappel_devis:    "Certains de vos devis sont en attente de réponse. Un rappel à vos clients ne serait peut-être pas superflu, Monsieur.",
-  rappel_stock:    "Monsieur, des articles en stock sont sous le seuil d'alerte. Je vous recommande de passer commande avant que la situation ne devienne problématique.",
-
-  // Briefing
-  briefing_vide:   "Bonne nouvelle, Monsieur. Aucune alerte particulière. Votre activité semble bien maîtrisée.",
-  briefing_intro:  "Permettez-moi de vous faire un point rapide sur votre activité, Monsieur.",
-
-  // Conversationnel — exactement comme Jarvis dans les films
-  compliment:   "C'est très aimable à vous, Monsieur. Je ne fais que mon travail.",
-  merci:        "De rien, Monsieur. C'est précisément pour cela que je suis là.",
-  comment_ca_va:"Je fonctionne de manière optimale, Monsieur. Merci de vous en préoccuper.",
-  blague:       "Mon sens de l'humour reste perfectible, Monsieur. Mais je ferai de mon mieux.",
-  pause:        "Bien reçu, Monsieur. Je mets les systèmes en pause. N'hésitez pas.",
-  bravo:        "Vous vous en sortez très bien, Monsieur. Vous êtes l'être le plus capable que je connaisse.",
-
-  // Inconnue
-  unknown:      "Je n'ai pas saisi votre requête, Monsieur. Pourriez-vous reformuler ?",
-  unknown2:     "Pardonnez-moi, Monsieur. Votre commande m'a échappé. Pouvez-vous répéter ?",
-  unknown3:     "Je dois admettre que cette commande dépasse mes capacités de compréhension, Monsieur.",
-
-  // Stop
-  stop:         "Très bien, Monsieur. Mise en veille. Je reste disponible si vous avez besoin de moi.",
-  stop2:        "Systèmes en veille, Monsieur. N'hésitez pas à faire appel à moi."
-};
-
-// Fonction pour choisir une phrase aléatoire parmi plusieurs variantes
-function jarvisPick() {
-  var key = arguments[0];
-  var variants = [];
-  for (var i = 0; i < arguments.length; i++) { variants.push(arguments[i]); }
-  return JARVIS_PHRASES[variants[Math.floor(Math.random() * variants.length)]];
-}
-
-// Briefing intelligent au démarrage
-function jarvisBriefing() {
-  var alertes = [];
-  var retards = getProspectsEnRetard ? getProspectsEnRetard() : [];
-  if (retards.length > 0) alertes.push(retards.length + ' prospect' + (retards.length > 1 ? 's' : '') + ' sans contact depuis plus de 7 jours');
-  
-  var certs = (DB.certifications || []).filter(function(c) {
-    var diff = Math.round((new Date(c.expiration) - new Date()) / (1000 * 60 * 60 * 24));
-    return diff >= 0 && diff < 30;
-  });
-  if (certs.length > 0) alertes.push(certs.length + ' certification' + (certs.length > 1 ? 's' : '') + ' expire bientôt');
-
-  var impayés = (DB.installations || []).filter(function(i) {
-    return i.montant > 0 && i.paiementStatut !== 'Payé' && (i.montant - (i.acompte || 0)) > 0;
-  });
-  if (impayés.length > 0) alertes.push(impayés.length + ' chantier' + (impayés.length > 1 ? 's' : '') + ' avec solde en attente');
-
-  var enCours = (DB.installations || []).filter(function(i) { return i.statut === 'En cours'; }).length;
-  var opps = (DB.opportunites || []).filter(function(o) { return o.etape !== 'Gagné' && o.etape !== 'Perdu'; }).length;
-
-  var texte = JARVIS_PHRASES['briefing_intro'] + ' ';
-  texte += enCours + ' installation' + (enCours > 1 ? 's' : '') + ' en cours, ';
-  texte += opps + ' opportunité' + (opps > 1 ? 's' : '') + ' dans votre pipeline. ';
-
-  if (alertes.length > 0) {
-    texte += 'Je me dois également de vous signaler : ' + alertes.join(', ') + '. ';
-    texte += 'Je reste à votre disposition, Monsieur.';
-  } else {
-    texte += JARVIS_PHRASES['briefing_vide'];
-  }
-
-  jarvisSpeakText(texte);
-}
-
-// Rappels automatiques
-function jarvisCheckRappels() {
-  if (!isAdmin() || !jarvisListening) return;
-  var retards = getProspectsEnRetard ? getProspectsEnRetard() : [];
-  if (retards.length >= 3) { jarvisSpeak('rappel_prospect'); return; }
-  var stockAlerts = (DB.materiel || []).filter(function(m) { return m.stock <= m.seuil; });
-  if (stockAlerts.length >= 2) { jarvisSpeak('rappel_stock'); return; }
-}
-
-var JARVIS_COMMANDS = [
-  { keywords: ['tableau de bord', 'dashboard', 'accueil', 'home'],    action: function(){ nav('pgDash'); jarvisSpeak('nav_dash'); } },
-  { keywords: ['pipeline', 'opportunités', 'commercial'],              action: function(){ nav('pgPipeline'); jarvisSpeak('nav_pipe'); } },
-  { keywords: ['devis', 'nouveau devis', 'créer devis'],              action: function(){ nav('pgDevis'); jarvisSpeak('nav_devis'); } },
-  { keywords: ['installations', 'chantiers', 'terrain'],              action: function(){ nav('pgInst'); jarvisSpeak('nav_inst'); } },
-  { keywords: ['planning', 'calendrier', 'agenda'],                    action: function(){ nav('pgPlanning'); jarvisSpeak('nav_plan'); } },
-  { keywords: ['stock', 'matériel', 'inventaire'],                    action: function(){ nav('pgStock'); jarvisSpeak('nav_stock'); } },
-  { keywords: ['sav', 'support', 'ticket'],                           action: function(){ nav('pgSAV'); jarvisSpeak('nav_sav'); } },
-  { keywords: ['finance', 'paiements', 'chiffre affaires'],           action: function(){ nav('pgFinance'); jarvisSpeak('nav_fin'); } },
-  { keywords: ['rh', 'ressources humaines', 'congés'],                action: function(){ nav('pgRH'); jarvisSpeak('nav_rh'); } },
-  { keywords: ['recrutement', 'candidatures'],                        action: function(){ nav('pgRecrutement'); jarvisSpeak('nav_recr'); } },
-  { keywords: ['utilisateurs', 'comptes', 'équipe'],                  action: function(){ nav('pgUsers'); jarvisSpeak('nav_users'); } },
-  { keywords: ['messagerie', 'chat', 'messages'],                     action: function(){ nav('pgChat'); jarvisSpeak('nav_chat'); } },
-  { keywords: ['nouvelle installation', 'nouveau chantier'],          action: function(){ nav('pgInst'); setTimeout(function(){ openIM(-1); }, 500); jarvisSpeak('new_inst'); } },
-  { keywords: ['nouveau devis', 'créer un devis'],                    action: function(){ nav('pgDevis'); setTimeout(function(){ openDM(-1); }, 500); jarvisSpeak('new_devis'); } },
-  { keywords: ['nouvelle opportunité', 'nouvel prospect'],            action: function(){ nav('pgPipeline'); setTimeout(function(){ openOppModal(-1); }, 500); jarvisSpeak('new_opp'); } },
-  { keywords: ['nouveau ticket', 'problème', 'panne'],                action: function(){ nav('pgSAV'); setTimeout(function(){ openSAVModal(-1); }, 500); jarvisSpeak('new_sav'); } },
-  { keywords: ['statistiques', 'rapports', 'analyse'],                action: function(){ nav('pgRapports'); jarvisSpeak('stats'); } },
-  { keywords: ['stop', 'arrête', 'pause', 'silence'],                 action: function(){ stopJarvis(); jarvisSpeak('stop'); } },
-];
-
+// ── VOIX JARVIS ──
 function jarvisSpeak(key, callback) {
   var text = JARVIS_PHRASES[key] || key;
   jarvisSpeakText(text, callback);
@@ -3859,9 +3729,11 @@ function jarvisSpeak(key, callback) {
 
 function jarvisSpeakText(text, callback) {
   if (jarvisAudio) { jarvisAudio.pause(); jarvisAudio = null; }
+  if (jarvisSpeaking) { if (callback) callback(); return; }
+  jarvisSpeaking = true;
   updateJarvisUI('speaking', text);
 
-  fetch('https://api.elevenlabs.io/v1/text-to-speech/' + JARVIS_VOICE_ID, {
+  fetch('https://api.elevenlabs.io/v1/text-to-speech/' + JARVIS_VOICE_ID + '?optimize_streaming_latency=3', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -3871,100 +3743,216 @@ function jarvisSpeakText(text, callback) {
       text: text,
       model_id: 'eleven_multilingual_v2',
       voice_settings: {
-        stability: 0.85,
-        similarity_boost: 0.95,
-        style: 0.08,
-        use_speaker_boost: true,
-        speed: 0.88
+        stability: 0.82,
+        similarity_boost: 0.90,
+        style: 0.12,
+        use_speaker_boost: true
       }
     })
   })
-  .then(function(r){ return r.blob(); })
+  .then(function(r){
+    if (!r.ok) throw new Error('ElevenLabs ' + r.status);
+    return r.blob();
+  })
   .then(function(blob){
     var url = URL.createObjectURL(blob);
     jarvisAudio = new Audio(url);
+    jarvisAudio.playbackRate = 0.92;
     jarvisAudio.play();
     jarvisAudio.onended = function(){
-      updateJarvisUI(jarvisListening ? 'listening' : 'idle', jarvisListening ? 'En attente de "Jarvis..."' : '');
+      jarvisSpeaking = false;
+      updateJarvisUI(jarvisListening ? 'listening' : 'idle', jarvisListening ? 'Dites "Jarvis" suivi de votre commande...' : '');
       URL.revokeObjectURL(url);
       if (callback) callback();
     };
   })
   .catch(function(e){
+    jarvisSpeaking = false;
     console.log('Jarvis TTS error:', e);
-    updateJarvisUI('error', 'Erreur de connexion ElevenLabs');
+    updateJarvisUI('error', 'Erreur voix: ' + e.message);
     if (callback) callback();
   });
 }
 
-var CLAUDE_API_KEY = ''; // Clé gérée côté serveur via Cloudflare Worker
+// ── PHRASES JARVIS (style Iron Man VF) ──
+var JARVIS_PHRASES = {
+  boot_matin:   "Systemes en ligne, Monsieur. Bonjour. Je suis a votre disposition.",
+  boot_aprem:   "Bon apres-midi, Monsieur. Tous les systemes sont operationnels.",
+  boot_soir:    "Bonsoir, Monsieur. Je suis neanmoins a votre service.",
+  boot_nuit:    "Monsieur, il est assez tard. Cela dit, je suis la.",
+  ready:        "Je vous ecoute, Monsieur.",
+  nav_dash:     "Voila votre empire en un coup d'oeil, Monsieur.",
+  nav_pipe:     "Permettez-moi d'afficher vos opportunites en cours.",
+  nav_devis:    "Module devis active, Monsieur.",
+  nav_inst:     "Installations en cours affichees.",
+  nav_plan:     "Planning affiche, Monsieur.",
+  nav_stock:    "Inventaire materiel, Monsieur.",
+  nav_sav:      "Support technique. Les problemes ne se resolvent pas seuls, Monsieur.",
+  nav_fin:      "Tableau financier, Monsieur. Les chiffres sont la.",
+  nav_rh:       "Ressources humaines, Monsieur.",
+  nav_recr:     "Recrutement affiche.",
+  nav_users:    "Gestion des acces, Monsieur.",
+  nav_chat:     "Messagerie ouverte, Monsieur.",
+  new_inst:     "Formulaire d'installation pret, Monsieur.",
+  new_devis:    "Nouveau devis en preparation.",
+  new_opp:      "Nouvelle opportunite. Je vous souhaite bonne chance, Monsieur.",
+  new_sav:      "Ticket SAV cree, Monsieur.",
+  stats:        "Analyse des performances, Monsieur.",
+  unknown:      "Je n'ai pas saisi, Monsieur. Pourriez-vous reformuler ?",
+  stop:         "Mise en veille. Je reste disponible, Monsieur.",
+  merci:        "De rien, Monsieur. C'est pour cela que je suis la.",
+  comment_va:   "Je fonctionne de maniere optimale, Monsieur. Merci de votre sollicitude.",
+  briefing_intro: "Permettez-moi de faire un point rapide, Monsieur."
+};
 
+// ── COMMANDES NAVIGATION ──
+var JARVIS_COMMANDS = [
+  { keywords: ['tableau de bord', 'dashboard', 'accueil'],    action: function(){ nav('pgDash'); jarvisSpeak('nav_dash'); } },
+  { keywords: ['pipeline', 'opportunites'],                    action: function(){ nav('pgPipeline'); jarvisSpeak('nav_pipe'); } },
+  { keywords: ['devis'],                                       action: function(){ nav('pgDevis'); jarvisSpeak('nav_devis'); } },
+  { keywords: ['installations', 'chantiers'],                  action: function(){ nav('pgInst'); jarvisSpeak('nav_inst'); } },
+  { keywords: ['planning', 'calendrier', 'agenda'],            action: function(){ nav('pgPlanning'); jarvisSpeak('nav_plan'); } },
+  { keywords: ['stock', 'materiel', 'inventaire'],             action: function(){ nav('pgStock'); jarvisSpeak('nav_stock'); } },
+  { keywords: ['sav', 'support', 'ticket'],                    action: function(){ nav('pgSAV'); jarvisSpeak('nav_sav'); } },
+  { keywords: ['finance', 'paiements', 'chiffre'],             action: function(){ nav('pgFinance'); jarvisSpeak('nav_fin'); } },
+  { keywords: ['rh', 'ressources humaines', 'conges'],         action: function(){ nav('pgRH'); jarvisSpeak('nav_rh'); } },
+  { keywords: ['recrutement', 'candidatures'],                 action: function(){ nav('pgRecrutement'); jarvisSpeak('nav_recr'); } },
+  { keywords: ['utilisateurs', 'comptes'],                     action: function(){ nav('pgUsers'); jarvisSpeak('nav_users'); } },
+  { keywords: ['messagerie', 'chat', 'messages'],              action: function(){ nav('pgChat'); jarvisSpeak('nav_chat'); } },
+  { keywords: ['statistiques', 'rapports'],                    action: function(){ nav('pgRapports'); jarvisSpeak('stats'); } },
+];
+
+// ── CONTEXTE INTELLIGENT POUR CLAUDE ──
 function buildJarvisContext() {
   var now = new Date();
-  var enCours = DB.installations.filter(function(i){ return i.statut === 'En cours'; });
-  var terminees = DB.installations.filter(function(i){ return i.statut === 'Terminée'; });
-  var pipeline = DB.opportunites.filter(function(o){ return o.etape !== 'Gagné' && o.etape !== 'Perdu'; });
-  var devisEnAttente = DB.devis.filter(function(d){ return d.statut === 'Envoyé'; });
-  var prospects = DB.prospects.filter(function(p){ return p.statut !== 'Gagné' && p.statut !== 'Perdu'; });
-  var stockAlertes = DB.materiel.filter(function(m){ return m.stock <= m.seuil; });
-  var impayés = DB.installations.filter(function(i){ return i.montant > 0 && i.paiementStatut !== 'Payé'; });
+  var enCours = (DB.installations||[]).filter(function(i){ return i.statut === 'En cours'; });
+  var terminees = (DB.installations||[]).filter(function(i){ return i.statut === 'Terminee' || i.statut === 'Terminée'; });
+  var pipeline = (DB.opportunites||[]).filter(function(o){ return o.etape !== 'Gagne' && o.etape !== 'Gagné' && o.etape !== 'Perdu'; });
+  var devisEnAttente = (DB.devis||[]).filter(function(d){ return d.statut === 'Envoye' || d.statut === 'Envoyé'; });
+  var prospects = (DB.prospects||[]).filter(function(p){ return p.statut !== 'Gagne' && p.statut !== 'Gagné' && p.statut !== 'Perdu'; });
+  var stockAlertes = (DB.materiel||[]).filter(function(m){ return m.stock <= m.seuil; });
+  var impayees = (DB.installations||[]).filter(function(i){ return i.montant > 0 && i.paiementStatut !== 'Paye' && i.paiementStatut !== 'Payé'; });
   var caTotal = terminees.reduce(function(s,i){ return s+(i.montant||0); }, 0);
   var retards = getProspectsEnRetard ? getProspectsEnRetard() : [];
+  var savOuverts = (DB.savTickets||[]).filter(function(t){ return t.statut !== 'Resolu' && t.statut !== 'Résolu'; });
 
-  var ctx = 'Tu es JARVIS, assistant IA de Florian Camps, dirigeant de BornPower, specialiste IRVE a Marseille. ';
-  ctx += 'Parle uniquement en francais. Ton: formel, pince-sans-rire, toujours Monsieur, phrases courtes. Comme Jarvis dans Iron Man VF. ';
-  ctx += 'DONNEES BORNPOWER ' + now.toLocaleDateString('fr-FR') + ': ';
-  ctx += 'Installations en cours: ' + enCours.length + ' (' + enCours.map(function(i){return i.chantier+'('+i.installateur+')';}).join(', ') + '). ';
-  ctx += 'Terminees: ' + terminees.length + '. CA total: ' + caTotal.toLocaleString('fr-FR') + 'euros. ';
-  ctx += 'Pipeline: ' + pipeline.length + ' opportunites (' + pipeline.reduce(function(s,o){return s+o.montant;},0).toLocaleString('fr-FR') + 'euros). ';
-  ctx += 'Devis en attente: ' + devisEnAttente.length + '. Prospects actifs: ' + prospects.length + ' dont ' + retards.length + ' en retard. ';
-  ctx += 'Alertes stock: ' + stockAlertes.length + '. Soldes impayes: ' + impayés.length + '. ';
-  ctx += 'Installateurs: ' + DB.installateurs.map(function(i){return i.prenom+' '+i.nom+'('+( i.dispo||'Disponible')+')';}).join(', ') + '. ';
-  ctx += 'SAV ouverts: ' + (DB.savTickets||[]).filter(function(t){return t.statut!=='Resolu';}).length + '. ';
-  ctx += 'Reponds en 1-3 phrases max. Direct et utile.';
+  var ctx = '';
+  ctx += 'Tu es JARVIS, exactement comme dans Iron Man version francaise. ';
+  ctx += 'Tu es assistant IA personnel de Monsieur Florian Camps, dirigeant de BornPower. ';
+  ctx += 'BornPower installe des bornes de recharge pour vehicules electriques (IRVE) a Marseille et en region PACA. ';
+  ctx += 'REGLES ABSOLUES: ';
+  ctx += '- Parle TOUJOURS en francais. ';
+  ctx += '- Appelle le TOUJOURS "Monsieur", jamais par son prenom. ';
+  ctx += '- Sois formel, precis, legerement pince-sans-rire. ';
+  ctx += '- Phrases COURTES. Maximum 2-3 phrases par reponse. ';
+  ctx += '- Utilise des expressions comme: "Si je puis me permettre", "Permettez-moi", "Je me dois de vous signaler", "Comme vous le souhaitez". ';
+  ctx += '- Ne dis JAMAIS "OK", "super", "genial". Dis "Tres bien", "Parfait", "Comme vous le souhaitez". ';
+  ctx += '- Si tu fais de humour, reste subtil et pince-sans-rire. ';
+  ctx += 'DONNEES BORNPOWER EN TEMPS REEL au ' + now.toLocaleDateString('fr-FR') + ': ';
+  if (enCours.length) ctx += 'Installations en cours: ' + enCours.length + ' (' + enCours.map(function(i){return (i.chantier||i.client||'?') + ' par ' + (i.installateur||'?');}).join(', ') + '). ';
+  else ctx += 'Aucune installation en cours. ';
+  ctx += 'Installations terminees: ' + terminees.length + '. CA total: ' + caTotal.toLocaleString('fr-FR') + ' euros. ';
+  ctx += 'Pipeline: ' + pipeline.length + ' opportunites pour ' + pipeline.reduce(function(s,o){return s+(o.montant||0);},0).toLocaleString('fr-FR') + ' euros. ';
+  ctx += 'Devis en attente reponse: ' + devisEnAttente.length + '. ';
+  ctx += 'Prospects actifs: ' + prospects.length + '. En retard de contact (plus de 7 jours): ' + retards.length + '. ';
+  if (stockAlertes.length) ctx += 'ALERTE stock: ' + stockAlertes.length + ' articles sous seuil (' + stockAlertes.map(function(m){return m.nom;}).join(', ') + '). ';
+  if (impayees.length) ctx += 'Chantiers avec solde impaye: ' + impayees.length + '. ';
+  if (savOuverts.length) ctx += 'Tickets SAV ouverts: ' + savOuverts.length + '. ';
+  var instList = (DB.installateurs||[]);
+  if (instList.length) ctx += 'Equipe installateurs: ' + instList.map(function(i){return (i.prenom||'')+' '+(i.nom||'')+' ('+(i.dispo||'Disponible')+')';}).join(', ') + '. ';
   return ctx;
 }
 
+// ── APPEL CLAUDE VIA PROXY ──
 function askClaude(question, callback) {
   updateJarvisUI('processing', 'Analyse en cours...');
-  
+  console.log('Jarvis -> Claude:', question);
+
   fetch('https://jarvis-proxy.tight-snow-5888.workers.dev', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 300,
+      max_tokens: 500,
       system: buildJarvisContext(),
       messages: [{ role: 'user', content: question }]
     })
   })
-  .then(function(r){ return r.json(); })
+  .then(function(r){
+    if (!r.ok) throw new Error('Proxy error ' + r.status);
+    return r.json();
+  })
   .then(function(data){
+    console.log('Claude -> Jarvis:', data);
+    if (data.error) {
+      callback("Pardonnez-moi Monsieur, une erreur technique. " + (data.error.message || ''));
+      return;
+    }
     var response = data.content && data.content[0] ? data.content[0].text : "Je n'ai pas pu traiter votre demande, Monsieur.";
     callback(response);
   })
   .catch(function(e){
     console.log('Claude error:', e);
-    callback("Pardonnez-moi, Monsieur. Une erreur de connexion m'empêche de répondre.");
+    callback("Pardonnez-moi Monsieur. Erreur de connexion au serveur.");
   });
 }
 
+// ── BRIEFING INTELLIGENT ──
+function jarvisBriefing() {
+  if (!DB || !DB.installations) { jarvisSpeakText("Les donnees ne sont pas encore chargees, Monsieur. Un instant."); return; }
+
+  var enCours = (DB.installations||[]).filter(function(i){ return i.statut === 'En cours'; }).length;
+  var pipeline = (DB.opportunites||[]).filter(function(o){ return o.etape !== 'Gagné' && o.etape !== 'Perdu'; }).length;
+  var retards = getProspectsEnRetard ? getProspectsEnRetard().length : 0;
+  var stockAlertes = (DB.materiel||[]).filter(function(m){ return m.stock <= m.seuil; }).length;
+  var impayees = (DB.installations||[]).filter(function(i){ return i.montant > 0 && i.paiementStatut !== 'Payé'; }).length;
+
+  var texte = JARVIS_PHRASES['briefing_intro'] + ' ';
+  texte += enCours + ' installation' + (enCours > 1 ? 's' : '') + ' en cours, ';
+  texte += pipeline + ' opportunite' + (pipeline > 1 ? 's' : '') + ' dans votre pipeline. ';
+
+  var alertes = [];
+  if (retards > 0) alertes.push(retards + ' prospect' + (retards > 1 ? 's' : '') + ' en retard de contact');
+  if (stockAlertes > 0) alertes.push(stockAlertes + ' alerte' + (stockAlertes > 1 ? 's' : '') + ' stock');
+  if (impayees > 0) alertes.push(impayees + ' solde' + (impayees > 1 ? 's' : '') + ' impaye' + (impayees > 1 ? 's' : ''));
+
+  if (alertes.length > 0) {
+    texte += 'Je me dois de vous signaler: ' + alertes.join(', ') + '. ';
+  } else {
+    texte += 'Aucune alerte particuliere. Votre activite semble bien maitrisee. ';
+  }
+
+  jarvisSpeakText(texte);
+}
+
+// ── TRAITEMENT DES COMMANDES ──
 function processJarvisCommand(transcript) {
   var t = transcript.toLowerCase().trim();
+  console.log('Jarvis entendu:', t);
   updateJarvisUI('processing', '"' + transcript + '"');
 
-  // Check wake word
-  if (t.indexOf('jarvis') < 0 && t.indexOf('boris') < 0) {
-    updateJarvisUI('listening', 'En attente de "Jarvis..."');
+  // Wake word detection (flexible)
+  var hasWakeWord = t.indexOf('jarvis') >= 0 || t.indexOf('jarvi') >= 0 || t.indexOf('boris') >= 0 || t.indexOf('djarvis') >= 0 || t.indexOf('garvis') >= 0;
+  if (!hasWakeWord) {
+    updateJarvisUI('listening', 'Dites "Jarvis" suivi de votre commande...');
     return;
   }
 
-  // Commandes de navigation directes (sans passer par Claude — plus rapide)
-  if (t.indexOf('stop') >= 0 || t.indexOf('arrête') >= 0) { stopJarvis(); jarvisSpeak('stop'); return; }
-  if (t.indexOf('briefing') >= 0 || t.indexOf('point rapide') >= 0) { jarvisBriefing(); return; }
+  // Stop command (always direct)
+  if (t.indexOf('stop') >= 0 || t.indexOf('arrete') >= 0 || t.indexOf('arrête') >= 0 || t.indexOf('tais') >= 0) {
+    stopJarvis(); jarvisSpeak('stop'); return;
+  }
 
+  // Briefing (direct, no Claude needed)
+  if (t.indexOf('briefing') >= 0 || t.indexOf('point') >= 0 || t.indexOf('resume') >= 0 || t.indexOf('résumé') >= 0) {
+    jarvisBriefing(); return;
+  }
+
+  // Quick conversational responses (no Claude needed)
+  if (t.indexOf('merci') >= 0) { jarvisSpeak('merci'); return; }
+  if (t.indexOf('comment') >= 0 && (t.indexOf('va') >= 0 || t.indexOf('vas') >= 0)) { jarvisSpeak('comment_va'); return; }
+
+  // Navigation commands (fast, no Claude needed)
   for (var i = 0; i < JARVIS_COMMANDS.length; i++) {
     var cmd = JARVIS_COMMANDS[i];
     for (var j = 0; j < cmd.keywords.length; j++) {
@@ -3975,56 +3963,69 @@ function processJarvisCommand(transcript) {
     }
   }
 
-  // Tout le reste passe par Claude — vraie intelligence
-  var question = transcript.replace(/jarvis[,\s]*/i, '').trim();
-  if (!question) { jarvisSpeak('ready'); return; }
-  
+  // Everything else -> Claude (real intelligence)
+  var question = transcript.replace(/jarvis[,\s]*/i, '').replace(/boris[,\s]*/i, '').trim();
+  if (!question || question.length < 3) { jarvisSpeak('ready'); return; }
+
   askClaude(question, function(response) {
     jarvisSpeakText(response);
   });
 }
 
+// ── DÉMARRAGE / ARRÊT ──
 function startJarvis() {
-  if (!isAdmin()) { toast("Jarvis est réservé à l'administrateur"); return; }
+  if (!isAdmin()) { toast("Jarvis est reserve a l'administrateur"); return; }
 
   var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) { toast('Reconnaissance vocale non supportée sur ce navigateur'); return; }
+  if (!SpeechRecognition) { toast('Reconnaissance vocale non supportee'); return; }
 
   jarvisListening = true;
   updateJarvisBtn(true);
-  
+
   // Salutation selon l'heure
   var h = new Date().getHours();
   var bootKey = h < 12 ? 'boot_matin' : h < 18 ? 'boot_aprem' : h < 23 ? 'boot_soir' : 'boot_nuit';
-  
-  // Briefing après la salutation
   jarvisSpeakText(JARVIS_PHRASES[bootKey], function() {
-    setTimeout(function(){ jarvisBriefing(); }, 500);
+    setTimeout(function(){ jarvisBriefing(); }, 800);
   });
 
   jarvisRecognition = new SpeechRecognition();
   jarvisRecognition.lang = 'fr-FR';
   jarvisRecognition.continuous = true;
   jarvisRecognition.interimResults = false;
+  jarvisRecognition.maxAlternatives = 3;
 
   jarvisRecognition.onresult = function(e) {
-    var transcript = e.results[e.results.length - 1][0].transcript;
-    processJarvisCommand(transcript);
+    // Take best result
+    var results = e.results[e.results.length - 1];
+    var best = results[0].transcript;
+    var conf = results[0].confidence;
+    console.log('Recognition:', best, 'confidence:', conf);
+    // Only process if confidence > 0.5
+    if (conf > 0.4) {
+      processJarvisCommand(best);
+    }
   };
   jarvisRecognition.onerror = function(e) {
     console.log('Jarvis recognition error:', e.error);
-    if (e.error === 'not-allowed') { toast('Microphone non autorisé'); stopJarvis(); }
+    if (e.error === 'not-allowed') { toast('Microphone non autorise'); stopJarvis(); }
+    // no-speech is normal, just continue listening
   };
   jarvisRecognition.onend = function() {
-    if (jarvisListening) jarvisRecognition.start();
+    if (jarvisListening && !jarvisSpeaking) {
+      try { jarvisRecognition.start(); } catch(e) { console.log('Restart error:', e); }
+    }
   };
 
-  setTimeout(function(){ jarvisRecognition.start(); }, 2000);
+  setTimeout(function(){
+    try { jarvisRecognition.start(); } catch(e) { console.log('Start error:', e); }
+  }, 3000);
 }
 
 function stopJarvis() {
   jarvisListening = false;
-  if (jarvisRecognition) { jarvisRecognition.stop(); jarvisRecognition = null; }
+  jarvisSpeaking = false;
+  if (jarvisRecognition) { try { jarvisRecognition.stop(); } catch(e){} jarvisRecognition = null; }
   if (jarvisAudio) { jarvisAudio.pause(); jarvisAudio = null; }
   updateJarvisBtn(false);
   updateJarvisUI('idle', '');
@@ -4034,6 +4035,7 @@ function toggleJarvis() {
   if (jarvisListening) stopJarvis();
   else startJarvis();
 }
+
 
 function updateJarvisBtn(active) {
   var btn = document.getElementById('jarvisBtn');
