@@ -148,6 +148,8 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 .roleDirtech{background:var(--blue-bg);color:#1d4ed8;}
 .roleCommercial{background:var(--purple-bg);color:#6d28d9;}
 .roleInstallateur{background:var(--green-bg);color:#065f46;}
+.roleInstaller{background:var(--green-bg);color:#065f46;}
+.roleCM{background:#fce7f3;color:#be185d;}
 .pendingBadge{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
 .activeBadge{background:var(--green-bg);color:#065f46;border:1px solid #6ee7b7;}
 .blockedBadge{background:var(--red-bg);color:#991b1b;border:1px solid #fca5a5;}
@@ -506,6 +508,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
           <option value="commercial">Commercial</option>
           <option value="dirtech">Directeur technique</option>
           <option value="installer">Installateur</option>
+          <option value="cm">Community Manager</option>
         </select>
       </div>
 <div class="afield" id="rDeptsField" style="display:none">
@@ -1011,6 +1014,56 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
         </div></div>
       </div>
     </div>
+
+    <!-- ══════════ COMMUNITY MANAGER PAGES ══════════ -->
+    <div class="pg" id="pgDashCM">
+      <div class="pgHead"><div><h1>Tableau de bord digital</h1><p class="sub">Vue d'ensemble de votre activité réseaux sociaux</p></div></div>
+      <div class="kpiRow" id="dashCMKpis"></div>
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:18px;">
+        <div class="card"><div class="cardH"><h3>📅 Prochaines publications</h3></div><div class="cardB" id="dashCMUpcoming"></div></div>
+        <div class="card"><div class="cardH"><h3>⚡ Chantiers à filmer</h3></div><div class="cardB" id="dashCMChantiers"></div></div>
+      </div>
+      <div class="card" style="margin-top:18px"><div class="cardH"><h3>💡 Suggestions de contenu</h3></div><div class="cardB" id="dashCMIdeas"></div></div>
+    </div>
+
+    <div class="pg" id="pgEditorial">
+      <div class="pgHead"><div><h1>Calendrier éditorial</h1><p class="sub">Planifiez et suivez vos publications</p></div><button class="btn bPrimary" onclick="openEditorialModal(-1)">+ Publication</button></div>
+      <div class="card"><div class="cardB" style="padding:0"><div id="editorialList"></div></div></div>
+    </div>
+
+    <div class="pg" id="pgMedia">
+      <div class="pgHead"><div><h1>Banque de contenu</h1><p class="sub">Photos et vidéos par chantier</p></div><button class="btn bPrimary" onclick="openMediaModal()">+ Ajouter média</button></div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <select class="fsl" id="mediaFilterType" onchange="renderMedia()"><option value="">Tous types</option><option>Photo</option><option>Vidéo</option><option>Reel</option><option>Story</option></select>
+        <select class="fsl" id="mediaFilterChantier" onchange="renderMedia()"><option value="">Tous chantiers</option></select>
+      </div>
+      <div id="mediaGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;"></div>
+    </div>
+
+    <div class="pg" id="pgContentIdeas">
+      <div class="pgHead"><div><h1>Idées de contenu</h1><p class="sub">Inspirations basées sur votre activité</p></div><button class="btn bPrimary" onclick="openIdeaModal(-1)">+ Idée</button></div>
+      <div id="ideasList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"></div>
+    </div>
+
+    <div class="pg" id="pgSocialObj">
+      <div class="pgHead"><div><h1>Objectifs digitaux</h1><p class="sub">Vos cibles par plateforme</p></div><button class="btn bPrimary" onclick="openSocialObjModal(-1)">+ Objectif</button></div>
+      <div class="kpiRow" id="socialObjKpis"></div>
+      <div id="socialObjList" style="margin-top:18px;display:grid;gap:14px;"></div>
+    </div>
+
+    <div class="pg" id="pgCMPlanning">
+      <div class="pgHead"><div><h1>Planning tournages</h1><p class="sub">Organisez vos déplacements sur les chantiers</p></div></div>
+      <div class="card"><div class="cardB" id="cmPlanningList"></div></div>
+    </div>
+
+    <div class="pg" id="pgCMInst">
+      <div class="pgHead"><div><h1>Installations</h1><p class="sub">Tous les chantiers BornPower</p></div></div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <select class="fsl" id="cmInstFilter" onchange="renderCMInst()"><option value="">Tous statuts</option><option>Planifiée</option><option>En cours</option><option>Terminée</option></select>
+      </div>
+      <div class="card"><div class="cardB" style="padding:0;overflow-x:auto"><table class="tbl" id="cmInstTable"><thead><tr><th>Chantier</th><th>Lieu</th><th>Installateur</th><th>Date</th><th>Statut</th><th>Action</th></tr></thead><tbody></tbody></table></div></div>
+    </div>
+
 
   </div>
 </div>
@@ -1842,12 +1895,12 @@ var ETAPES=['Prospection','Contact','Qualification','Proposition','Négociation'
 var ECOLS={Prospection:'#6b7280',Contact:'#0891b2',Qualification:'#7c3aed',Proposition:'#d97706',Négociation:'#ea580c',Gagné:'#059669',Perdu:'#dc2626'};
 var SCOLS={Planifiée:'#2563eb','En cours':'#d97706',Terminée:'#059669','En pause':'#92400e',Annulée:'#dc2626'};
 var BDGS={Planifiée:'bPlan','En cours':'bCours',Terminée:'bTerm','En pause':'bPause',Annulée:'bAnnul'};
-var ROLE_LABELS={admin:'Administrateur',dirtech:'Dir. Technique',commercial:'Commercial',installer:'Installateur'};
-var ROLE_CSS={admin:'roleAdmin',dirtech:'roleDirtech',commercial:'roleCommercial',installer:'roleInstaller'};
+var ROLE_LABELS={admin:'Administrateur',dirtech:'Dir. Technique',commercial:'Commercial',installer:'Installateur',cm:'Community Manager'};
+var ROLE_CSS={admin:'roleAdmin',dirtech:'roleDirtech',commercial:'roleCommercial',installer:'roleInstaller',cm:'roleCM'};
 
 var ADMIN={id:'florian',name:'Florian',prenom:'Florian',nom:'',email:'contact@bornpower.fr',pass:'Admin2026@',role:'admin',avatar:'F',color:'#c79732',status:'active'};
 
-var DB={installations:[],installateurs:[],materiel:[],mouvements:[],opportunites:[],contacts:[],devis:[],prospects:[],savTickets:[],chatMessages:[],notifications:[],activites:[],objectifs:[],conges:[],certifications:[],paiements:[],candidatures:[],nextId:1};
+var DB={installations:[],installateurs:[],materiel:[],mouvements:[],opportunites:[],contacts:[],devis:[],prospects:[],savTickets:[],chatMessages:[],notifications:[],activites:[],objectifs:[],conges:[],certifications:[],paiements:[],candidatures:[],mediaGallery:[],editorialCal:[],socialStats:[],contentIdeas:[],socialObjectifs:[],nextId:1};
 var curUserObj=null;
 
 // ── FIREBASE ──
@@ -1919,6 +1972,7 @@ function isAdmin(){return getRole()==='admin';}
 function isDirtech(){return getRole()==='dirtech';}
 function isCommercial(){return getRole()==='commercial';}
 function isInstaller(){return getRole()==='installer';}
+function isCM(){return getRole()==='cm';}
 function instName(p,n){return (p||'')+' '+(n||'');}
 function instColor(name){var i=DB.installateurs.find(function(x){return instName(x.prenom,x.nom)===name;});return i?i.color:'#888';}
 function kpi(ico,lbl,val,color){var bg={green:'var(--green-bg)',blue:'var(--blue-bg)',orange:'var(--orange-bg)',red:'var(--red-bg)',purple:'var(--purple-bg)'}[color]||'var(--bg)';var fc={green:'var(--green)',blue:'var(--blue)',orange:'var(--orange)',red:'var(--red)',purple:'var(--purple)'}[color]||'var(--muted)';return '<div class="kpi"><div class="kpiIco" style="background:'+bg+';color:'+fc+'">'+ico+'</div><div><div class="kpiV">'+val+'</div><div class="kpiL">'+lbl+'</div></div></div>';}
@@ -1981,6 +2035,14 @@ var NAV_MAP={
     {id:'pgSAV',ico:'🔧',lbl:'SAV'},{id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgStock',ico:'📦',lbl:'Stock'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
     {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
+  ],
+  cm:[
+    {s:'Mon espace digital'},{id:'pgDashCM',ico:'📊',lbl:'Tableau de bord'},
+    {id:'pgEditorial',ico:'📅',lbl:'Calendrier éditorial'},{id:'pgMedia',ico:'🎬',lbl:'Banque de contenu'},
+    {id:'pgContentIdeas',ico:'💡',lbl:'Idées de contenu'},{id:'pgSocialObj',ico:'📈',lbl:'Objectifs digitaux'},
+    {s:'Terrain'},{id:'pgCMPlanning',ico:'🗓️',lbl:'Planning tournages'},{id:'pgCMInst',ico:'⚡',lbl:'Installations'},
+    {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
+    {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
   ]
 };
 
@@ -2026,6 +2088,13 @@ function nav(id){
   if(id==='pgRapports')renderRapports();
   if(id==='pgUsers')renderUsers();
   if(id==='pgMonProfil')renderMonProfil();
+  if(id==='pgDashCM')renderDashCM();
+  if(id==='pgEditorial')renderEditorial();
+  if(id==='pgMedia')renderMedia();
+  if(id==='pgContentIdeas')renderContentIdeas();
+  if(id==='pgSocialObj')renderSocialObj();
+  if(id==='pgCMPlanning')renderCMPlanning();
+  if(id==='pgCMInst')renderCMInst();
 }
 
 function initApp(){
@@ -2045,7 +2114,7 @@ function initApp(){
   // Show Jarvis only for admin
   var jw=document.getElementById('jarvisWrap');
   if(jw)jw.style.display=isAdmin()?'block':'none';
-  var first={admin:'pgDash',dirtech:'pgDashDT',commercial:'pgDashComm',installer:'pgInst'}[getRole()]||'pgInst';
+  var first={admin:'pgDash',dirtech:'pgDashDT',commercial:'pgDashComm',installer:'pgInst',cm:'pgDashCM'}[getRole()]||'pgInst';
   nav(first);
   updateNotifBadge();
   applyMobileLayout();
@@ -2763,7 +2832,7 @@ function renderPList(y,m){var allInsts=getVisibleInst().filter(function(i){if(!i
 
 // ── CHAT ──
 var curChatChannel=null;
-var CHAT_CHANNELS=[{id:'general',name:'Général',ico:'🏢',desc:"Toute l'équipe",roles:['admin','dirtech','commercial','installer']},{id:'commercial',name:'Commercial',ico:'💼',desc:'Équipe commerciale',roles:['admin','commercial']},{id:'terrain',name:'Terrain',ico:'⚡',desc:'Équipe terrain',roles:['admin','dirtech','installer']},{id:'sav',name:'SAV',ico:'🔧',desc:'Support technique',roles:['admin','dirtech','installer']}];
+var CHAT_CHANNELS=[{id:'general',name:'Général',ico:'🏢',desc:"Toute l'équipe",roles:['admin','dirtech','commercial','installer']},{id:'commercial',name:'Commercial',ico:'💼',desc:'Équipe commerciale',roles:['admin','commercial']},{id:'terrain',name:'Terrain',ico:'⚡',desc:'Équipe terrain',roles:['admin','dirtech','installer']},{id:'sav',name:'SAV',ico:'🔧',desc:'Support technique',roles:['admin','dirtech','installer']},{id:'digital',name:'Digital / Com',ico:'📱',desc:'Community Management',roles:['admin','cm']}];
 function getMyChannels(){var role=getRole();return CHAT_CHANNELS.filter(function(c){return c.roles.indexOf(role)>=0;});}
 function renderChat(){var channels=getMyChannels();g('chatChannelList').innerHTML=channels.map(function(ch){var msgs=(DB.chatMessages||[]).filter(function(m){return m.channel===ch.id;});var last=msgs.length?msgs[msgs.length-1]:'';var uid=curUserObj?curUserObj.id:'';var unread=msgs.filter(function(m){return !m.readBy||(m.readBy.indexOf(uid)<0&&m.authorId!==uid);}).length;return '<div class="chatChannel'+(curChatChannel===ch.id?' on':'')+'" onclick="selectChannel(\''+ch.id+'\')"><span style="font-size:16px">'+ch.ico+'</span><div style="flex:1;min-width:0"><div class="chatChannelNm">'+ch.name+'</div><div class="chatChannelPrev">'+(last?last.author+': '+last.text:'Aucun message')+'</div></div>'+(unread>0?'<span class="chatUnread">'+unread+'</span>':'')+'</div>';}).join('');if(!curChatChannel&&channels.length){selectChannel(channels[0].id);}else if(curChatChannel){renderChatMessages();}}
 function selectChannel(id){curChatChannel=id;var ch=CHAT_CHANNELS.find(function(c){return c.id===id;});if(ch){g('chatHeaderNm').textContent=ch.ico+' '+ch.name;g('chatHeaderSub').textContent=ch.desc;}renderChatMessages();renderChat();}
@@ -3322,6 +3391,267 @@ function showPageHelp(pageId) {
 function getActivePage() {
   var active = document.querySelector('.pg.on');
   return active ? active.id : null;
+}
+
+
+
+
+// ── MODAL GÉNÉRIQUE (pour CM et autres) ──
+function showModal(title, bodyHTML, onSave, onDelete){
+  var existing=document.getElementById('mGeneric');if(existing)existing.remove();
+  var delBtn=onDelete?'<button class="btn bGhost" style="color:var(--red)" onclick="window._modalDelete()">Supprimer</button>':'';
+  var html='<div class="modal"><div class="mh"><h2>'+title+'</h2><button class="mcl" onclick="closeModal()">&#10005;</button></div>'+
+    '<div style="padding:4px 0">'+bodyHTML+'</div>'+
+    '<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">'+delBtn+
+    '<button class="btn bGhost" onclick="closeModal()">Annuler</button>'+
+    '<button class="btn bPrimary" onclick="window._modalSave()">Enregistrer</button></div></div>';
+  document.body.insertAdjacentHTML('beforeend','<div class="ov on" id="mGeneric" onclick="if(event.target===this)closeModal()">'+html+'</div>');
+  window._modalSave=onSave||function(){closeModal();};
+  window._modalDelete=onDelete||function(){};
+}
+function closeModal(){var m=document.getElementById('mGeneric');if(m)m.remove();}
+
+
+
+// ══════════════════════════════════════════════
+// COMMUNITY MANAGER — FONCTIONS
+// ══════════════════════════════════════════════
+
+var PLATFORMS = ['Instagram','LinkedIn','YouTube','TikTok','Facebook'];
+var PLATFORM_ICONS = {Instagram:'📷',LinkedIn:'💼',YouTube:'▶️',TikTok:'🎵',Facebook:'👍'};
+var POST_STATUS = {'Idée':'#6b7280','À faire':'#d97706','En cours':'#2563eb','Programmé':'#7c3aed','Publié':'#059669'};
+
+// ── DASHBOARD CM ──
+function renderDashCM(){
+  if(!DB||!DB.installations){setTimeout(renderDashCM,500);return;}
+  var posts=DB.editorialCal||[];
+  var published=posts.filter(function(p){return p.statut==='Publié';}).length;
+  var planned=posts.filter(function(p){return p.statut==='Programmé'||p.statut==='À faire';}).length;
+  var medias=(DB.mediaGallery||[]).length;
+  var aFilmer=DB.installations.filter(function(i){return i.aFilmer;}).length;
+
+  g('dashCMKpis').innerHTML=
+    kpi('📤','Publications ce mois',published,'green')+
+    kpi('📅','À venir',planned,'blue')+
+    kpi('🎬','Médias en banque',medias,'purple')+
+    kpi('⚡','Chantiers à filmer',aFilmer,'orange');
+
+  // Upcoming posts
+  var upcoming=posts.filter(function(p){return p.statut!=='Publié';}).sort(function(a,b){return new Date(a.date)-new Date(b.date);}).slice(0,5);
+  g('dashCMUpcoming').innerHTML=upcoming.length?upcoming.map(function(p){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">'+
+      '<span style="font-size:20px">'+(PLATFORM_ICONS[p.platform]||'📱')+'</span>'+
+      '<div style="flex:1"><div style="font-weight:600;font-size:13px">'+p.titre+'</div><div style="font-size:11px;color:var(--muted)">'+fmtD(p.date)+' • '+p.platform+'</div></div>'+
+      '<span class="badge" style="background:'+POST_STATUS[p.statut]+'22;color:'+POST_STATUS[p.statut]+'">'+p.statut+'</span></div>';
+  }).join(''):'<p style="color:var(--muted);text-align:center;padding:20px;font-size:13px">Aucune publication planifiée</p>';
+
+  // Chantiers à filmer
+  var chantiers=DB.installations.filter(function(i){return i.statut==='En cours'||i.statut==='Planifiée';}).slice(0,5);
+  g('dashCMChantiers').innerHTML=chantiers.length?chantiers.map(function(i){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">'+
+      '<span style="font-size:18px">⚡</span>'+
+      '<div style="flex:1"><div style="font-weight:600;font-size:13px">'+(i.chantier||i.client||'Chantier')+'</div><div style="font-size:11px;color:var(--muted)">'+(i.ville||i.adresse||'')+' • '+(i.installateur||'')+'</div></div>'+
+      '<button class="btn bGhost" style="padding:4px 10px;font-size:12px" onclick="planTournage('+i.id+')">📹 Filmer</button></div>';
+  }).join(''):'<p style="color:var(--muted);text-align:center;padding:20px;font-size:13px">Aucun chantier en cours</p>';
+
+  // Content ideas (auto-generated)
+  renderDashCMIdeas();
+}
+
+function renderDashCMIdeas(){
+  var ideas=[];
+  var terminees=DB.installations.filter(function(i){return i.statut==='Terminée';});
+  if(terminees.length>=3)ideas.push({ico:'🎬',txt:'Carrousel "'+terminees.length+' installations réalisées" — montre tes plus belles réalisations'});
+  var enCours=DB.installations.filter(function(i){return i.statut==='En cours';});
+  if(enCours.length>0)ideas.push({ico:'📹',txt:'Reel timelapse sur le chantier "'+(enCours[0].chantier||enCours[0].client)+'" en cours'});
+  ideas.push({ico:'💡',txt:'Post pédagogique : "Comment choisir sa borne de recharge ?" (7.4kW vs 22kW)'});
+  ideas.push({ico:'⭐',txt:'Story témoignage client après une installation réussie'});
+  ideas.push({ico:'🔋',txt:'Vidéo explicative sur la prime ADVENIR et les aides 2026'});
+
+  g('dashCMIdeas').innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">'+
+    ideas.map(function(i){return '<div style="background:var(--bg);border-radius:10px;padding:14px;display:flex;gap:10px;align-items:flex-start"><span style="font-size:20px">'+i.ico+'</span><span style="font-size:13px;line-height:1.4">'+i.txt+'</span></div>';}).join('')+'</div>';
+}
+
+// ── CALENDRIER ÉDITORIAL ──
+function renderEditorial(){
+  var posts=(DB.editorialCal||[]).slice().sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+  if(!posts.length){g('editorialList').innerHTML='<p style="color:var(--muted);text-align:center;padding:40px;font-size:13px">Aucune publication. Cliquez sur "+ Publication" pour commencer.</p>';return;}
+  g('editorialList').innerHTML='<table class="tbl"><thead><tr><th>Date</th><th>Plateforme</th><th>Titre</th><th>Type</th><th>Statut</th><th>Action</th></tr></thead><tbody>'+
+    posts.map(function(p,i){
+      return '<tr><td>'+fmtD(p.date)+'</td><td>'+(PLATFORM_ICONS[p.platform]||'')+' '+p.platform+'</td><td style="font-weight:600">'+p.titre+'</td><td>'+(p.type||'Post')+'</td>'+
+        '<td><span class="badge" style="background:'+POST_STATUS[p.statut]+'22;color:'+POST_STATUS[p.statut]+'">'+p.statut+'</span></td>'+
+        '<td><button class="btn bGhost" style="padding:3px 9px;font-size:12px" onclick="openEditorialModal('+i+')">Modifier</button></td></tr>';
+    }).join('')+'</tbody></table>';
+}
+
+function openEditorialModal(idx){
+  var p=idx>=0?DB.editorialCal[idx]:{titre:'',platform:'Instagram',type:'Post',date:new Date().toISOString().slice(0,10),statut:'Idée',notes:''};
+  var platformOpts=PLATFORMS.map(function(pl){return '<option'+(p.platform===pl?' selected':'')+'>'+pl+'</option>';}).join('');
+  var statusOpts=Object.keys(POST_STATUS).map(function(s){return '<option'+(p.statut===s?' selected':'')+'>'+s+'</option>';}).join('');
+  var typeOpts=['Post','Reel','Story','Carrousel','Vidéo','Article'].map(function(t){return '<option'+(p.type===t?' selected':'')+'>'+t+'</option>';}).join('');
+  showModal('📅 '+(idx>=0?'Modifier':'Nouvelle')+' publication',
+    '<div class="fi" style="margin-bottom:10px"><label>Titre</label><input id="edTitre" value="'+(p.titre||'')+'"></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">'+
+    '<div class="fi"><label>Plateforme</label><select id="edPlatform">'+platformOpts+'</select></div>'+
+    '<div class="fi"><label>Type</label><select id="edType">'+typeOpts+'</select></div></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">'+
+    '<div class="fi"><label>Date</label><input type="date" id="edDate" value="'+(p.date||'')+'"></div>'+
+    '<div class="fi"><label>Statut</label><select id="edStatut">'+statusOpts+'</select></div></div>'+
+    '<div class="fi" style="margin-bottom:10px"><label>Notes / Légende</label><textarea id="edNotes" rows="3">'+(p.notes||'')+'</textarea></div>',
+    function(){
+      var data={titre:g('edTitre').value,platform:g('edPlatform').value,type:g('edType').value,date:g('edDate').value,statut:g('edStatut').value,notes:g('edNotes').value};
+      if(idx>=0){DB.editorialCal[idx]=Object.assign(DB.editorialCal[idx],data);}
+      else{data.id=DB.nextId++;DB.editorialCal.unshift(data);}
+      save();renderEditorial();closeModal();toast('Publication enregistrée');
+    },idx>=0?function(){if(confirm('Supprimer cette publication ?')){DB.editorialCal.splice(idx,1);save();renderEditorial();closeModal();toast('Supprimé');}}:null);
+}
+
+// ── BANQUE DE CONTENU ──
+function renderMedia(){
+  // Populate chantier filter
+  var chSel=g('mediaFilterChantier');
+  if(chSel&&chSel.options.length<=1){
+    DB.installations.forEach(function(i){var o=document.createElement('option');o.value=i.id;o.textContent=(i.chantier||i.client||'Chantier #'+i.id);chSel.appendChild(o);});
+  }
+  var ft=g('mediaFilterType').value, fc=g('mediaFilterChantier').value;
+  var medias=(DB.mediaGallery||[]).filter(function(m){
+    if(ft&&m.type!==ft)return false;
+    if(fc&&String(m.chantierId)!==String(fc))return false;
+    return true;
+  });
+  if(!medias.length){g('mediaGrid').innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:40px;font-size:13px">Aucun média. Ajoutez vos photos et vidéos de chantier.</p>';return;}
+  g('mediaGrid').innerHTML=medias.map(function(m,i){
+    var realIdx=DB.mediaGallery.indexOf(m);
+    var preview=m.data&&m.type==='Photo'?'<img src="'+m.data+'" style="width:100%;height:140px;object-fit:cover;border-radius:8px 8px 0 0">':'<div style="width:100%;height:140px;background:linear-gradient(135deg,#222651,#2d3270);border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:center;font-size:40px">'+(m.type==='Vidéo'?'🎬':m.type==='Reel'?'📹':'📷')+'</div>';
+    return '<div style="background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden">'+preview+
+      '<div style="padding:10px"><div style="font-weight:600;font-size:13px;margin-bottom:4px">'+(m.titre||'Sans titre')+'</div>'+
+      '<div style="font-size:11px;color:var(--muted)">'+(m.type||'')+' • '+fmtD(m.date)+'</div>'+
+      '<button class="btn bGhost" style="padding:3px 8px;font-size:11px;margin-top:8px" onclick="deleteMedia('+realIdx+')">Supprimer</button></div></div>';
+  }).join('');
+}
+
+function openMediaModal(){
+  var chOpts=DB.installations.map(function(i){return '<option value="'+i.id+'">'+(i.chantier||i.client||'Chantier #'+i.id)+'</option>';}).join('');
+  showModal('🎬 Ajouter un média',
+    '<div class="fi" style="margin-bottom:10px"><label>Titre</label><input id="mdTitre" placeholder="Ex: Installation borne Aix"></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">'+
+    '<div class="fi"><label>Type</label><select id="mdType"><option>Photo</option><option>Vidéo</option><option>Reel</option><option>Story</option></select></div>'+
+    '<div class="fi"><label>Chantier</label><select id="mdChantier"><option value="">Aucun</option>'+chOpts+'</select></div></div>'+
+    '<div class="fi" style="margin-bottom:10px"><label>Photo (optionnel)</label><input type="file" id="mdFile" accept="image/*"></div>'+
+    '<div class="fi" style="margin-bottom:10px"><label>Lien vidéo (optionnel)</label><input id="mdLink" placeholder="URL YouTube, Drive..."></div>',
+    function(){
+      var file=g('mdFile').files[0];
+      var saveMedia=function(dataUrl){
+        var m={id:DB.nextId++,titre:g('mdTitre').value,type:g('mdType').value,chantierId:g('mdChantier').value,link:g('mdLink').value,data:dataUrl||'',date:new Date().toISOString().slice(0,10)};
+        if(!DB.mediaGallery)DB.mediaGallery=[];
+        DB.mediaGallery.unshift(m);save();renderMedia();closeModal();toast('Média ajouté');
+      };
+      if(file){var r=new FileReader();r.onload=function(e){saveMedia(e.target.result);};r.readAsDataURL(file);}
+      else saveMedia('');
+    },null);
+}
+
+function deleteMedia(idx){if(confirm('Supprimer ce média ?')){DB.mediaGallery.splice(idx,1);save();renderMedia();toast('Supprimé');}}
+
+// ── IDÉES DE CONTENU ──
+function renderContentIdeas(){
+  var ideas=DB.contentIdeas||[];
+  if(!ideas.length){g('ideasList').innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:40px;font-size:13px">Aucune idée enregistrée. Notez vos inspirations ici.</p>';return;}
+  g('ideasList').innerHTML=ideas.map(function(idea,i){
+    return '<div style="background:var(--white);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:16px;border-left:3px solid var(--gold)">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px"><span style="font-size:24px">'+(idea.ico||'💡')+'</span>'+
+      '<button class="btn bGhost" style="padding:2px 7px;font-size:11px" onclick="deleteIdea('+i+')">×</button></div>'+
+      '<div style="font-weight:600;font-size:14px;margin-bottom:6px">'+idea.titre+'</div>'+
+      '<div style="font-size:12px;color:var(--muted);line-height:1.4">'+(idea.desc||'')+'</div>'+
+      (idea.platform?'<div style="margin-top:8px"><span class="badge" style="background:var(--blue-bg);color:var(--blue)">'+(PLATFORM_ICONS[idea.platform]||'')+' '+idea.platform+'</span></div>':'')+'</div>';
+  }).join('');
+}
+
+function openIdeaModal(idx){
+  var idea=idx>=0?DB.contentIdeas[idx]:{titre:'',desc:'',platform:'',ico:'💡'};
+  var platOpts='<option value="">Toutes</option>'+PLATFORMS.map(function(pl){return '<option'+(idea.platform===pl?' selected':'')+'>'+pl+'</option>';}).join('');
+  showModal('💡 Idée de contenu',
+    '<div class="fi" style="margin-bottom:10px"><label>Titre</label><input id="idTitre" value="'+(idea.titre||'')+'"></div>'+
+    '<div class="fi" style="margin-bottom:10px"><label>Description</label><textarea id="idDesc" rows="3">'+(idea.desc||'')+'</textarea></div>'+
+    '<div class="fi" style="margin-bottom:10px"><label>Plateforme cible</label><select id="idPlatform">'+platOpts+'</select></div>',
+    function(){
+      var data={titre:g('idTitre').value,desc:g('idDesc').value,platform:g('idPlatform').value,ico:'💡'};
+      if(!DB.contentIdeas)DB.contentIdeas=[];
+      if(idx>=0)DB.contentIdeas[idx]=data;else DB.contentIdeas.unshift(data);
+      save();renderContentIdeas();closeModal();toast('Idée enregistrée');
+    },null);
+}
+function deleteIdea(idx){if(confirm('Supprimer cette idée ?')){DB.contentIdeas.splice(idx,1);save();renderContentIdeas();toast('Supprimé');}}
+
+// ── OBJECTIFS DIGITAUX ──
+function renderSocialObj(){
+  var objs=DB.socialObjectifs||[];
+  var totalFollowers=objs.reduce(function(s,o){return s+(parseInt(o.current)||0);},0);
+  var totalTarget=objs.reduce(function(s,o){return s+(parseInt(o.target)||0);},0);
+  g('socialObjKpis').innerHTML=
+    kpi('👥','Abonnés totaux',totalFollowers.toLocaleString('fr-FR'),'blue')+
+    kpi('🎯','Objectif total',totalTarget.toLocaleString('fr-FR'),'purple')+
+    kpi('📈','Progression',(totalTarget?Math.round(totalFollowers/totalTarget*100):0)+'%','green');
+  if(!objs.length){g('socialObjList').innerHTML='<p style="color:var(--muted);text-align:center;padding:40px;font-size:13px">Aucun objectif. Définissez vos cibles par plateforme.</p>';return;}
+  g('socialObjList').innerHTML=objs.map(function(o,i){
+    var pct=o.target?Math.min(100,Math.round(o.current/o.target*100)):0;
+    return '<div class="card"><div class="cardB"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'+
+      '<div style="font-weight:700;font-size:15px">'+(PLATFORM_ICONS[o.platform]||'')+' '+o.platform+'</div>'+
+      '<button class="btn bGhost" style="padding:3px 9px;font-size:12px" onclick="openSocialObjModal('+i+')">Modifier</button></div>'+
+      '<div style="font-size:13px;color:var(--muted);margin-bottom:6px">'+(o.current||0).toLocaleString('fr-FR')+' / '+(o.target||0).toLocaleString('fr-FR')+' abonnés • '+o.metric+'</div>'+
+      '<div style="background:var(--border);border-radius:10px;height:10px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:10px"></div></div>'+
+      '<div style="text-align:right;font-size:12px;color:var(--gold);font-weight:600;margin-top:4px">'+pct+'%</div></div></div>';
+  }).join('');
+}
+
+function openSocialObjModal(idx){
+  var o=idx>=0?DB.socialObjectifs[idx]:{platform:'Instagram',metric:'Abonnés',current:0,target:1000};
+  var platOpts=PLATFORMS.map(function(pl){return '<option'+(o.platform===pl?' selected':'')+'>'+pl+'</option>';}).join('');
+  showModal('📈 Objectif digital',
+    '<div class="fi" style="margin-bottom:10px"><label>Plateforme</label><select id="soPlatform">'+platOpts+'</select></div>'+
+    '<div class="fi" style="margin-bottom:10px"><label>Métrique</label><select id="soMetric"><option'+(o.metric==='Abonnés'?' selected':'')+'>Abonnés</option><option'+(o.metric==='Vues'?' selected':'')+'>Vues</option><option'+(o.metric==='Engagement'?' selected':'')+'>Engagement</option><option'+(o.metric==='Leads'?' selected':'')+'>Leads</option></select></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">'+
+    '<div class="fi"><label>Actuel</label><input type="number" id="soCurrent" value="'+(o.current||0)+'"></div>'+
+    '<div class="fi"><label>Objectif</label><input type="number" id="soTarget" value="'+(o.target||0)+'"></div></div>',
+    function(){
+      var data={platform:g('soPlatform').value,metric:g('soMetric').value,current:parseInt(g('soCurrent').value)||0,target:parseInt(g('soTarget').value)||0};
+      if(!DB.socialObjectifs)DB.socialObjectifs=[];
+      if(idx>=0)DB.socialObjectifs[idx]=data;else DB.socialObjectifs.push(data);
+      save();renderSocialObj();closeModal();toast('Objectif enregistré');
+    },idx>=0?function(){if(confirm('Supprimer ?')){DB.socialObjectifs.splice(idx,1);save();renderSocialObj();closeModal();}}:null);
+}
+
+// ── PLANNING TOURNAGES ──
+function renderCMPlanning(){
+  var chantiers=DB.installations.filter(function(i){return i.statut==='En cours'||i.statut==='Planifiée';}).sort(function(a,b){return new Date(a.date||0)-new Date(b.date||0);});
+  if(!chantiers.length){g('cmPlanningList').innerHTML='<p style="color:var(--muted);text-align:center;padding:40px;font-size:13px">Aucun chantier à venir.</p>';return;}
+  g('cmPlanningList').innerHTML='<table class="tbl"><thead><tr><th>Date</th><th>Chantier</th><th>Lieu</th><th>Installateur</th><th>Contact</th><th>À filmer</th></tr></thead><tbody>'+
+    chantiers.map(function(i){
+      var inst=DB.installateurs.find(function(x){return instName(x.prenom,x.nom)===i.installateur;});
+      var tel=inst&&inst.tel?inst.tel:'--';
+      return '<tr><td>'+fmtD(i.date)+'</td><td style="font-weight:600">'+(i.chantier||i.client||'')+'</td><td>'+(i.ville||i.adresse||'')+'</td>'+
+        '<td>'+(i.installateur||'')+'</td><td>'+tel+'</td>'+
+        '<td><input type="checkbox" '+(i.aFilmer?'checked':'')+' onchange="toggleAFilmer('+i.id+',this.checked)"></td></tr>';
+    }).join('')+'</tbody></table>';
+}
+
+function toggleAFilmer(id,val){var i=DB.installations.find(function(x){return x.id===id;});if(i){i.aFilmer=val;save();toast(val?'Marqué à filmer':'Retiré');}}
+function planTournage(id){var i=DB.installations.find(function(x){return x.id===id;});if(i){i.aFilmer=true;save();toast('Chantier ajouté aux tournages');renderDashCM();}}
+
+// ── INSTALLATIONS (vue CM lecture seule) ──
+function renderCMInst(){
+  var f=g('cmInstFilter').value;
+  var insts=DB.installations.filter(function(i){return !f||i.statut===f;});
+  var tb=g('cmInstTable').querySelector('tbody');
+  if(!insts.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted)">Aucune installation</td></tr>';return;}
+  tb.innerHTML=insts.map(function(i){
+    var inst=DB.installateurs.find(function(x){return instName(x.prenom,x.nom)===i.installateur;});
+    var tel=inst&&inst.tel?inst.tel:'';
+    return '<tr><td style="font-weight:600">'+(i.chantier||i.client||'')+'</td><td>'+(i.ville||i.adresse||'')+'</td>'+
+      '<td>'+(i.installateur||'')+(tel?' <span style="color:var(--muted);font-size:11px">'+tel+'</span>':'')+'</td>'+
+      '<td>'+fmtD(i.date)+'</td><td><span class="badge" style="background:'+(SCOLS[i.statut]||'#888')+'22;color:'+(SCOLS[i.statut]||'#888')+'">'+i.statut+'</span></td>'+
+      '<td><button class="btn bGhost" style="padding:3px 9px;font-size:12px" onclick="planTournage('+i.id+')">📹 Filmer</button></td></tr>';
+  }).join('');
 }
 
 
