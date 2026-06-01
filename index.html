@@ -810,7 +810,8 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 
     <!-- PROFILS -->
     <div class="pg" id="pgProfils">
-      <div class="pgHead"><div><h1>Installateurs</h1><p class="sub">Équipe terrain</p></div><div id="profilAddBtn"></div></div>
+      <div class="pgHead"><div><h1>Installateurs</h1><p class="sub">Équipe terrain</p></div><button class="btn bPrimary" id="profilAddBtn" onclick="openProfModal(-1)">+ Installateur</button></div>
+      <div style="margin-bottom:16px"><input id="profilSearch" placeholder="Rechercher un installateur..." oninput="renderProfils()" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit"></div>
       <div class="pgrid" id="profilGrid"></div>
     </div>
 
@@ -2074,7 +2075,7 @@ function nav(id){
   if(id==='pgDevis')renderDevis();
   if(id==='pgInst')renderT();
   if(id==='pgStock')renderS();
-  if(id==='pgProfils')renderProfils();
+  if(id==='pgProfils'){if(fbReady&&db){loadFromFirebase(function(){renderProfils();});}else{renderProfils();}}
   if(id==='pgProspects')renderProspects();
   if(id==='pgSAV')renderSAV();
   if(id==='pgChat')renderChat();
@@ -2086,7 +2087,7 @@ function nav(id){
   if(id==='pgRecrutement')renderRecrut();
   if(id==='pgPlanning')renderP();
   if(id==='pgRapports')renderRapports();
-  if(id==='pgUsers')renderUsers();
+  if(id==='pgUsers'){if(fbReady&&db){loadAccountsFromFirebase(function(){renderUsers();});}else{renderUsers();}}
   if(id==='pgMonProfil')renderMonProfil();
   if(id==='pgDashCM')renderDashCM();
   if(id==='pgEditorial')renderEditorial();
@@ -2118,6 +2119,29 @@ function initApp(){
   nav(first);
   updateNotifBadge();
   applyMobileLayout();
+  // Check for pending accounts (admin only)
+  if(isAdmin()){
+    setTimeout(function(){ checkPendingAccounts(); }, 1500);
+  }
+}
+
+function checkPendingAccounts(){
+  var doCheck=function(){
+    var accounts=loadAccounts();
+    var pending=accounts.filter(function(a){return a.status==='pending';});
+    if(pending.length>0){
+      // Add a notification for each pending account
+      pending.forEach(function(p){
+        var exists=(DB.notifications||[]).some(function(n){return n.txt && n.txt.indexOf(p.email)>=0;});
+        if(!exists){
+          addNotif('user', p.name+' ('+p.email+') attend la validation de son compte', '👤');
+        }
+      });
+      updateNotifBadge();
+      toast(pending.length+' compte(s) en attente de validation');
+    }
+  };
+  if(fbReady&&db){loadAccountsFromFirebase(function(){doCheck();});}else{doCheck();}
 }
 
 // ── MOBILE ──
@@ -2155,7 +2179,7 @@ function installPWA(){if(!deferredPrompt)return;deferredPrompt.prompt();deferred
 function updateNotifBadge(){var unread=(DB.notifications||[]).filter(function(n){return !n.read;}).length;var dot=g('notifDot');if(dot)dot.classList.toggle('on',unread>0);}
 function toggleNotifPanel(){var panel=g('notifPanel');panel.classList.toggle('on');if(panel.classList.contains('on'))renderNotifPanel();}
 function renderNotifPanel(){var notifs=DB.notifications||[];g('notifList').innerHTML=notifs.length?notifs.map(function(n,i){return '<div class="notifItem'+(n.read?'':' unread')+'" onclick="clickNotif('+i+')">'+'<div class="notifIco" style="background:'+(n.read?'var(--bg)':'var(--blue-bg)')+'">'+n.ico+'</div>'+'<div><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+fmtNotifTime(n.ts)+'</div></div></div>';}).join(''):'<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">Aucune notification</div>';}
-function clickNotif(i){if(DB.notifications[i])DB.notifications[i].read=true;save();updateNotifBadge();renderNotifPanel();}
+function clickNotif(i){var n=DB.notifications[i];if(n)n.read=true;save();updateNotifBadge();renderNotifPanel();if(n&&n.type==='user'&&isAdmin()){var np=g('notifPanel');if(np)np.classList.remove('on');nav('pgUsers');}}
 function markAllRead(){(DB.notifications||[]).forEach(function(n){n.read=true;});save();updateNotifBadge();renderNotifPanel();}
 
 // ── AUTH ──
@@ -2757,8 +2781,9 @@ function saveMvt(){var q=parseInt(g('mMvqte').value)||0;if(!q){alert('Quantité 
 var eProfil=-1,profColSel='#2563eb';
 var selectedDepts=[];
 function renderProfils(){
-  var q=(g('profilSearch').value||'').toLowerCase();
-  var list=DB.installateurs.filter(function(p){return !q||(instName(p.prenom,p.nom)+( p.spec||'')).toLowerCase().includes(q);});
+  var se=g('profilSearch');var q=se?(se.value||'').toLowerCase():'';
+  var list=(DB.installateurs||[]).filter(function(p){return !q||(instName(p.prenom,p.nom)+( p.spec||'')).toLowerCase().includes(q);});
+  if(!list.length){g('profilGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted)"><div style="font-size:42px;margin-bottom:12px">👷</div><p style="font-size:15px;font-weight:600;margin-bottom:6px">Aucun installateur enregistré</p><p style="font-size:13px">Cliquez sur "+ Installateur" pour ajouter votre équipe terrain.</p></div>';return;}
   g('profilGrid').innerHTML=list.map(function(p){
     var idx=DB.installateurs.indexOf(p);var nm=instName(p.prenom,p.nom);
     var dispoCol={Disponible:'var(--green)',Occupé:'var(--orange)',Congés:'var(--red)',Formation:'var(--purple)'}[p.dispo]||'var(--muted)';
