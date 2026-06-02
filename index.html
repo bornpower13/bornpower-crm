@@ -658,6 +658,10 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <button onclick="startTutorial()" title="Tutoriel" style="flex:1;background:rgba(199,151,50,.15);border:1px solid rgba(199,151,50,.3);color:#ffe576;border-radius:8px;padding:7px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">🎓 Tutoriel</button>
       <button onclick="showPageHelp(getActivePage())" title="Aide page" style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.7);border-radius:8px;padding:7px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">❓ Aide</button>
     </div>
+    <div style="padding:0 10px 10px;position:relative">
+      <input id="globalSearch" oninput="globalSearchRun()" onfocus="globalSearchRun()" placeholder="🔍 Rechercher (nom, tél, email...)" autocomplete="off" style="width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;border-radius:8px;padding:8px 10px;font-size:12px;font-family:inherit;outline:none;box-sizing:border-box">
+      <div id="globalSearchResults" style="display:none;position:absolute;left:10px;right:10px;top:42px;background:var(--white);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.35);max-height:60vh;overflow-y:auto;z-index:500"></div>
+    </div>
     <div class="jarvisWrap" id="jarvisWrap" style="display:none">
       <button id="jarvisBtn" onclick="toggleJarvis()" style="width:100%;background:rgba(199,151,50,.15);border:1px solid rgba(199,151,50,.3);color:#ffe576;border-radius:8px;padding:9px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;letter-spacing:.03em">🎙️ Jarvis</button>
       <div id="jarvisPanel"></div>
@@ -2387,6 +2391,62 @@ function renderProspects(){
       +'</td></tr>';
   }).join('');
 }
+function globalSearchRun(){
+  var box=g('globalSearchResults');if(!box)return;
+  var q=(g('globalSearch').value||'').toLowerCase().trim();
+  if(q.length<2){box.style.display='none';box.innerHTML='';return;}
+  var qd=q.replace(/[^0-9]/g,''); // version chiffres seuls pour le téléphone
+  var role=getRole();
+  function match(obj,fields){
+    return fields.some(function(f){
+      var v=(obj[f]||'').toString().toLowerCase();
+      if(!v)return false;
+      if(v.indexOf(q)>=0)return true;
+      if(qd.length>=4&&f.toLowerCase().indexOf('tel')>=0){return v.replace(/[^0-9]/g,'').indexOf(qd)>=0;}
+      return false;
+    });
+  }
+  var results=[];
+  // Prospects
+  if(role!=='installer'&&role!=='cm'){
+    (DB.prospects||[]).forEach(function(p,i){if(match(p,['nom','societe','tel','email','contactPrenom','contactNom','ville']))results.push({type:'Prospect',ico:'🎯',col:'#d97706',nom:p.nom,sub:[p.tel,p.email,p.ville].filter(Boolean).join(' · '),act:"nav('pgProspects');openProspectModal("+i+")"});});
+  }
+  // Contacts / clients
+  if(role!=='installer'&&role!=='cm'){
+    (DB.contacts||[]).forEach(function(c,i){if(match(c,['nom','prenom','nomFamille','societe','tel','email','poste']))results.push({type:'Client',ico:'👥',col:'#059669',nom:c.nom,sub:[c.tel,c.email,c.societe].filter(Boolean).join(' · '),act:"nav('pgContacts');openContactModal("+i+")"});});
+  }
+  // Opportunités
+  if(role!=='installer'&&role!=='cm'){
+    (DB.opportunites||[]).forEach(function(o,i){if(match(o,['nom','client','societe']))results.push({type:'Opportunité',ico:'📊',col:'#7c3aed',nom:o.nom||o.client,sub:[o.client,fmtE(o.montant),o.etape].filter(Boolean).join(' · '),act:"nav('pgPipeline');openOppModal("+i+")"});});
+  }
+  // Devis
+  if(role!=='installer'&&role!=='cm'){
+    (DB.devis||[]).forEach(function(d,i){if(match(d,['client','societe','emailClient','adresse'])||('devis '+d.numero).indexOf(q)>=0)results.push({type:'Devis',ico:'📋',col:'#2563eb',nom:'Devis N°'+d.numero+' — '+(d.client||''),sub:[d.statut,fmtE((d.lignes||[]).reduce(function(s,l){return s+l.qte*l.pu;},0))+' HT'].filter(Boolean).join(' · '),act:"nav('pgDevis');openDM("+i+")"});});
+  }
+  // Installations (visibles selon rôle)
+  getVisibleInst().forEach(function(ins){var i=DB.installations.indexOf(ins);if(match(ins,['chantier','client','tel','adresse','installateur']))results.push({type:'Installation',ico:'⚡',col:'#0891b2',nom:ins.chantier||ins.client,sub:[ins.client,ins.installateur,ins.statut].filter(Boolean).join(' · '),act:"openFiche("+i+")"});});
+
+  if(!results.length){box.style.display='block';box.innerHTML='<div style="padding:16px;text-align:center;color:var(--muted);font-size:13px">Aucun résultat pour \"'+q+'\"</div>';return;}
+  // Limiter à 20
+  results=results.slice(0,20);
+  box.style.display='block';
+  box.innerHTML=results.map(function(r){
+    return '<div onclick="globalSearchPick(&quot;'+r.act.replace(/"/g,'&quot;')+'&quot;)" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer" onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'\'">'+
+      '<span style="font-size:18px;width:26px;text-align:center">'+r.ico+'</span>'+
+      '<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+r.nom+'</div>'+(r.sub?'<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+r.sub+'</div>':'')+'</div>'+
+      '<span class="badge" style="background:'+r.col+'22;color:'+r.col+';font-size:10px;flex-shrink:0">'+r.type+'</span></div>';
+  }).join('');
+}
+function globalSearchPick(act){
+  g('globalSearchResults').style.display='none';
+  g('globalSearch').value='';
+  try{eval(act);}catch(e){console.log('nav error',e);}
+}
+// Fermer les résultats si on clique ailleurs
+document.addEventListener('click',function(e){
+  var sb=g('globalSearch');var box=g('globalSearchResults');
+  if(box&&sb&&e.target!==sb&&!box.contains(e.target)){box.style.display='none';}
+});
 function fillVisiteQui(selectId,selected){
   var sel=g(selectId);if(!sel)return;
   var opts='<option value="">--</option><option value="Florian Camps"'+(selected==='Florian Camps'?' selected':'')+'>Florian Camps (moi)</option>';
