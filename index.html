@@ -461,6 +461,31 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 .notifIco{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
 .notifTxt{font-size:13px;color:var(--text);flex:1;}
 .notifTime{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* ===== RESPONSIVE MOBILE ===== */
+#sidebar{transition:transform .25s ease;}
+@media (max-width:768px){
+  #sidebar{transform:translateX(-100%);width:82vw;max-width:300px;box-shadow:4px 0 24px rgba(0,0,0,.4);}
+  #sidebar.open{transform:translateX(0);}
+  #main{margin-left:0 !important;padding:14px !important;padding-top:64px !important;}
+  #mobileTopBar{display:flex !important;}
+  .pgHead{flex-direction:column;align-items:flex-start;gap:10px;}
+  .pgHead h1{font-size:20px;}
+  .pgHead .btn,.pgHead button{width:auto;}
+  .fgrid{grid-template-columns:1fr !important;}
+  .kpis,.kpiRow{grid-template-columns:1fr 1fr !important;}
+  .modal{width:94vw !important;max-width:94vw !important;max-height:88vh !important;}
+  table{display:block;overflow-x:auto;white-space:nowrap;}
+  .card{overflow-x:auto;}
+  div[style*="grid-template-columns:2fr 1fr"]{grid-template-columns:1fr !important;}
+  div[style*="grid-template-columns:repeat(auto-fill"]{grid-template-columns:1fr 1fr !important;}
+  .mf{flex-wrap:wrap;}
+  .mf .btn{flex:1;min-width:120px;}
+}
+@media (min-width:769px){
+  #mobileTopBar{display:none !important;}
+  #sidebar{transform:none !important;}
+}
 </style>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -1872,7 +1897,7 @@ function nav(id){
   document.querySelectorAll('#navLinks a').forEach(function(a){a.classList.remove('on');});
   var pg=g(id);if(pg)pg.classList.add('on');
   var navEl=g('nav_'+id);if(navEl)navEl.classList.add('on');
-  if(isMobile()){var sidebar=g('sidebar');var overlay=g('sidebarOverlay');if(sidebar)sidebar.classList.remove('open');if(overlay){overlay.style.display='none';overlay.classList.remove('on');}}
+  if(isMobile()){closeMobileMenu();}
   if(id==='pgDash')renderDash();
   if(id==='pgDashComm')renderDashComm();
   if(id==='pgDashDT')renderDashDT();
@@ -1958,23 +1983,17 @@ function isMobile(){return window.innerWidth<=768;}
 function toggleMobileMenu(){
   var sidebar=g('sidebar');var overlay=g('sidebarOverlay');
   if(!sidebar)return;
-  var isOpen=sidebar.classList.contains('open');
-  if(isOpen){sidebar.style.transform='translateX(-100%)';sidebar.classList.remove('open');if(overlay){overlay.style.display='none';overlay.classList.remove('on');}}
-  else{sidebar.style.transform='translateX(0)';sidebar.style.boxShadow='4px 0 20px rgba(0,0,0,.4)';sidebar.classList.add('open');if(overlay){overlay.style.display='block';overlay.classList.add('on');}}
+  var isOpen=sidebar.classList.toggle('open');
+  if(overlay){overlay.style.display=isOpen?'block':'none';}
+}
+function closeMobileMenu(){
+  var sidebar=g('sidebar');var overlay=g('sidebarOverlay');
+  if(sidebar)sidebar.classList.remove('open');
+  if(overlay)overlay.style.display='none';
 }
 function applyMobileLayout(){
-  var mobile=isMobile();var sidebar=g('sidebar');var main=g('main');var topbar=g('mobileTopBar');
-  if(mobile){
-    if(sidebar){sidebar.style.transform='translateX(-100%)';sidebar.style.width='280px';sidebar.style.position='fixed';sidebar.style.zIndex='50';sidebar.style.height='100vh';}
-    if(main){main.style.marginLeft='0';main.style.paddingTop='58px';}
-    if(topbar){topbar.style.display='flex';}
-  } else {
-    if(sidebar){sidebar.style.transform='';sidebar.style.width='220px';}
-    if(main){main.style.marginLeft='220px';main.style.paddingTop='24px';}
-    if(topbar){topbar.style.display='none';}
-    var overlay=g('sidebarOverlay');if(overlay)overlay.classList.remove('on');
-    if(sidebar)sidebar.classList.remove('open');
-  }
+  // Le CSS (media queries) gère la mise en page. On nettoie juste l'état du menu.
+  if(!isMobile()){closeMobileMenu();}
 }
 window.addEventListener('resize',applyMobileLayout);
 
