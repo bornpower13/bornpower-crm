@@ -1263,6 +1263,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 <div class="ov" id="mOpp">
   <div class="modal">
     <div class="mh"><h2 id="mOppT">Nouvelle opportunité</h2><button class="mcl" onclick="closeOppModal()">&#10005;</button></div>
+    <div id="mOcreationInfo"></div>
     <div class="fgrid">
       <div class="fi full"><label>Nom *</label><input id="mOnom" placeholder="Nom de l'opportunité"></div>
       <div class="fi"><label>Contact</label><input id="mOclient" placeholder="Nom du contact"></div>
@@ -1271,6 +1272,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="fi"><label>Probabilité (%)</label><input id="mOproba" type="number" min="0" max="100" placeholder="50"></div>
       <div class="fi"><label>Étape</label><select id="mOetape"><option>Prospection</option><option>Contact</option><option>Qualification</option><option>Proposition</option><option>Négociation</option><option>Gagné</option><option>Perdu</option></select></div>
       <div class="fi"><label>Clôture prévue</label><input id="mOclose" type="date"></div>
+      <div class="fi"><label>📞 Date de rappel client</label><input id="mOrappel" type="date"></div>
       <div class="fi"><label>Source</label><select id="mOsource"><option>Bouche à oreille</option><option>Site web</option><option>Réseaux sociaux</option><option>Prospection téléphonique</option><option>Partenaire</option><option>Autre</option></select></div>
       <div class="fi full"><label>Notes</label><textarea id="mOnotes" placeholder="Notes..."></textarea></div>
     </div>
@@ -1515,162 +1517,6 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
   </div>
 </div>>
 <!-- SIGNATURE CLIENT -->
-<div class="ov" id="mSignature">
-  <div class="modal">
-    <div class="mh"><h2>Signature client</h2><button class="mcl" onclick="g('mSignature').classList.remove('on')">&#10005;</button></div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Le client signe ci-dessous pour confirmer la réception du chantier</p>
-    <canvas id="sigCanvas" class="sigCanvas" width="460" height="200"></canvas>
-    <div class="mf" style="margin-top:12px">
-      <button class="btn bGhost" onclick="clearSig()">Effacer</button>
-      <button class="btn bGhost" onclick="g('mSignature').classList.remove('on')">Annuler</button>
-      <button class="btn bPrimary" onclick="saveSig()">Valider la signature</button>
-    </div>
-  </div>
-</div>
-
-<!-- COMPTE RENDU INTERVENTION -->
-<div class="ov" id="mCompteRendu">
-  <div class="modal lg">
-    <div class="mh"><h2 id="mCRTitle">Compte rendu intervention</h2><button class="mcl" onclick="g('mCompteRendu').classList.remove('on')">&#10005;</button></div>
-    <div class="fgrid">
-      <div class="fi full"><label>Travaux réalisés</label><textarea id="crTravaux" placeholder="Décrivez les travaux effectués..." style="min-height:80px"></textarea></div>
-      <div class="fi full"><label>Problèmes rencontrés</label><textarea id="crProblemes" placeholder="Difficultés, imprévus..." style="min-height:60px"></textarea></div>
-      <div class="fi"><label>Matériel utilisé</label><textarea id="crMateriel" placeholder="Liste du matériel..."></textarea></div>
-      <div class="fi"><label>Temps passé</label><input id="crTemps" placeholder="Ex: 4h30" style="border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;outline:none;font-family:inherit;width:100%"></div>
-      <div class="fi full"><label>Observations / Recommandations</label><textarea id="crObservations" placeholder="Recommandations au client, suivi nécessaire..." style="min-height:60px"></textarea></div>
-    </div>
-    <div class="mf"><button class="btn bGhost" onclick="g('mCompteRendu').classList.remove('on')">Annuler</button><button class="btn bPrimary" onclick="saveCompteRendu()">Enregistrer</button></div>
-  </div>
-</div>
-
-<!-- RECRUTEMENT MODAL -->
-<div class="ov" id="mRecrut">
-  <div class="modal">
-    <div class="mh"><h2 id="mRecrutT">Nouvelle candidature</h2><button class="mcl" onclick="g('mRecrut').classList.remove('on')">&#10005;</button></div>
-    <div class="fgrid">
-      <div class="fi"><label>Prénom *</label><input id="mRcPrenom" placeholder="Prénom"></div>
-      <div class="fi"><label>Nom *</label><input id="mRcNom" placeholder="Nom"></div>
-      <div class="fi"><label>Email</label><input id="mRcEmail" placeholder="email@exemple.fr" type="email"></div>
-      <div class="fi"><label>Téléphone</label><input id="mRcTel" placeholder="06 00 00 00 00"></div>
-      <div class="fi"><label>Poste</label>
-        <select id="mRcPoste"><option>Installateur IRVE</option><option>Commercial</option><option>Technicien</option><option>Autre</option></select>
-      </div>
-      <div class="fi"><label>Statut</label>
-        <select id="mRcStat"><option>Reçue</option><option>Entretien</option><option>Validée</option><option>Refusée</option></select>
-      </div>
-      <div class="fi"><label>Date candidature</label><input type="date" id="mRcDate"></div>
-      <div class="fi"><label>Source</label>
-        <select id="mRcSource"><option>Site web</option><option>LinkedIn</option><option>Indeed</option><option>Recommandation</option><option>Spontanée</option></select>
-      </div>
-      <div class="fi full"><label>Notes / Compétences</label><textarea id="mRcNotes" placeholder="Expérience, certifications, remarques..."></textarea></div>
-    </div>
-    <div class="mf"><button class="btn bGhost" onclick="g('mRecrut').classList.remove('on')">Annuler</button><button class="btn bPrimary" onclick="saveRecrut()">Enregistrer</button></div>
-  </div>
-</div>
-
-<!-- OPP MODAL -->
-<div class="ov" id="mOpp">
-  <div class="modal">
-    <div class="mh"><h2 id="mOppT">Opportunité</h2><button class="mcl" onclick="closeOppModal()">&#10005;</button></div>
-    <div id="mOcreationInfo"></div>
-    <div class="fgrid">
-      <div class="fi"><label>Nom *</label><input id="mOnom" placeholder="Nom de l'affaire"></div>
-      <div class="fi"><label>Client</label><input id="mOclient" placeholder="Nom du client"></div>
-      <div class="fi"><label>Société</label><input id="mOsociete" placeholder="Société"></div>
-      <div class="fi"><label>Montant (€)</label><input type="number" id="mOmontant" placeholder="5000"></div>
-      <div class="fi"><label>Probabilité (%)</label><input type="number" id="mOproba" min="0" max="100" value="50"></div>
-      <div class="fi"><label>Étape</label>
-        <select id="mOetape"><option>Prospection</option><option>Contact</option><option>Qualification</option><option>Proposition</option><option>Négociation</option><option>Gagné</option><option>Perdu</option></select>
-      </div>
-      <div class="fi"><label>Date de clôture prévue</label><input type="date" id="mOclose"></div>
-      <div class="fi"><label>📞 Date de rappel client</label><input type="date" id="mOrappel"></div>
-      <div class="fi"><label>Source</label>
-        <select id="mOsource"><option>Bouche à oreille</option><option>Site web</option><option>Réseaux sociaux</option><option>Prospection téléphonique</option><option>Partenaire</option><option>Autre</option></select>
-      </div>
-      <div class="fi full"><label>Notes</label><textarea id="mOnotes" placeholder="Notes..."></textarea></div>
-    </div>
-    <div class="mf">
-      <button class="btn bGhost" onclick="closeOppModal()">Annuler</button>
-      <button class="btn bGhost" id="mOppConvertBtn" onclick="convertOppToInst()" style="color:var(--green);display:none">⚡ Créer installation</button>
-      <button class="btn bPrimary" onclick="saveOpp()">Enregistrer</button>
-    </div>
-  </div>
-</div>
-
-<!-- OPP DETAIL / HISTORIQUE -->
-<div class="ov" id="mOppDetail">
-  <div class="modal lg">
-    <div class="mh"><h2 id="mOppDetailT">Historique</h2><button class="mcl" onclick="g('mOppDetail').classList.remove('on')">&#10005;</button></div>
-    <div id="mOppDetailBody"></div>
-    <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
-      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Ajouter un échange</div>
-      <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-        <select id="echangeType" style="border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:13px;outline:none;font-family:inherit">
-          <option value="📞">📞 Appel</option>
-          <option value="📧">📧 Email</option>
-          <option value="🤝">🤝 RDV</option>
-          <option value="💬">💬 Message</option>
-          <option value="📝">📝 Note</option>
-        </select>
-        <input type="date" id="echangeDate" style="border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:13px;outline:none;font-family:inherit">
-      </div>
-      <div style="display:flex;gap:8px">
-        <input id="echangeInput" placeholder="Décrivez l'échange..." style="flex:1;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;font-family:inherit">
-        <button class="btn bPrimary" onclick="addEchange()">Ajouter</button>
-      </div>
-    </div>
-    <div class="mf"><button class="btn bGhost" onclick="g('mOppDetail').classList.remove('on')">Fermer</button></div>
-  </div>
-</div>
-
-<!-- CONTACT MODAL -->
-<div class="ov" id="mContact">
-  <div class="modal">
-    <div class="mh"><h2 id="mCT">Contact</h2><button class="mcl" onclick="g('mContact').classList.remove('on')">&#10005;</button></div>
-    <div class="fgrid">
-      <div class="fi"><label>Nom *</label><input id="mCnom" placeholder="Nom complet"></div>
-      <div class="fi"><label>Email</label><input type="email" id="mCemail" placeholder="email@exemple.fr"></div>
-      <div class="fi"><label>Téléphone</label><input id="mCtel" placeholder="06 00 00 00 00"></div>
-      <div class="fi"><label>Société</label><input id="mCsociete" placeholder="Société"></div>
-      <div class="fi"><label>Type</label>
-        <select id="mCtype"><option>Client</option><option>Prospect</option><option>Contact</option><option>Partenaire</option></select>
-      </div>
-      <div class="fi full"><label>Notes</label><textarea id="mCnotes" placeholder="Notes..."></textarea></div>
-    </div>
-    <div class="mf"><button class="btn bGhost" onclick="g('mContact').classList.remove('on')">Annuler</button><button class="btn bPrimary" onclick="saveContact()">Enregistrer</button></div>
-  </div>
-</div>
-
-<!-- PROSPECT MODAL -->
-<div class="ov" id="mProspect">
-  <div class="modal">
-    <div class="mh"><h2 id="mProspT">Prospect</h2><button class="mcl" onclick="g('mProspect').classList.remove('on')">&#10005;</button></div>
-    <div class="fgrid">
-      <div class="fi"><label>Nom *</label><input id="mPrNom" placeholder="Nom complet"></div>
-      <div class="fi"><label>Email</label><input type="email" id="mPrEmail" placeholder="email@exemple.fr"></div>
-      <div class="fi"><label>Téléphone</label><input id="mPrTel" placeholder="06 00 00 00 00"></div>
-      <div class="fi"><label>Société</label><input id="mPrSociete" placeholder="Société (optionnel)"></div>
-      <div class="fi"><label>Source</label>
-        <select id="mPrSource"><option>Site web</option><option>Bouche à oreille</option><option>LinkedIn</option><option>Réseaux sociaux</option><option>Prospection</option><option>Autre</option></select>
-      </div>
-      <div class="fi"><label>Statut</label>
-        <select id="mPrStatut"><option>Nouveau</option><option>Contacté</option><option>En discussion</option><option>Gagné</option><option>Perdu</option></select>
-      </div>
-      <div class="fi full"><label>Notes</label><textarea id="mPrNotes" placeholder="Notes..."></textarea></div>
-    </div>
-    <div style="padding:0 20px 10px">
-      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Recherche INSEE (Sirene)</div>
-      <div style="display:flex;gap:8px;margin-bottom:8px">
-        <input id="inseeSearch" placeholder="Nom entreprise..." style="flex:1;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;font-family:inherit">
-        <button class="btn bGhost" onclick="searchINSEE()">Rechercher</button>
-      </div>
-      <div id="inseeResults"></div>
-    </div>
-    <div class="mf"><button class="btn bGhost" onclick="g('mProspect').classList.remove('on')">Annuler</button><button class="btn bPrimary" onclick="saveProspect()">Enregistrer</button></div>
-  </div>
-</div>
-
-<!-- INSTALLATION MODAL -->
 <div class="ov" id="mInst">
   <div class="modal lg">
     <div class="mh"><h2 id="mInstT">Installation</h2><button class="mcl" onclick="closeIM()">&#10005;</button></div>
@@ -1720,22 +1566,6 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 </div>
 
 <!-- FICHE INSTALLATION -->
-<div class="ov" id="mFiche">
-  <div class="modal lg">
-    <div class="mh"><h2>Fiche chantier</h2><button class="mcl" onclick="closeFiche()">&#10005;</button></div>
-    <div id="mFicheBody"></div>
-    <div class="mf" style="flex-wrap:wrap;gap:6px">
-      <button class="btn bGhost" onclick="closeFiche()">Fermer</button>
-      <button class="btn bGhost" onclick="addToCalendar(eFicheIdx)" style="color:var(--blue)">📅 Calendrier</button>
-      <button class="btn bGhost" onclick="openCompteRendu(eFicheIdx)" style="color:var(--purple)">📝 CR Intervention</button>
-      <button class="btn bGhost" onclick="openSignature(eFicheIdx)" style="color:var(--green)">✍️ Signature</button>
-      <button class="btn bPrimary" onclick="exportFichePDF(eFicheIdx)">📄 Export PDF</button>
-      <button class="btn bGhost" onclick="editFiche()">✏️ Modifier</button>
-    </div>
-  </div>
-</div>
-
-<!-- MATÉRIEL MODAL -->
 <div class="ov" id="mMat">
   <div class="modal sm">
     <div class="mh"><h2 id="mMatT">Matériel</h2><button class="mcl" onclick="g('mMat').classList.remove('on')">&#10005;</button></div>
@@ -1752,65 +1582,6 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 </div>
 
 <!-- MOUVEMENT STOCK -->
-<div class="ov" id="mMvt">
-  <div class="modal sm">
-    <div class="mh"><h2 id="mMvtT">Mouvement</h2><button class="mcl" onclick="g('mMvt').classList.remove('on')">&#10005;</button></div>
-    <div class="fgrid">
-      <div class="fi"><label>Type</label><select id="mMvtype"><option>Entrée</option><option>Sortie</option></select></div>
-      <div class="fi"><label>Quantité *</label><input type="number" id="mMvqte" value="1" min="1"></div>
-      <div class="fi full"><label>Notes</label><input id="mMvnotes" placeholder="Raison, chantier..."></div>
-    </div>
-    <div class="mf"><button class="btn bGhost" onclick="g('mMvt').classList.remove('on')">Annuler</button><button class="btn bPrimary" onclick="saveMvt()">Enregistrer</button></div>
-  </div>
-</div>
-
-<!-- PROFIL INSTALLATEUR -->
-
-<div class="ov" id="mSAV">
-  <div class="modal">
-    <div class="mh"><h2 id="mSAVT">Ticket SAV</h2><button class="mcl" onclick="closeSAVModal()">&#10005;</button></div>
-    <div class="fgrid">
-      <div class="fi full"><label>Titre *</label><input id="mSAVtitle" placeholder="Décrivez le problème"></div>
-      <div class="fi"><label>Catégorie</label><select id="mSAVcat"><option>Panne</option><option>Maintenance</option><option>Installation</option><option>Garantie</option><option>Autre</option></select></div>
-      <div class="fi"><label>Priorité</label><select id="mSAVprio"><option>Normal</option><option>Urgent</option><option>Faible</option></select></div>
-      <div class="fi"><label>Statut</label><select id="mSAVstat"><option>Ouvert</option><option>En cours</option><option>Résolu</option><option>Urgent</option></select></div>
-      <div class="fi"><label>Client</label><input id="mSAVclient" placeholder="Nom du client"></div>
-      <div class="fi"><label>Téléphone</label><input id="mSAVtel" placeholder="06 00 00 00 00"></div>
-      <div class="fi"><label>Installation liée</label><select id="mSAVinst"></select></div>
-      <div class="fi"><label>Assigner à</label><select id="mSAVassign"></select></div>
-      <div class="fi full"><label>Description</label><textarea id="mSAVdesc" placeholder="Détails du problème..."></textarea></div>
-    </div>
-    <div class="mf"><button class="btn bGhost" onclick="closeSAVModal()">Annuler</button><button class="btn bPrimary" onclick="saveSAV()">Enregistrer</button></div>
-  </div>
-</div>
-
-<!-- SAV DETAIL -->
-<div class="ov" id="mSAVDetail">
-  <div class="modal lg">
-    <div class="mh"><h2 id="mSAVDetailT">Ticket SAV</h2><button class="mcl" onclick="g('mSAVDetail').classList.remove('on')">&#10005;</button></div>
-    <div id="mSAVDetailBody" style="max-height:350px;overflow-y:auto"></div>
-    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
-      <div style="display:flex;gap:8px">
-        <input id="savCommentInput" placeholder="Ajouter un commentaire..." style="flex:1;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;font-family:inherit">
-        <button class="btn bPrimary" onclick="addSAVComment()">Envoyer</button>
-      </div>
-    </div>
-    <div class="mf"><button class="btn bGhost" onclick="g('mSAVDetail').classList.remove('on')">Fermer</button></div>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div id="toastEl" class="toast"></div>
-
-<!-- NOTIF PANEL -->
-<div id="notifPanel" class="notifPanel">
-  <div class="notifPanelH">
-    <span style="font-weight:700;color:var(--navy)">Notifications</span>
-    <button onclick="markAllRead()" style="background:none;border:none;font-size:12px;color:var(--blue);cursor:pointer;font-family:inherit">Tout lire</button>
-  </div>
-  <div id="notifList"></div>
-</div>
-
 <script>
 
 var KEY='bpcrm_v2', ACCOUNTS_KEY='bp_accounts_v2';
