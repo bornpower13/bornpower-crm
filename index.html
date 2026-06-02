@@ -872,6 +872,25 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
     </div>
 
     <!-- SAV -->
+    <!-- CATALOGUE PRODUITS -->
+    <div class="pg" id="pgCatalogue">
+      <div class="pgHead"><div><h1>Catalogue produits</h1><p class="sub">Produits et prix pour monter vos devis</p></div><button class="btn bPrimary" onclick="openCatModal(-1)">+ Produit</button></div>
+      <div style="margin-bottom:16px"><input id="catSearch" placeholder="Rechercher un produit..." oninput="renderCatalogue()" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit"></div>
+      <div id="catGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;"></div>
+    </div>
+
+    <!-- MA JOURNEE (installateur) -->
+    <div class="pg" id="pgMaJournee">
+      <div class="pgHead"><div><h1 id="maJourneeTitle">Ma journée</h1><p class="sub" id="maJourneeDate"></p></div></div>
+      <div class="kpiRow" id="maJourneeKpis" style="margin-bottom:16px"></div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center">
+        <button class="btn bGhost" onclick="changeJourneeDay(-1)">&#8249; Veille</button>
+        <button class="btn bGhost" onclick="journeeToday()">Aujourd'hui</button>
+        <button class="btn bGhost" onclick="changeJourneeDay(1)">Lendemain &#8250;</button>
+      </div>
+      <div id="maJourneeList"></div>
+    </div>
+
     <!-- VISITES TECHNIQUES -->
     <div class="pg" id="pgVisites">
       <div class="pgHead"><div><h1>Visites techniques</h1><p class="sub">Toutes les visites programmées</p></div></div>
@@ -1120,6 +1139,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <button class="btn bGhost" onclick="addToCalendar(eFicheIdx)" style="color:var(--blue)">📅 Calendrier</button>
       <button class="btn bGhost" onclick="openCompteRendu(eFicheIdx)" style="color:var(--purple)">📝 CR Intervention</button>
       <button class="btn bGhost" onclick="openSignature(eFicheIdx)" style="color:var(--green)">✍️ Signature</button>
+      <button class="btn bGhost" onclick="exportInstallToCalendar(eFicheIdx)" style="color:var(--blue)">📅 Calendrier</button>
       <button class="btn bPrimary" onclick="exportFichePDF(eFicheIdx)">📄 Export PDF</button>
       <button class="btn bGhost" onclick="editFiche()">✏️ Modifier</button>
     </div>
@@ -1250,6 +1270,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
   <input type="hidden" id="mPdepts">
 </div>
       <div class="fi"><label>Rémunération par installation (€)</label><input type="number" id="mPremun" min="0" placeholder="Ex: 200"></div>
+      <div class="fi"><label>👥 Équipe gérée par</label><select id="mPmanager"></select></div>
       <div class="fi full"><label>Notes</label><textarea id="mPnotes" placeholder="Notes..."></textarea></div>
     </div>
     <div class="mf"><button class="btn bGhost" onclick="closePM()">Annuler</button><button class="btn bPrimary" onclick="saveP()">Enregistrer</button></div>
@@ -1519,6 +1540,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
           <tbody id="mDlignes"></tbody>
         </table>
         <button class="btn bGhost" onclick="addDevisLigne()" style="margin-top:8px;font-size:12px">+ Ajouter une ligne</button>
+        <button class="btn bGhost" onclick="addFromCatalogue()" style="margin-top:8px;font-size:12px;color:var(--gold)">🏷️ Depuis le catalogue</button>
       </div>
       <div class="fi full" style="grid-column:1/-1">
         <div style="display:flex;justify-content:flex-end">
@@ -1625,7 +1647,7 @@ var ROLE_CSS={admin:'roleAdmin',dirtech:'roleDirtech',commercial:'roleCommercial
 
 var ADMIN={id:'florian',name:'Florian',prenom:'Florian',nom:'',email:'contact@bornpower.fr',pass:'Admin2026@',role:'admin',avatar:'F',color:'#c79732',status:'active'};
 
-var DB={installations:[],installateurs:[],materiel:[],mouvements:[],opportunites:[],contacts:[],devis:[],prospects:[],savTickets:[],chatMessages:[],notifications:[],activites:[],objectifs:[],conges:[],certifications:[],paiements:[],candidatures:[],mediaGallery:[],editorialCal:[],socialStats:[],contentIdeas:[],socialObjectifs:[],commercialPrimes:{},nextId:1};
+var DB={installations:[],installateurs:[],materiel:[],mouvements:[],opportunites:[],contacts:[],devis:[],prospects:[],savTickets:[],chatMessages:[],notifications:[],activites:[],objectifs:[],conges:[],certifications:[],paiements:[],candidatures:[],mediaGallery:[],editorialCal:[],socialStats:[],contentIdeas:[],socialObjectifs:[],commercialPrimes:{},catalogue:[],nextId:1};
 var curUserObj=null;
 
 // ── FIREBASE ──
@@ -1730,7 +1752,7 @@ function fmtNotifTime(ts){
 // ── NAV ──
 var NAV_MAP={
   admin:[
-    {s:'Commercial'},{id:'pgDash',ico:'📊',lbl:'Tableau de bord'},{id:'pgPipeline',ico:'🎯',lbl:'Pipeline'},
+    {s:'Commercial'},{id:'pgDash',ico:'📊',lbl:'Tableau de bord'},{id:'pgPipeline',ico:'🎯',lbl:'Pipeline'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
     {id:'pgProspects',ico:'🔍',lbl:'Prospects'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},
     {id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgObjectifs',ico:'🎯',lbl:'Objectifs CA'},
     {id:'pgRapports',ico:'📈',lbl:'Rapports'},{id:'pgCommerciaux',ico:'💼',lbl:'Commerciaux'},
@@ -1753,13 +1775,13 @@ var NAV_MAP={
   commercial:[
     {s:'Mon espace'},{id:'pgDashComm',ico:'📊',lbl:'Tableau de bord'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
     {id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgProspects',ico:'🔍',lbl:'Prospects'},
-    {id:'pgContacts',ico:'👥',lbl:'Mes contacts'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},
+    {id:'pgContacts',ico:'👥',lbl:'Mes contacts'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
     {id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
     {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
   ],
   installer:[
-    {s:'Mes chantiers'},{id:'pgInst',ico:'⚡',lbl:'Mes installations'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
+    {s:'Mes chantiers'},{id:'pgMaJournee',ico:'☀️',lbl:'Ma journée'},{id:'pgInst',ico:'⚡',lbl:'Mes installations'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
     {id:'pgSAV',ico:'🔧',lbl:'SAV'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},{id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgStock',ico:'📦',lbl:'Stock'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
     {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
@@ -1803,6 +1825,8 @@ function nav(id){
   if(id==='pgInst')renderT();
   if(id==='pgStock')renderS();
   if(id==='pgVisites')renderVisites();
+  if(id==='pgMaJournee')renderMaJournee();
+  if(id==='pgCatalogue')renderCatalogue();
   if(id==='pgProfils'){if(fbReady&&db){loadFromFirebase(function(){renderProfils();});}else{renderProfils();}}
   if(id==='pgProspects')renderProspects();
   if(id==='pgSAV')renderSAV();
@@ -1843,7 +1867,7 @@ function initApp(){
   // Show Jarvis only for admin
   var jw=document.getElementById('jarvisWrap');
   if(jw)jw.style.display=isAdmin()?'block':'none';
-  var first={admin:'pgDash',dirtech:'pgDashDT',commercial:'pgDashComm',installer:'pgInst',cm:'pgDashCM'}[getRole()]||'pgInst';
+  var first={admin:'pgDash',dirtech:'pgDashDT',commercial:'pgDashComm',installer:'pgMaJournee',cm:'pgDashCM'}[getRole()]||'pgMaJournee';
   nav(first);
   updateNotifBadge();
   applyMobileLayout();
@@ -2179,6 +2203,8 @@ function renderDevis(){
       +'<td><span class="bdg '+(statColors[d.statut]||'bPause')+'">'+d.statut+'</span></td>'
       +'<td class="acts">'
         +'<button class="act" onclick="exportDevisPDFById('+idx+')" title="PDF" style="color:var(--red)">📄</button>'
+        +'<button class="act" onclick="emailDevis('+idx+')" title="Envoyer par email" style="color:var(--blue)">✉️</button>'
+        +'<button class="act" onclick="duplicateDevis('+idx+')" title="Dupliquer" style="color:var(--gold)">⧉</button>'
         +'<button class="act" onclick="openDM('+idx+')">✏️</button>'
         +(isAdmin()?'<button class="act dl" onclick="delD('+idx+')">🗑</button>':'')
       +'</td></tr>';
@@ -2215,6 +2241,38 @@ function addDevisLigne(){
     +'<td class="montantCell" style="text-align:right;padding:4px;font-size:12px;font-weight:600;white-space:nowrap;color:var(--navy)">0,00 €</td>'
     +'<td style="padding:4px;text-align:center"><button onclick="this.closest(\'tr\').remove();calcDevisTotal()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;line-height:1">✕</button></td>';
   tbody.appendChild(tr);calcDevisTotal();
+}
+function addFromCatalogue(){
+  if(!DB.catalogue||!DB.catalogue.length){alert('Votre catalogue est vide. Ajoutez des produits dans l\'onglet Catalogue.');return;}
+  var opts=DB.catalogue.map(function(p,i){return '<div onclick="insertCatLigne('+i+')" style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center" onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'\'"><div><div style="font-weight:600;font-size:13px">'+p.nom+'</div><div style="font-size:11px;color:var(--muted)">'+(p.cat||'')+'</div></div><div style="font-weight:700;color:var(--navy)">'+fmtE(p.pu)+'</div></div>';}).join('');
+  showModal('🏷️ Choisir un produit', '<div style="max-height:340px;overflow-y:auto;margin:-4px">'+opts+'</div>', null, null);
+  // remove the default save button since selection closes
+  var gm=document.getElementById('mGeneric');if(gm){var mf=gm.querySelector('.btn.bPrimary');if(mf)mf.style.display='none';}
+}
+function insertCatLigne(i){
+  var p=DB.catalogue[i];if(!p)return;
+  addDevisLigne();
+  var tbody=g('mDlignes');var tr=tbody.lastElementChild;
+  var ta=tr.querySelector('textarea');var inputs=tr.querySelectorAll('input[type=number]');
+  if(ta)ta.value=p.nom+(p.desc?' — '+p.desc:'');
+  if(inputs[0])inputs[0].value=1;
+  if(inputs[1])inputs[1].value=p.pu;
+  calcDevisTotal();closeModal();
+}
+function duplicateDevis(idx){
+  var r=DB.devis[idx];if(!r)return;
+  var copy=JSON.parse(JSON.stringify(r));
+  copy.id=DB.nextId++;copy.numero=genDevisNum();copy.statut='Brouillon';copy.date=new Date().toISOString().slice(0,10);
+  DB.devis.push(copy);save();renderDevis();toast('Devis dupliqué ✅');
+}
+function emailDevis(idx){
+  var r=DB.devis[idx];if(!r)return;
+  var total=(r.lignes||[]).reduce(function(s,l){return s+l.qte*l.pu;},0);
+  var ttc=total*(1+(r.tva||5.5)/100);
+  var sujet='Votre devis BornPower N°'+r.numero;
+  var corps='Bonjour '+(r.client||'')+',%0D%0A%0D%0AVeuillez trouver votre devis pour l\'installation de borne de recharge.%0D%0A%0D%0AMontant total TTC : '+fmtE(ttc)+'%0D%0A%0D%0AN\'hésitez pas à me contacter pour toute question.%0D%0A%0D%0ACordialement,%0D%0A'+(curUserObj?curUserObj.name:'L\'équipe BornPower')+'%0D%0ABornPower - 09 55 770 770';
+  var mail='mailto:'+(r.emailClient||'')+'?subject='+encodeURIComponent(sujet).replace(/%20/g,' ')+'&body='+corps;
+  window.location.href='mailto:'+(r.emailClient||'')+'?subject='+encodeURIComponent(sujet)+'&body='+encodeURIComponent(corps.replace(/%0D%0A/g,String.fromCharCode(10)));
 }
 function calcDevisTotal(){
   var tva=parseFloat(g('mDtva').value)||5.5;
@@ -2332,10 +2390,17 @@ function selectINSEE(nom,siren,adresse,ville){if(g('mProsNom'))g('mProsNom').val
 
 // ── INSTALLATIONS ──
 var eInst=-1,eFicheIdx=-1;
+function getMyTeamNames(){
+  // Noms des installateurs de l'équipe du dirtech courant + lui-même
+  var myId=curUserObj?curUserObj.id:'';
+  var names=(DB.installateurs||[]).filter(function(i){return i.managerId===myId;}).map(function(i){return instName(i.prenom,i.nom);});
+  if(curUserObj)names.push(curUserObj.name);
+  return names;
+}
 function getVisibleInst(){
   var role=getRole();var nm=curUserObj?curUserObj.name:'';
   if(role==='installer')return DB.installations.filter(function(i){return i.installateur===nm;});
-  if(role==='dirtech')return DB.installations.filter(function(i){return i.assignedDirtech===curUserObj.id||i.installateur===nm||!i.assignedDirtech;});
+  if(role==='dirtech'){var team=getMyTeamNames();return DB.installations.filter(function(i){return team.indexOf(i.installateur)>=0||i.installateur===nm;});}
   return DB.installations;
 }
 function renderT(){
@@ -2379,7 +2444,18 @@ function openIM(idx){
   g('mItype').value=r.type||'Borne de recharge';g('mIbien').value=r.typeBien||'Maison individuelle';
   g('mInbbornes').value=r.nbBornes||1;g('mIpuissance').value=r.puissance||'7.4 kW';
   var iSel=g('mIinst');iSel.innerHTML='<option value="">Non assigné</option>';
-  DB.installateurs.forEach(function(i){var nm=instName(i.prenom,i.nom);var o=document.createElement('option');o.value=nm;o.textContent=nm;if(nm===(r.installateur||''))o.selected=true;iSel.appendChild(o);});
+  var poseurs=[];
+  if(isDirtech()){
+    // Anthony : seulement son équipe + lui-même
+    var myId=curUserObj?curUserObj.id:'';
+    if(curUserObj)poseurs.push(curUserObj.name);
+    DB.installateurs.filter(function(i){return i.managerId===myId;}).forEach(function(i){poseurs.push(instName(i.prenom,i.nom));});
+  } else {
+    // Admin : tout le monde (dirtechs + tous les installateurs)
+    loadAccounts().filter(function(a){return a.status==='active'&&a.role==='dirtech';}).forEach(function(a){poseurs.push(a.name);});
+    DB.installateurs.forEach(function(i){poseurs.push(instName(i.prenom,i.nom));});
+  }
+  poseurs.filter(function(v,idx){return poseurs.indexOf(v)===idx;}).forEach(function(nm){var o=document.createElement('option');o.value=nm;o.textContent=nm;if(nm===(r.installateur||''))o.selected=true;iSel.appendChild(o);});
   g('mIstat').value=r.statut||'Planifiée';g('mIdebut').value=r.dateDebut||'';g('mIfin').value=r.dateFin||'';
   g('mImontant').value=r.montant||'';g('mInotes').value=r.notes||'';
   g('mIacompte').value=r.acompte||0;g('mIpaiement').value=r.paiementStatut||'En attente';
@@ -2436,6 +2512,21 @@ function saveI(){
     devisPDF:existing.devisPDF||null,devisPDFName:existing.devisPDFName||'',
     compteRendu:existing.compteRendu||null
   };
+  // Détection de conflit : installateur déjà booké sur la période
+  if(row.installateur&&row.dateDebut){
+    var s1=new Date(row.dateDebut);var e1=row.dateFin?new Date(row.dateFin):s1;
+    var conflit=DB.installations.find(function(x){
+      if(x.id===row.id)return false;
+      if(x.installateur!==row.installateur)return false;
+      if(x.statut==='Terminée'||x.statut==='Annulée')return false;
+      if(!x.dateDebut)return false;
+      var s2=new Date(x.dateDebut);var e2=x.dateFin?new Date(x.dateFin):s2;
+      return s1<=e2&&e1>=s2;
+    });
+    if(conflit){
+      if(!confirm('⚠️ Conflit détecté !\n\n'+row.installateur+' est déjà sur le chantier "'+conflit.chantier+'" sur cette période.\n\nVoulez-vous quand même enregistrer ?'))return;
+    }
+  }
   if(eInst>=0)DB.installations[eInst]=row;else DB.installations.push(row);
   addActivite('install',(eInst>=0?'Installation modifiée: ':'Nouvelle installation: ')+chantier);
   save();closeIM();renderT();toast('Installation enregistrée !');
@@ -2610,7 +2701,11 @@ var selectedDepts=[];
 function renderProfils(){
   var addBtn=g('profilAddBtn');if(addBtn)addBtn.style.display=(isAdmin()||isDirtech())?'inline-flex':'none';
   var se=g('profilSearch');var q=se?(se.value||'').toLowerCase():'';
-  var list=(DB.installateurs||[]).filter(function(p){return !q||(instName(p.prenom,p.nom)+( p.spec||'')).toLowerCase().includes(q);});
+  var myId=curUserObj?curUserObj.id:'';
+  var list=(DB.installateurs||[]).filter(function(p){
+    if(isDirtech()&&p.managerId!==myId)return false;
+    return !q||(instName(p.prenom,p.nom)+( p.spec||'')).toLowerCase().includes(q);
+  });
   if(!list.length){g('profilGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted)"><div style="font-size:42px;margin-bottom:12px">👷</div><p style="font-size:15px;font-weight:600;margin-bottom:6px">Aucun installateur enregistré</p><p style="font-size:13px">Cliquez sur "+ Installateur" pour ajouter votre équipe terrain.</p></div>';return;}
   g('profilGrid').innerHTML=list.map(function(p){
     var idx=DB.installateurs.indexOf(p);var nm=instName(p.prenom,p.nom);
@@ -2618,7 +2713,7 @@ function renderProfils(){
     var depts=(p.depts||'').split(',').filter(Boolean);
     return '<div class="pcard"><div class="pcardH">'
       +'<div class="pcAv" style="background:'+(p.color||'#888')+'">'+( p.prenom?p.prenom[0]:'?')+((p.nom||'')[0]||'')+'</div>'
-      +'<div><div class="pcNm">'+nm+'</div><div class="pcSp">'+(p.spec||'Installateur')+'</div>'
+      +'<div><div class="pcNm">'+nm+'</div><div class="pcSp">'+(p.spec||'Installateur')+(function(){var mgr=p.managerId?(loadAccounts().find(function(a){return a.id===p.managerId;})||{}).name:'Florian';return ' · <span style="color:var(--gold)">👥 '+(mgr||'Florian')+'</span>';})()+'</div>'
         +'<div style="display:flex;align-items:center;gap:4px;margin-top:2px"><div style="width:7px;height:7px;border-radius:50%;background:'+dispoCol+'"></div><span style="font-size:11px;color:var(--muted)">'+(p.dispo||'Disponible')+'</span></div>'
       +'</div></div>'
       +'<div class="pcardb">'
@@ -2632,8 +2727,14 @@ function renderProfils(){
       +'</div></div>';
   }).join('');
 }
-function openProfModal(idx){eProfil=idx;var r=idx>=0?DB.installateurs[idx]:{};g('mProfT').textContent=idx>=0?'Modifier':'Nouvel installateur';g('mPp').value=r.prenom||'';g('mPn').value=r.nom||'';g('mPtel').value=r.tel||'';g('mPemail').value=r.email||'';g('mPspec').value=r.spec||'';g('mPdispo').value=r.dispo||'Disponible';initDeptTags(r.depts||'');g('mPnotes').value=r.notes||'';if(g('mPremun'))g('mPremun').value=r.remunInstall||'';profColSel=r.color||COLS[0];document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col===profColSel);});g('mProf').classList.add('on');}
-function saveP(){var p=g('mPp').value.trim();if(!p){alert('Prénom requis');return;}var row={id:eProfil>=0?DB.installateurs[eProfil].id:DB.nextId++,prenom:p,nom:g('mPn').value,tel:g('mPtel').value,email:g('mPemail').value,spec:g('mPspec').value,dispo:g('mPdispo').value,color:profColSel,depts:g('mPdepts').value,notes:g('mPnotes').value,remunInstall:g('mPremun')?parseFloat(g('mPremun').value)||0:0,userId:eProfil>=0?DB.installateurs[eProfil].userId:''};if(eProfil>=0)DB.installateurs[eProfil]=row;else DB.installateurs.push(row);save();g('mProf').classList.remove('on');renderProfils();toast('Installateur enregistré !');}
+function fillManagerSelect(selectId,selected){
+  var sel=g(selectId);if(!sel)return;
+  var opts='<option value="">Florian (direction)</option>';
+  loadAccounts().filter(function(a){return a.status==='active'&&a.role==='dirtech';}).forEach(function(a){opts+='<option value="'+a.id+'"'+(selected===a.id?' selected':'')+'>'+a.name+'</option>';});
+  sel.innerHTML=opts;
+}
+function openProfModal(idx){eProfil=idx;var r=idx>=0?DB.installateurs[idx]:{};g('mProfT').textContent=idx>=0?'Modifier':'Nouvel installateur';g('mPp').value=r.prenom||'';g('mPn').value=r.nom||'';g('mPtel').value=r.tel||'';g('mPemail').value=r.email||'';g('mPspec').value=r.spec||'';g('mPdispo').value=r.dispo||'Disponible';initDeptTags(r.depts||'');g('mPnotes').value=r.notes||'';if(g('mPremun'))g('mPremun').value=r.remunInstall||'';fillManagerSelect('mPmanager',r.managerId||'');profColSel=r.color||COLS[0];document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col===profColSel);});g('mProf').classList.add('on');}
+function saveP(){var p=g('mPp').value.trim();if(!p){alert('Prénom requis');return;}var row={id:eProfil>=0?DB.installateurs[eProfil].id:DB.nextId++,prenom:p,nom:g('mPn').value,tel:g('mPtel').value,email:g('mPemail').value,spec:g('mPspec').value,dispo:g('mPdispo').value,color:profColSel,depts:g('mPdepts').value,notes:g('mPnotes').value,remunInstall:g('mPremun')?parseFloat(g('mPremun').value)||0:0,managerId:g('mPmanager')?g('mPmanager').value:'',userId:eProfil>=0?DB.installateurs[eProfil].userId:''};if(eProfil>=0)DB.installateurs[eProfil]=row;else DB.installateurs.push(row);save();g('mProf').classList.remove('on');renderProfils();toast('Installateur enregistré !');}
 function delProf(i){if(confirm('Supprimer ?')){DB.installateurs.splice(i,1);save();renderProfils();}}
 
 // ── DEPARTEMENTS ──
@@ -2693,6 +2794,67 @@ function planToday(){planMonth=new Date();renderP();}
 
 function ficheIdxFor(inst){return DB.installations.indexOf(inst);}
 
+function icsDate(dateStr,timeStr){
+  // dateStr YYYY-MM-DD, timeStr HH:MM optional
+  if(!dateStr)return '';
+  var d=dateStr.replace(/-/g,'');
+  if(timeStr){var t=timeStr.replace(':','')+'00';return d+'T'+t;}
+  return d;
+}
+function downloadICS(filename,content){
+  var blob=new Blob([content],{type:'text/calendar;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},1000);
+}
+function buildICSEvent(opts){
+  // opts: {uid,title,date,heure,dateFin,location,desc,alarmMin}
+  var dtstamp=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  var allDay=!opts.heure;
+  var dtstart,dtend;
+  if(allDay){
+    dtstart='DTSTART;VALUE=DATE:'+icsDate(opts.date);
+    var d=new Date(opts.dateFin||opts.date);d.setDate(d.getDate()+1);
+    dtend='DTEND;VALUE=DATE:'+icsDate(d.toISOString().slice(0,10));
+  } else {
+    dtstart='DTSTART:'+icsDate(opts.date,opts.heure);
+    // +2h par défaut
+    var endH=opts.heure.split(':');var eh=(parseInt(endH[0])+2);if(eh>23)eh=23;
+    var endTime=(eh<10?'0'+eh:eh)+':'+endH[1];
+    dtend='DTEND:'+icsDate(opts.dateFin||opts.date,endTime);
+  }
+  var lines=[
+    'BEGIN:VEVENT',
+    'UID:'+(opts.uid||('bp-'+Date.now()+'@bornpower.fr')),
+    'DTSTAMP:'+dtstamp,
+    dtstart,
+    dtend,
+    'SUMMARY:'+(opts.title||'').replace(/([,;\\])/g,'\\$1'),
+    opts.location?'LOCATION:'+opts.location.replace(/([,;\\])/g,'\\$1'):'',
+    opts.desc?'DESCRIPTION:'+opts.desc.replace(/\n/g,'\\n').replace(/([,;])/g,'\\$1'):'',
+    'BEGIN:VALARM','TRIGGER:-PT'+(opts.alarmMin||60)+'M','ACTION:DISPLAY','DESCRIPTION:Rappel','END:VALARM',
+    'END:VEVENT'
+  ].filter(Boolean);
+  return lines.join('\r\n');
+}
+function exportInstallToCalendar(idx){
+  var i=DB.installations[idx];if(!i){toast('Installation introuvable');return;}
+  if(!i.dateDebut){alert('Ajoutez d\'abord une date de début à cette installation.');return;}
+  var desc='Client: '+(i.client||'-')+'\nType: '+(i.type||'-')+'\nBornes: '+(i.nbBornes||0)+(i.puissance?' x '+i.puissance:'')+'\nInstallateur: '+(i.installateur||'-')+'\nTel: '+(i.tel||'-')+(i.raccordement?'\nRaccordement: '+i.raccordement:'')+(i.cableM?'\nCable: '+i.cableM+'m':'')+(i.notes?'\nNotes: '+i.notes:'');
+  var ev=buildICSEvent({uid:'bp-inst-'+i.id+'@bornpower.fr',title:'⚡ Installation: '+i.chantier,date:i.dateDebut,dateFin:i.dateFin,location:i.adresse||'',desc:desc,alarmMin:120});
+  var cal='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//BornPower//CRM//FR\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n'+ev+'\r\nEND:VCALENDAR';
+  downloadICS('installation-'+(i.chantier||'bornpower').replace(/[^a-z0-9]/gi,'_')+'.ics',cal);
+  toast('📅 Ajouté au calendrier');
+}
+function exportVisiteToCalendar(type,idx){
+  var v=getVisitesTechniques().find(function(x){return x.type===type&&x.idx===idx;});
+  if(!v){toast('Visite introuvable');return;}
+  var desc='Visite technique\nContact: '+(v.nom||'-')+'\nAssignée à: '+(v.qui||'-')+(v.tel?'\nTel: '+v.tel:'')+(v.adresse?'\nAdresse: '+v.adresse:'');
+  var ev=buildICSEvent({uid:'bp-visite-'+type+'-'+idx+'@bornpower.fr',title:'🛠️ Visite technique: '+v.nom,date:v.date,heure:v.heure,location:v.adresse||'',desc:desc,alarmMin:60});
+  var cal='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//BornPower//CRM//FR\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n'+ev+'\r\nEND:VCALENDAR';
+  downloadICS('visite-'+(v.nom||'bornpower').replace(/[^a-z0-9]/gi,'_')+'.ics',cal);
+  toast('📅 Visite ajoutée au calendrier');
+}
 function getVisitesTechniques(){
   var visites=[];
   (DB.prospects||[]).forEach(function(p,i){if(p.visiteDate)visites.push({type:'prospect',idx:i,nom:p.nom,qui:p.visiteQui||'Non assigné',date:p.visiteDate,heure:p.visiteHeure||'',stat:p.visiteStat||'',tel:p.tel||'',adresse:[p.adresse,p.ville].filter(Boolean).join(', ')});});
@@ -2702,6 +2864,107 @@ function getVisitesTechniques(){
   return visites;
 }
 
+var eCat=-1;
+function renderCatalogue(){
+  if(!DB.catalogue)DB.catalogue=[];
+  var q=(g('catSearch')?g('catSearch').value:'').toLowerCase();
+  var list=DB.catalogue.filter(function(p){return !q||(p.nom+(p.cat||'')).toLowerCase().includes(q);});
+  if(!list.length){g('catGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted)"><div style="font-size:42px;margin-bottom:12px">🏷️</div><p style="font-size:15px;font-weight:600;margin-bottom:6px">Catalogue vide</p><p style="font-size:13px">Ajoutez vos produits (bornes, câbles, prestations...) pour monter vos devis plus vite.</p></div>';return;}
+  g('catGrid').innerHTML=list.map(function(p){
+    var idx=DB.catalogue.indexOf(p);
+    return '<div style="background:var(--white);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:16px;border-top:3px solid var(--gold)">'+
+      '<div style="font-weight:700;font-size:14px;color:var(--navy);margin-bottom:4px">'+p.nom+'</div>'+
+      (p.cat?'<span class="badge" style="background:var(--gold-bg,#fdf6e3);color:var(--gold)">'+p.cat+'</span>':'')+
+      (p.desc?'<div style="font-size:12px;color:var(--muted);margin:8px 0">'+p.desc+'</div>':'')+
+      '<div style="font-size:20px;font-weight:800;color:var(--navy);margin:8px 0">'+fmtE(p.pu)+' <span style="font-size:11px;color:var(--muted);font-weight:500">HT / '+(p.unite||'unité')+'</span></div>'+
+      '<div style="display:flex;gap:6px;margin-top:8px"><button class="btn bGhost" style="font-size:12px;padding:5px 10px" onclick="openCatModal('+idx+')">✏️</button><button class="btn bGhost" style="font-size:12px;padding:5px 10px;color:var(--red)" onclick="delCat('+idx+')">🗑</button></div></div>';
+  }).join('');
+}
+function openCatModal(idx){
+  eCat=idx;var p=idx>=0?DB.catalogue[idx]:{nom:'',cat:'Borne',desc:'',pu:0,unite:'unité'};
+  var catOpts=['Borne','Câble','Disjoncteur','Coffret','Prestation','Pose','Accessoire','Autre'].map(function(c){return '<option'+(p.cat===c?' selected':'')+'>'+c+'</option>';}).join('');
+  showModal('🏷️ '+(idx>=0?'Modifier':'Nouveau')+' produit',
+    '<div class="fi" style="margin-bottom:10px"><label>Nom *</label><input id="catNom" value="'+(p.nom||'').replace(/"/g,'&quot;')+'" placeholder="Ex: Borne Raedian NEO 7,4kW"></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px"><div class="fi"><label>Catégorie</label><select id="catCat">'+catOpts+'</select></div><div class="fi"><label>Unité</label><input id="catUnite" value="'+(p.unite||'unité')+'"></div></div>'+
+    '<div class="fi" style="margin-bottom:10px"><label>Prix unitaire HT (€)</label><input type="number" id="catPu" value="'+(p.pu||0)+'" min="0" step="0.01"></div>'+
+    '<div class="fi" style="margin-bottom:10px"><label>Description</label><textarea id="catDesc" rows="2">'+(p.desc||'')+'</textarea></div>',
+    function(){
+      var nom=g('catNom').value.trim();if(!nom){alert('Nom requis');return;}
+      var row={nom:nom,cat:g('catCat').value,unite:g('catUnite').value,pu:parseFloat(g('catPu').value)||0,desc:g('catDesc').value};
+      if(!DB.catalogue)DB.catalogue=[];
+      if(eCat>=0)DB.catalogue[eCat]=row;else DB.catalogue.push(row);
+      save();closeModal();renderCatalogue();toast('Produit enregistré');
+    },idx>=0?function(){if(confirm('Supprimer ?')){DB.catalogue.splice(eCat,1);save();closeModal();renderCatalogue();}}:null);
+}
+function delCat(idx){if(confirm('Supprimer ce produit ?')){DB.catalogue.splice(idx,1);save();renderCatalogue();toast('Supprimé');}}
+
+var journeeDay=new Date();
+function journeeToday(){journeeDay=new Date();renderMaJournee();}
+function changeJourneeDay(d){journeeDay.setDate(journeeDay.getDate()+d);renderMaJournee();}
+function renderMaJournee(){
+  var nm=curUserObj?curUserObj.name:'';
+  var jour=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][journeeDay.getDay()];
+  var d0=new Date(journeeDay);d0.setHours(0,0,0,0);
+  var today=new Date();today.setHours(0,0,0,0);
+  var lbl=d0.getTime()===today.getTime()?"Aujourd'hui":jour+' '+journeeDay.getDate()+' '+MO[journeeDay.getMonth()];
+  if(g('maJourneeDate'))g('maJourneeDate').textContent=jour+' '+journeeDay.getDate()+' '+MO[journeeDay.getMonth()]+' '+journeeDay.getFullYear();
+  // My installations on that day
+  var mine=DB.installations.filter(function(i){
+    if(getRole()==='installer'&&i.installateur!==nm)return false;
+    if(!i.dateDebut)return false;
+    var s=new Date(i.dateDebut);s.setHours(0,0,0,0);
+    var e=i.dateFin?new Date(i.dateFin):s;e.setHours(0,0,0,0);
+    return d0>=s&&d0<=e;
+  });
+  // Visits on that day assigned to me
+  var myVisits=getVisitesTechniques().filter(function(v){if(v.qui!==nm&&!(getRole()!=='installer'))return v.qui===nm?true:false;return v.qui===nm;}).filter(function(v){var vd=new Date(v.date);vd.setHours(0,0,0,0);return vd.getTime()===d0.getTime();});
+  var done=mine.filter(function(i){return i.statut==='Terminée';}).length;
+  g('maJourneeKpis').innerHTML=kpi('⚡','Chantiers',mine.length,'blue')+kpi('✅','Terminés',done,'green')+kpi('🛠️','Visites tech',myVisits.length,'orange');
+
+  var html='';
+  if(!mine.length&&!myVisits.length){
+    html='<div style="background:var(--white);border-radius:var(--radius-lg);padding:50px;text-align:center;color:var(--muted)"><div style="font-size:48px;margin-bottom:12px">😎</div><p style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:6px">Rien de prévu '+(d0.getTime()===today.getTime()?"aujourd'hui":'ce jour-là')+'</p><p style="font-size:13px">Profitez-en !</p></div>';
+    g('maJourneeList').innerHTML=html;return;
+  }
+  // Visits first
+  myVisits.forEach(function(v){
+    html+='<div style="background:var(--white);border-radius:14px;box-shadow:0 1px 5px rgba(0,0,0,.07);padding:16px;margin-bottom:12px;border-left:4px solid #0891b2">'+
+      '<div style="font-weight:700;font-size:15px;color:var(--navy);margin-bottom:4px">🛠️ Visite technique — '+v.nom+'</div>'+
+      (v.adresse?'<div style="font-size:13px;color:var(--muted);margin-bottom:10px">📍 '+v.adresse+'</div>':'')+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+      (v.tel?'<a href="tel:'+v.tel.replace(/\s/g,'')+'" class="btn bGhost" style="font-size:13px;text-decoration:none">📞 Appeler</a>':'')+
+      (v.adresse?'<a href="https://maps.google.com/?q='+encodeURIComponent(v.adresse)+'" target="_blank" class="btn bGhost" style="font-size:13px;text-decoration:none">🗺️ Itinéraire</a>':'')+
+      '<button class="btn bGhost" style="font-size:13px" onclick="exportVisiteToCalendar(\''+v.type+'\','+v.idx+')">📅 Calendrier</button>'+
+      '</div></div>';
+  });
+  // Installations
+  mine.forEach(function(i){
+    var realIdx=DB.installations.indexOf(i);
+    var col=SCOLS[i.statut]||'#888';
+    var mats=(i.materiaux||[]).map(function(m){return (m.nom||m)+(m.qte?' x'+m.qte:'');});
+    html+='<div style="background:var(--white);border-radius:14px;box-shadow:0 1px 5px rgba(0,0,0,.07);padding:16px;margin-bottom:12px;border-left:4px solid '+col+'">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">'+
+      '<div style="font-weight:700;font-size:16px;color:var(--navy)">⚡ '+i.chantier+'</div>'+
+      '<span class="badge" style="background:'+col+'22;color:'+col+'">'+i.statut+'</span></div>'+
+      '<div style="font-size:13px;color:var(--muted);margin-bottom:4px">'+(i.client||'')+(i.type?' · '+i.type:'')+(i.nbBornes?' · '+i.nbBornes+' borne(s)':'')+'</div>'+
+      (i.adresse?'<div style="font-size:13px;color:var(--muted);margin-bottom:10px">📍 '+i.adresse+'</div>':'')+
+      (mats.length?'<div style="background:var(--bg);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:12px"><strong>📦 À charger :</strong> '+mats.join(', ')+'</div>':'')+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+      (i.tel?'<a href="tel:'+i.tel.replace(/\s/g,'')+'" class="btn bGhost" style="font-size:13px;text-decoration:none">📞 Client</a>':'')+
+      (i.adresse?'<a href="https://maps.google.com/?q='+encodeURIComponent(i.adresse)+'" target="_blank" class="btn bGhost" style="font-size:13px;text-decoration:none">🗺️ Itinéraire</a>':'')+
+      (i.statut!=='Terminée'?'<button class="btn bSuccess" style="font-size:13px" onclick="quickStatut('+realIdx+')">'+(i.statut==='En cours'?'✅ Terminer':'▶️ Démarrer')+'</button>':'')+
+      '<button class="btn bGhost" style="font-size:13px" onclick="openFiche('+realIdx+')">📋 Détails</button>'+
+      '<button class="btn bGhost" style="font-size:13px" onclick="exportInstallToCalendar('+realIdx+')">📅 Calendrier</button>'+
+      '</div></div>';
+  });
+  g('maJourneeList').innerHTML=html;
+}
+function quickStatut(idx){
+  var i=DB.installations[idx];if(!i)return;
+  if(i.statut==='En cours'){i.statut='Terminée';i.dateFinReelle=new Date().toISOString();toast('Chantier terminé ✅');}
+  else{i.statut='En cours';i.dateDebutReelle=new Date().toISOString();toast('Chantier démarré ▶️');}
+  save();renderMaJournee();
+}
 var TYPE_LABELS={prospect:'Prospect',contact:'Client',opp:'Opportunité',inst:'Installation'};
 var TYPE_COLORS={prospect:'#d97706',contact:'#059669',opp:'#7c3aed',inst:'#2563eb'};
 function renderVisites(){
@@ -2743,8 +3006,9 @@ function renderVisites(){
       '<div style="width:48px;height:48px;border-radius:12px;background:'+col+'18;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0"><div style="font-size:16px;font-weight:800;color:'+col+';line-height:1">'+vd.getDate()+'</div><div style="font-size:9px;color:'+col+';text-transform:uppercase">'+MO[vd.getMonth()].slice(0,3)+'</div></div>'+
       '<div style="flex:1"><div style="font-weight:700;font-size:14px;color:var(--navy)">🔧 '+v.nom+(v.heure?' <span style="color:var(--muted);font-weight:500">· '+v.heure+'</span>':'')+'</div>'+
       '<div style="font-size:12px;color:var(--muted)">'+(v.adresse?v.adresse+' · ':'')+'Assignée à <strong style="color:var(--navy)">'+v.qui+'</strong></div></div>'+
-      '<div style="text-align:right;flex-shrink:0"><span class="badge" style="background:'+col+'22;color:'+col+'">'+(TYPE_LABELS[v.type]||v.type)+'</span>'+
-      (isToday?'<div style="font-size:11px;color:var(--gold);font-weight:700;margin-top:4px">AUJOURD\'HUI</div>':isPast?'<div style="font-size:11px;color:var(--muted);margin-top:4px">Passée</div>':'')+'</div></div>';
+      '<div style="text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px"><span class="badge" style="background:'+col+'22;color:'+col+'">'+(TYPE_LABELS[v.type]||v.type)+'</span>'+
+      '<button class="btn bGhost" style="font-size:11px;padding:3px 8px" onclick="event.stopPropagation();exportVisiteToCalendar(\''+v.type+'\','+v.idx+')">📅</button>'+
+      (isToday?'<div style="font-size:11px;color:var(--gold);font-weight:700">AUJOURD\'HUI</div>':isPast?'<div style="font-size:11px;color:var(--muted)">Passée</div>':'')+'</div></div>';
   }).join('');
 }
 function renderPlanSummary(){
@@ -2782,7 +3046,10 @@ function renderPGantt(y,m){
     }
     var init=(inst.prenom[0]||'')+((inst.nom||'')[0]||'');
     var dispoCol={Disponible:'#059669',Occupé:'#d97706',Congés:'#dc2626',Formation:'#7c3aed'}[inst.dispo||'Disponible']||'#888';
-    return '<div class="pRow"><div class="prName"><div class="prAv" style="background:'+inst.color+'">'+init+'</div><div><div class="prNm">'+nm+'</div><div class="prCnt"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+dispoCol+';margin-right:3px;vertical-align:middle"></span>'+(inst.dispo||'Disponible')+' &middot; '+myI.length+' chantier(s)</div></div></div><div class="prCells">'+cells+'</div></div>';
+    var moisCount=myI.filter(function(x){if(!x.dateDebut)return false;var dx=new Date(x.dateDebut);return dx.getMonth()===m&&dx.getFullYear()===y&&x.statut!=='Annulée';}).length;
+    var loadCol=moisCount>8?'#dc2626':moisCount>=4?'#d97706':'#059669';
+    var loadLbl=moisCount>8?'Surchargé':moisCount>=4?'Bien rempli':'Disponible';
+    return '<div class="pRow"><div class="prName"><div class="prAv" style="background:'+inst.color+'">'+init+'</div><div><div class="prNm">'+nm+'</div><div class="prCnt"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+dispoCol+';margin-right:3px;vertical-align:middle"></span>'+(inst.dispo||'Disponible')+' &middot; <span style="color:'+loadCol+';font-weight:600">'+moisCount+' ce mois ('+loadLbl+')</span></div></div></div><div class="prCells">'+cells+'</div></div>';
   }).join('');
   g('planWrap').innerHTML='<div style="overflow-x:auto">'+headHTML+rows+'</div>';
 }
