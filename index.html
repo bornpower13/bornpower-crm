@@ -1435,6 +1435,11 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="fi"><label>Nom contact</label><input id="mProsContactN" placeholder="Nom"></div>
       <div class="fi"><label>Téléphone</label><input id="mProsTel" placeholder="04 00 00 00 00"></div>
       <div class="fi"><label>Email</label><input id="mProsEmail" type="email" placeholder="contact@..."></div>
+      <hr class="sep"><div class="seclbl">🔧 Visite technique</div>
+      <div class="fi"><label>Attribuée à</label><select id="mProsVisiteQui"></select></div>
+      <div class="fi"><label>Date de visite</label><input type="date" id="mProsVisiteDate"></div>
+      <div class="fi"><label>Heure</label><input type="time" id="mProsVisiteHeure"></div>
+      <div class="fi"><label>Statut visite</label><select id="mProsVisiteStat"><option value="">--</option><option>À planifier</option><option>Planifiée</option><option>Réalisée</option><option>Annulée</option></select></div>
       <hr class="sep"><div class="seclbl">Notes commerciales</div>
       <div class="fi full"><textarea id="mProsNotes" placeholder="Potentiel, besoins détectés, prochaine action..."></textarea></div>
     </div>
@@ -1459,6 +1464,11 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="fi"><label>Type</label><select id="mCtype"><option>Client</option><option>Prospect</option><option>Partenaire</option></select></div>
       <div class="fi"><label>Statut</label><select id="mCstat"><option>Actif</option><option>Inactif</option></select></div>
       <div class="fi full"><label>Adresse</label><input id="mCadresse" placeholder="Adresse complète"></div>
+      <hr class="sep" style="grid-column:1/-1"><div class="seclbl full" style="grid-column:1/-1">🔧 Visite technique</div>
+      <div class="fi"><label>Attribuée à</label><select id="mCvisiteQui"></select></div>
+      <div class="fi"><label>Date de visite</label><input type="date" id="mCvisiteDate"></div>
+      <div class="fi"><label>Heure</label><input type="time" id="mCvisiteHeure"></div>
+      <div class="fi"><label>Statut visite</label><select id="mCvisiteStat"><option value="">--</option><option>À planifier</option><option>Planifiée</option><option>Réalisée</option><option>Annulée</option></select></div>
       <div class="fi full"><label>Notes</label><textarea id="mCnotes" placeholder="Notes..."></textarea></div>
     </div>
     <div class="mf"><button class="btn bGhost" onclick="closeContactModal()">Annuler</button><button class="btn bPrimary" onclick="saveContact()">Enregistrer</button></div>
@@ -1481,6 +1491,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="fi"><label>Validité (jours)</label><input type="number" id="mDvalidite" value="30" min="1"></div>
       <div class="fi"><label>TVA (%)</label><select id="mDtva"><option value="5.5">5,5%</option><option value="10">10%</option><option value="20">20%</option><option value="0">0%</option></select></div>
       <div class="fi"><label>Statut</label><select id="mDstat"><option>Brouillon</option><option>Envoyé</option><option>Accepté</option><option>Refusé</option></select></div>
+      <div class="fi"><label>💼 Prime commercial (€)</label><input type="number" id="mDprime" min="0" placeholder="Auto selon le taux"></div>
       <hr class="sep"><div class="seclbl full" style="grid-column:1/-1">Lignes du devis</div>
       <div class="fi full" style="grid-column:1/-1" id="mDlignesWrap">
         <table style="width:100%;border-collapse:collapse;font-size:12px">
@@ -1548,6 +1559,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="fi"><label>Date fin</label><input type="date" id="mIfin"></div>
       <div class="fi"><label>Montant HT (€)</label><input type="number" id="mImontant" placeholder="0"></div>
       <div class="fi"><label>Acompte reçu (€)</label><input type="number" id="mIacompte" value="0"></div>
+      <div class="fi"><label>💶 Rémunération installateur (€)</label><input type="number" id="mIremunInst" min="0" placeholder="Auto selon le taux"></div>
       <div class="fi"><label>Statut paiement</label>
         <select id="mIpaiement"><option>En attente</option><option>Acompte reçu</option><option>Payé</option><option>En retard</option></select>
       </div>
@@ -2096,21 +2108,30 @@ function renderContacts(){
   g('contactCount').textContent=list.length+' contact(s)';
   g('contactTable').innerHTML=list.map(function(c,i){
     var idx=DB.contacts.indexOf(c);
-    return '<tr><td><div style="font-weight:600">'+c.nom+'</div>'+(c.societe?'<div style="font-size:11px;color:var(--muted)">'+c.societe+'</div>':'')+'</td>'
+    return '<tr><td><div style="font-weight:600">'+c.nom+(c.visiteDate?' <span title="Visite technique le '+fmtD(c.visiteDate)+'" style="font-size:11px">🔧</span>':'')+'</div>'+(c.societe?'<div style="font-size:11px;color:var(--muted)">'+c.societe+'</div>':'')+(c.visiteDate?'<div style="font-size:11px;color:#0891b2">🔧 Visite '+fmtD(c.visiteDate)+(c.visiteQui?' · '+c.visiteQui:'')+'</div>':'')+'</td>'
       +'<td>'+c.email+'</td><td>'+c.tel+'</td><td><span class="bdg '+(c.type==='Client'?'bTerm':c.type==='Prospect'?'bCours':'bPause')+'">'+c.type+'</span></td>'
       +'<td class="acts"><button class="act" onclick="openContactModal('+idx+')">✏️</button>'+(isAdmin()?'<button class="act dl" onclick="delContact('+idx+')">🗑</button>':'')+'</td></tr>';
   }).join('');
 }
 function openContactModal(idx){
   eContact=idx;var r=idx>=0?DB.contacts[idx]:{};
-  g('mCT').textContent=idx>=0?'Modifier':'Nouveau contact';
-  g('mCnom').value=r.nom||'';g('mCemail').value=r.email||'';g('mCtel').value=r.tel||'';
-  g('mCsociete').value=r.societe||'';g('mCtype').value=r.type||'Contact';g('mCnotes').value=r.notes||'';
+  if(g('mContactT'))g('mContactT').textContent=idx>=0?'Modifier contact':'Nouveau contact';
+  g('mCprenom').value=r.prenom||'';g('mCnom').value=r.nomFamille||r.nom||'';
+  g('mCsociete').value=r.societe||'';g('mCposte').value=r.poste||'';
+  g('mCemail').value=r.email||'';g('mCtel').value=r.tel||'';
+  g('mCtype').value=r.type||'Client';g('mCstat').value=r.statut||'Actif';
+  g('mCadresse').value=r.adresse||'';g('mCnotes').value=r.notes||'';
+  fillVisiteQui('mCvisiteQui',r.visiteQui||'');
+  g('mCvisiteDate').value=r.visiteDate||'';g('mCvisiteHeure').value=r.visiteHeure||'';
+  g('mCvisiteStat').value=r.visiteStat||'';
   g('mContact').classList.add('on');
 }
 function saveContact(){
-  var nom=g('mCnom').value.trim();if(!nom){alert('Nom requis');return;}
-  var row={id:eContact>=0?DB.contacts[eContact].id:DB.nextId++,nom:nom,email:g('mCemail').value,tel:g('mCtel').value,societe:g('mCsociete').value,type:g('mCtype').value,notes:g('mCnotes').value};
+  var prenom=g('mCprenom').value.trim();var nomF=g('mCnom').value.trim();
+  if(!prenom&&!nomF){alert('Nom requis');return;}
+  var fullName=(prenom+' '+nomF).trim();
+  var existing=eContact>=0?DB.contacts[eContact]:{};
+  var row={id:eContact>=0?existing.id:DB.nextId++,prenom:prenom,nomFamille:nomF,nom:fullName,societe:g('mCsociete').value,poste:g('mCposte').value,email:g('mCemail').value,tel:g('mCtel').value,type:g('mCtype').value,statut:g('mCstat').value,adresse:g('mCadresse').value,notes:g('mCnotes').value,visiteQui:g('mCvisiteQui').value,visiteDate:g('mCvisiteDate').value,visiteHeure:g('mCvisiteHeure').value,visiteStat:g('mCvisiteStat').value};
   if(eContact>=0)DB.contacts[eContact]=row;else DB.contacts.push(row);
   save();g('mContact').classList.remove('on');renderContacts();toast('Contact enregistré !');
 }
@@ -2151,6 +2172,11 @@ function openDM(idx){
   g('mDvalidite').value=r.validite||30;g('mDtva').value=r.tva||5.5;
   g('mDstat').value=r.statut||'Brouillon';g('mDnotes').value=r.notes||'';
   g('mDadvenir').value=r.advenir||'';
+  if(g('mDprime')){
+    var pr=r.primeCommercial;
+    if(pr===undefined||pr===''){var cid=r.commercialId||(curUserObj?curUserObj.id:'');if(cid&&DB.commercialPrimes&&DB.commercialPrimes[cid]!==undefined)pr=DB.commercialPrimes[cid];}
+    g('mDprime').value=(pr!==undefined&&pr!=='')?pr:'';
+  }
   g('mDpaiement').value=r.conditionsPaiement||'Possibilité de payer en 4 fois sans frais via PayPal';
   var tbody=g('mDlignes');tbody.innerHTML='';
   (r.lignes||[]).forEach(function(l){addDevisLigne();var tr=tbody.lastElementChild;var ta=tr.querySelector('textarea');var inputs=tr.querySelectorAll('input[type=number]');if(ta)ta.value=l.desc||'';if(inputs[0])inputs[0].value=l.qte||1;if(inputs[1])inputs[1].value=l.pu||0;});
@@ -2184,7 +2210,7 @@ function saveD(){
   var tva=parseFloat(g('mDtva').value)||5.5;
   var rows=g('mDlignes').querySelectorAll('tr');var lignes=[];
   rows.forEach(function(tr){var ta=tr.querySelector('textarea');var inputs=tr.querySelectorAll('input[type=number]');if(!ta)return;lignes.push({desc:ta.value,qte:parseFloat(inputs[0]?inputs[0].value:1)||0,pu:parseFloat(inputs[1]?inputs[1].value:0)||0});});
-  var row={id:eDevis>=0?DB.devis[eDevis].id:DB.nextId++,client:client,societe:g('mDsociete').value,adresse:g('mDadresse').value,ville:g('mDville').value,emailClient:g('mDemail').value,telClient:g('mDtel').value,date:g('mDdate').value,validite:parseInt(g('mDvalidite').value)||30,tva:tva,statut:g('mDstat').value,lignes:lignes,notes:g('mDnotes').value,advenir:g('mDadvenir').value,conditionsPaiement:g('mDpaiement').value,numero:eDevis>=0?DB.devis[eDevis].numero:genDevisNum(),commercialId:curUserObj?curUserObj.id:''};
+  var row={id:eDevis>=0?DB.devis[eDevis].id:DB.nextId++,client:client,societe:g('mDsociete').value,adresse:g('mDadresse').value,ville:g('mDville').value,emailClient:g('mDemail').value,telClient:g('mDtel').value,date:g('mDdate').value,validite:parseInt(g('mDvalidite').value)||30,tva:tva,statut:g('mDstat').value,lignes:lignes,notes:g('mDnotes').value,advenir:g('mDadvenir').value,conditionsPaiement:g('mDpaiement').value,numero:eDevis>=0?DB.devis[eDevis].numero:genDevisNum(),commercialId:eDevis>=0&&DB.devis[eDevis].commercialId?DB.devis[eDevis].commercialId:(curUserObj?curUserObj.id:''),primeCommercial:g('mDprime')&&g('mDprime').value!==''?parseFloat(g('mDprime').value)||0:''};
   if(eDevis>=0)DB.devis[eDevis]=row;else DB.devis.push(row);
   addActivite('devis',(eDevis>=0?'Devis modifié: ':'Nouveau devis: ')+client+' N°'+row.numero);
   save();closeDM();renderDevis();toast('Devis enregistré !');
@@ -2240,7 +2266,7 @@ function renderProspects(){
   g('prospTable').innerHTML=list.map(function(p){
     var idx=DB.prospects.indexOf(p);
     var sc={Nouveau:'bCours',Contacté:'bPause','En discussion':'bPlan',Gagné:'bTerm',Perdu:'bAnnul'}[p.statut]||'bCours';
-    return '<tr><td><strong>'+p.nom+'</strong>'+(p.societe?'<br><span style="font-size:11px;color:var(--muted)">'+p.societe+'</span>':'')+'</td>'
+    return '<tr><td><strong>'+p.nom+'</strong>'+(p.visiteDate?' <span title="Visite technique" style="font-size:11px">🔧</span>':'')+(p.visiteDate?'<br><span style="font-size:11px;color:#0891b2">🔧 Visite '+fmtD(p.visiteDate)+(p.visiteQui?' · '+p.visiteQui:'')+'</span>':'')+'</td>'
       +'<td>'+(p.email||'')+'</td><td>'+(p.tel||'')+'</td>'
       +'<td>'+(p.source||'')+'</td>'
       +'<td><span class="bdg '+sc+'">'+p.statut+'</span></td>'
@@ -2250,24 +2276,37 @@ function renderProspects(){
       +'</td></tr>';
   }).join('');
 }
+function fillVisiteQui(selectId,selected){
+  var sel=g(selectId);if(!sel)return;
+  var opts='<option value="">--</option><option value="Florian Camps"'+(selected==='Florian Camps'?' selected':'')+'>Florian Camps (moi)</option>';
+  (DB.installateurs||[]).forEach(function(i){var nm=instName(i.prenom,i.nom);opts+='<option value="'+nm+'"'+(selected===nm?' selected':'')+'>'+nm+'</option>';});
+  sel.innerHTML=opts;
+}
 function openProspectModal(idx){
   eProspect=idx;var r=idx>=0?DB.prospects[idx]:{};
-  g('mProspT').textContent=idx>=0?'Modifier':'Nouveau prospect';
-  g('mPrNom').value=r.nom||'';g('mPrEmail').value=r.email||'';g('mPrTel').value=r.tel||'';
-  g('mPrSociete').value=r.societe||'';g('mPrSource').value=r.source||'Bouche à oreille';
-  g('mPrStatut').value=r.statut||'Nouveau';g('mPrNotes').value=r.notes||'';
+  if(g('mProspectT'))g('mProspectT').textContent=idx>=0?'Modifier prospect':'Nouveau prospect';
+  g('mProsNom').value=r.nom||'';g('mProsSiret').value=r.siret||'';g('mProsNaf').value=r.naf||'';
+  g('mProsFormeJ').value=r.formeJ||'';g('mProsAdresse').value=r.adresse||'';g('mProsVille').value=r.ville||'';
+  g('mProsCP').value=r.cp||'';g('mProsEffectif').value=r.effectif||'';g('mProsCreation').value=r.dateCreationEnt||'';
+  g('mProsStat').value=r.statut||'Nouveau';
+  g('mProsContactP').value=r.contactPrenom||'';g('mProsContactN').value=r.contactNom||'';
+  g('mProsTel').value=r.tel||'';g('mProsEmail').value=r.email||'';g('mProsNotes').value=r.notes||'';
+  fillVisiteQui('mProsVisiteQui',r.visiteQui||'');
+  g('mProsVisiteDate').value=r.visiteDate||'';g('mProsVisiteHeure').value=r.visiteHeure||'';
+  g('mProsVisiteStat').value=r.visiteStat||'';
   g('mProspect').classList.add('on');
 }
 function saveProspect(){
-  var nom=g('mPrNom').value.trim();if(!nom){alert('Nom requis');return;}
-  var row={id:eProspect>=0?DB.prospects[eProspect].id:DB.nextId++,nom:nom,email:g('mPrEmail').value,tel:g('mPrTel').value,societe:g('mPrSociete').value,source:g('mPrSource').value,statut:g('mPrStatut').value,notes:g('mPrNotes').value,lastContact:new Date().toISOString().slice(0,10)};
+  var nom=g('mProsNom').value.trim();if(!nom){alert('Raison sociale requise');return;}
+  var existing=eProspect>=0?DB.prospects[eProspect]:{};
+  var row={id:eProspect>=0?existing.id:DB.nextId++,nom:nom,societe:nom,siret:g('mProsSiret').value,naf:g('mProsNaf').value,formeJ:g('mProsFormeJ').value,adresse:g('mProsAdresse').value,ville:g('mProsVille').value,cp:g('mProsCP').value,effectif:g('mProsEffectif').value,dateCreationEnt:g('mProsCreation').value,statut:g('mProsStat').value,contactPrenom:g('mProsContactP').value,contactNom:g('mProsContactN').value,tel:g('mProsTel').value,email:g('mProsEmail').value,notes:g('mProsNotes').value,source:existing.source||'Prospection',visiteQui:g('mProsVisiteQui').value,visiteDate:g('mProsVisiteDate').value,visiteHeure:g('mProsVisiteHeure').value,visiteStat:g('mProsVisiteStat').value,lastContact:new Date().toISOString().slice(0,10)};
   if(eProspect>=0)DB.prospects[eProspect]=row;else DB.prospects.push(row);
   save();g('mProspect').classList.remove('on');renderProspects();toast('Prospect enregistré !');
 }
 function delProspect(i){if(confirm('Supprimer ?')){DB.prospects.splice(i,1);save();renderProspects();}}
 function getProspectsEnRetard(){var today=new Date();return DB.prospects.filter(function(p){if(p.statut==='Gagné'||p.statut==='Perdu')return false;if(!p.lastContact)return true;var diff=Math.round((today-new Date(p.lastContact))/(1000*60*60*24));return diff>7;});}
 function searchINSEE(){var q=g('inseeSearch').value.trim();if(!q)return;g('inseeResults').innerHTML='<p style="color:var(--muted);font-size:13px">Recherche...</p>';fetch('https://recherche-entreprises.api.gouv.fr/search?q='+encodeURIComponent(q)+'&per_page=5').then(function(r){return r.json();}).then(function(data){var res=data.results||[];if(!res.length){g('inseeResults').innerHTML='<p style="color:var(--muted);font-size:13px">Aucun résultat</p>';return;}g('inseeResults').innerHTML=res.map(function(e){var nom=e.nom_complet||e.nom_raison_sociale||'';var siren=e.siren||'';var siege=e.siege||{};var adresse=[siege.numero_voie,siege.type_voie,siege.libelle_voie].filter(Boolean).join(' ');var ville=siege.code_postal?siege.code_postal+' '+siege.libelle_commune:'';return '<div class="inseeCard" onclick="selectINSEE(\''+nom.replace(/'/g,"&#39;")+'\',\''+siren+'\',\''+adresse.replace(/'/g,"&#39;")+'\',\''+ville.replace(/'/g,"&#39;")+'\')"><div style="font-weight:600;font-size:13px">'+nom+'</div><div style="font-size:11px;color:var(--muted)">SIREN: '+siren+' &middot; '+ville+'</div></div>';}).join('');}).catch(function(){g('inseeResults').innerHTML='<p style="color:var(--red);font-size:13px">Erreur de recherche</p>';});}
-function selectINSEE(nom,siren,adresse,ville){g('mPrSociete').value=nom;g('mPrNom').value=nom;g('inseeResults').innerHTML='<div style="color:var(--green);font-size:13px">✓ '+nom+' sélectionné</div>';}
+function selectINSEE(nom,siren,adresse,ville){if(g('mProsNom'))g('mProsNom').value=nom;if(g('mProsSiret'))g('mProsSiret').value=siren;if(g('mProsAdresse'))g('mProsAdresse').value=adresse;if(g('mProsVille'))g('mProsVille').value=ville;g('inseeResults').innerHTML='<div style="color:var(--green);font-size:13px">✓ '+nom+' sélectionné. Ouvrez "+ Prospect" pour compléter.</div>';}
 
 // ── INSTALLATIONS ──
 var eInst=-1,eFicheIdx=-1;
@@ -2324,6 +2363,11 @@ function openIM(idx){
   g('mIacompte').value=r.acompte||0;g('mIpaiement').value=r.paiementStatut||'En attente';
   if(g('mIraccord'))g('mIraccord').value=r.raccordement||'';
   if(g('mIcable'))g('mIcable').value=r.cableM||'';
+  if(g('mIremunInst')){
+    var rem=r.remunInstallateur;
+    if((rem===undefined||rem==='')&&r.installateur){var inst=DB.installateurs.find(function(x){return instName(x.prenom,x.nom)===r.installateur;});if(inst)rem=inst.remunInstall;}
+    g('mIremunInst').value=(rem!==undefined&&rem!=='')?rem:'';
+  }
   toggleCoproField();
   // Afficher le créateur de la fiche
   var creatorInfo=g('mIcreatorInfo');
@@ -2349,6 +2393,7 @@ function saveI(){
     type:g('mItype').value,typeBien:g('mIbien').value,
     raccordement:g('mIraccord')?g('mIraccord').value:'',
     cableM:g('mIcable')?parseInt(g('mIcable').value)||0:0,
+    remunInstallateur:g('mIremunInst')&&g('mIremunInst').value!==''?parseFloat(g('mIremunInst').value)||0:'',
     nbBornes:parseInt(g('mInbbornes').value)||0,puissance:g('mIpuissance').value,
     installateur:g('mIinst').value,statut:g('mIstat').value,
     dateDebut:dateDebut,dateFin:g('mIfin').value,
@@ -2395,6 +2440,7 @@ function openFiche(idx){
       +(r.raccordement?'<div class="frow"><span>Raccordement</span><span>'+r.raccordement+'</span></div>':'')
       +(r.cableM?'<div class="frow"><span>Câble</span><span>'+r.cableM+' m</span></div>':'')
       +'<div class="frow"><span>Installateur</span><span>'+(r.installateur||'--')+'</span></div>'
+      +(function(){var rem=r.remunInstallateur;if((rem===undefined||rem==='')&&r.installateur){var inst=DB.installateurs.find(function(x){return instName(x.prenom,x.nom)===r.installateur;});if(inst)rem=inst.remunInstall;}return (rem!==undefined&&rem!==''&&rem>0)?'<div class="frow"><span>💶 Gain installateur</span><span style="font-weight:600;color:var(--gold)">'+fmtE(rem)+'</span></div>':'';})()
       +'<div class="frow"><span>Statut</span><span><span class="bdg '+(BDGS[r.statut]||'')+'">'+r.statut+'</span></span></div>'
       +'<div class="frow"><span>Date début</span><span>'+(r.dateDebut?fmtD(r.dateDebut):'--')+'</span></div>'
       +'<div class="frow"><span>Date fin</span><span>'+(r.dateFin?fmtD(r.dateFin):'--')+'</span></div>'
@@ -2622,6 +2668,12 @@ function planToday(){planMonth=new Date();renderP();}
 
 function ficheIdxFor(inst){return DB.installations.indexOf(inst);}
 
+function getVisitesTechniques(){
+  var visites=[];
+  (DB.prospects||[]).forEach(function(p,i){if(p.visiteDate)visites.push({type:'prospect',idx:i,nom:p.nom,qui:p.visiteQui||'Non assigné',date:p.visiteDate,heure:p.visiteHeure||'',stat:p.visiteStat||'',tel:p.tel||'',adresse:[p.adresse,p.ville].filter(Boolean).join(', ')});});
+  (DB.contacts||[]).forEach(function(c,i){if(c.visiteDate)visites.push({type:'contact',idx:i,nom:c.nom,qui:c.visiteQui||'Non assigné',date:c.visiteDate,heure:c.visiteHeure||'',stat:c.visiteStat||'',tel:c.tel||'',adresse:c.adresse||''});});
+  return visites;
+}
 function renderPlanSummary(){
   var el=g('planSummary');if(!el)return;
   var all=getVisibleInst();
@@ -2633,7 +2685,8 @@ function renderPlanSummary(){
   var weekCount=all.filter(function(i){return inRange(i,weekStart,weekEnd);}).length;
   var enCours=all.filter(function(i){return i.statut==='En cours';}).length;
   var planifiees=all.filter(function(i){return i.statut==='Planifiée';}).length;
-  el.innerHTML=kpi('📍',"Aujourd'hui",todayCount,'blue')+kpi('📆','Cette semaine',weekCount,'purple')+kpi('⚡','En cours',enCours,'orange')+kpi('🗓️','Planifiées',planifiees,'green');
+  var visitesWeek=getVisitesTechniques().filter(function(v){var vd=new Date(v.date);vd.setHours(0,0,0,0);return vd>=weekStart&&vd<=weekEnd&&v.stat!=='Réalisée'&&v.stat!=='Annulée';}).length;
+  el.innerHTML=kpi('📍',"Aujourd'hui",todayCount,'blue')+kpi('📆','Cette semaine',weekCount,'purple')+kpi('🔧','Visites tech (sem.)',visitesWeek,'orange')+kpi('🗓️','Planifiées',planifiees,'green');
 }
 
 function renderPGantt(y,m){
@@ -2663,6 +2716,7 @@ function renderPGantt(y,m){
 
 function renderPWeek(){
   var today=new Date();today.setHours(0,0,0,0);
+  var allVisites=getVisitesTechniques();
   var base=new Date(planMonth);
   // Use the week containing the 1st of planMonth, or today if same month
   var ref=(today.getMonth()===planMonth.getMonth()&&today.getFullYear()===planMonth.getFullYear())?today:new Date(planMonth.getFullYear(),planMonth.getMonth(),1);
@@ -2674,7 +2728,11 @@ function renderPWeek(){
     var day=new Date(weekStart);day.setDate(weekStart.getDate()+i);
     var isToday=day.toDateString()===today.toDateString();
     var dayInsts=all.filter(function(inst){if(!inst.dateDebut)return false;var s=new Date(inst.dateDebut);s.setHours(0,0,0,0);var e=inst.dateFin?new Date(inst.dateFin):s;e.setHours(0,0,0,0);return day>=s&&day<=e;});
-    var blocks=dayInsts.map(function(inst){var fi=ficheIdxFor(inst);return '<div onclick="openFiche('+fi+')" style="background:'+(SCOLS[inst.statut]||'#888')+';color:#fff;border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;font-size:12px"><div style="font-weight:700;margin-bottom:2px">'+inst.chantier+'</div><div style="opacity:.9;font-size:11px">'+(inst.installateur||'Non assigné')+'</div></div>';}).join('')||'<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px 0">—</div>';
+    var blocks=dayInsts.map(function(inst){var fi=ficheIdxFor(inst);return '<div onclick="openFiche('+fi+')" style="background:'+(SCOLS[inst.statut]||'#888')+';color:#fff;border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;font-size:12px"><div style="font-weight:700;margin-bottom:2px">'+inst.chantier+'</div><div style="opacity:.9;font-size:11px">'+(inst.installateur||'Non assigné')+'</div></div>';}).join('');
+    // Visites techniques du jour
+    var dayVisites=allVisites.filter(function(v){var vd=new Date(v.date);vd.setHours(0,0,0,0);return vd.getTime()===day.getTime();});
+    blocks+=dayVisites.map(function(v){return '<div onclick="'+(v.type==='prospect'?'nav(\'pgProspects\');openProspectModal('+v.idx+')':'nav(\'pgContacts\');openContactModal('+v.idx+')')+'" style="background:#0891b2;color:#fff;border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;font-size:12px;border-left:3px solid #fff"><div style="font-weight:700;margin-bottom:2px">🔧 '+(v.heure?v.heure+' ':'')+v.nom+'</div><div style="opacity:.9;font-size:11px">Visite tech · '+v.qui+'</div></div>';}).join('');
+    if(!blocks)blocks='<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px 0">—</div>';
     var dayName=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'][i];
     cols+='<div style="flex:1;min-width:130px;border-right:1px solid var(--border)">'+
       '<div style="text-align:center;padding:10px 6px;border-bottom:2px solid '+(isToday?'var(--gold)':'var(--border)')+';background:'+(isToday?'var(--gold-bg,#fdf6e3)':'var(--bg)')+'"><div style="font-size:11px;color:var(--muted);text-transform:uppercase">'+dayName+'</div><div style="font-size:18px;font-weight:700;color:'+(isToday?'var(--gold)':'var(--navy)')+'">'+day.getDate()+'</div><div style="font-size:10px;color:var(--muted)">'+MO[day.getMonth()].slice(0,3)+'</div></div>'+
@@ -2723,8 +2781,9 @@ function renderCommercialPay(uid,mois,an){
     if(d.statut!=='Accepté')return false;
     var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;
   }).sort(function(a,b){return new Date(b.date)-new Date(a.date);});
-  var gagne=moisVentes.length*prime;
-  var html='<div class="myCACard" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)"><div class="myCATitle">Ma prime — '+MO[mois]+' '+an+'</div><div class="myCAVal">'+fmtE(gagne)+'</div><div class="myCASubVal">'+moisVentes.length+' vente(s) signée(s) &times; '+fmtE(prime)+'</div></div>';
+  function primeFor(d){var p=d.primeCommercial;return (p!==undefined&&p!=='')?(parseFloat(p)||0):prime;}
+  var gagne=moisVentes.reduce(function(s,d){return s+primeFor(d);},0);
+  var html='<div class="myCACard" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)"><div class="myCATitle">Ma prime — '+MO[mois]+' '+an+'</div><div class="myCAVal">'+fmtE(gagne)+'</div><div class="myCASubVal">'+moisVentes.length+' vente(s) signée(s)</div></div>';
   if(!prime){html+='<div class="card" style="margin-bottom:16px"><div class="cardB" style="text-align:center;color:var(--muted);font-size:13px;padding:20px">💡 Votre prime par vente n\'est pas encore définie. Demandez à votre responsable de la configurer.</div></div>';return html;}
   html+='<div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📅 Mes primes — '+MO[mois]+'</h3></div><div class="cardB" style="padding:0">';
   if(!moisVentes.length){html+='<div style="text-align:center;color:var(--muted);font-size:13px;padding:30px">Aucune vente signée ce mois-ci</div>';}
@@ -2734,7 +2793,7 @@ function renderCommercialPay(uid,mois,an){
       return '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border)">'+
         '<div style="width:40px;height:40px;border-radius:10px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center;font-size:18px">💶</div>'+
         '<div style="flex:1"><div style="font-weight:600;font-size:13px">'+(d.client||d.numero||'Vente')+'</div><div style="font-size:11px;color:var(--muted)">'+fmtD(d.date)+' &middot; CA: '+fmtE(montant)+'</div></div>'+
-        '<div style="text-align:right"><div style="font-weight:700;color:var(--green)">'+fmtE(prime)+'</div><div style="font-size:10px;color:var(--muted)">Acquis</div></div></div>';
+        '<div style="text-align:right"><div style="font-weight:700;color:var(--green)">'+fmtE(primeFor(d))+'</div><div style="font-size:10px;color:var(--muted)">Acquis</div></div></div>';
     }).join('');
     html+='<div style="display:flex;justify-content:space-between;padding:14px 16px;background:var(--bg);font-weight:700"><span>Total prime '+MO[mois]+'</span><span style="color:var(--green)">'+fmtE(gagne)+'</span></div>';
   }
@@ -2750,11 +2809,12 @@ function renderInstallerPay(nom,mois,an){
     var dRef=i.dateFin||i.dateDebut;if(!dRef)return false;
     var d=new Date(dRef);return d.getMonth()===mois&&d.getFullYear()===an;
   }).sort(function(a,b){return new Date(a.dateDebut||a.dateFin)-new Date(b.dateDebut||b.dateFin);});
+  function payFor(i){var r=i.remunInstallateur;return (r!==undefined&&r!=='')?(parseFloat(r)||0):taux;}
   var terminees=moisInsts.filter(function(i){return i.statut==='Terminée';});
   var aVenir=moisInsts.filter(function(i){return i.statut!=='Terminée'&&i.statut!=='Annulée';});
-  var gagne=terminees.length*taux;
-  var projete=aVenir.length*taux;
-  var html='<div class="myCACard" style="background:linear-gradient(135deg,#059669,#047857)"><div class="myCATitle">Ma rémunération — '+MO[mois]+' '+an+'</div><div class="myCAVal">'+fmtE(gagne)+'</div><div class="myCASubVal">'+terminees.length+' installation(s) terminée(s) &times; '+fmtE(taux)+(projete>0?' &middot; +'+fmtE(projete)+' à venir':'')+'</div></div>';
+  var gagne=terminees.reduce(function(s,i){return s+payFor(i);},0);
+  var projete=aVenir.reduce(function(s,i){return s+payFor(i);},0);
+  var html='<div class="myCACard" style="background:linear-gradient(135deg,#059669,#047857)"><div class="myCATitle">Ma rémunération — '+MO[mois]+' '+an+'</div><div class="myCAVal">'+fmtE(gagne)+'</div><div class="myCASubVal">'+terminees.length+' installation(s) terminée(s)'+(projete>0?' &middot; +'+fmtE(projete)+' à venir':'')+'</div></div>';
   if(!taux){html+='<div class="card" style="margin-bottom:16px"><div class="cardB" style="text-align:center;color:var(--muted);font-size:13px;padding:20px">💡 Votre taux de rémunération par installation n\'est pas encore défini. Demandez à votre responsable de le configurer.</div></div>';return html;}
   html+='<div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📅 Calendrier de paiement — '+MO[mois]+'</h3></div><div class="cardB" style="padding:0">';
   if(!moisInsts.length){html+='<div style="text-align:center;color:var(--muted);font-size:13px;padding:30px">Aucune installation ce mois-ci</div>';}
@@ -2765,7 +2825,7 @@ function renderInstallerPay(nom,mois,an){
       return '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border)">'+
         '<div style="width:40px;height:40px;border-radius:10px;background:'+(paid?'var(--green-bg)':'var(--bg)')+';display:flex;align-items:center;justify-content:center;font-size:18px">'+(paid?'✅':'🗓️')+'</div>'+
         '<div style="flex:1"><div style="font-weight:600;font-size:13px">'+i.chantier+'</div><div style="font-size:11px;color:var(--muted)">'+(dRef?fmtD(dRef):'--')+' &middot; '+i.statut+'</div></div>'+
-        '<div style="text-align:right"><div style="font-weight:700;color:'+(paid?'var(--green)':'var(--muted)')+'">'+fmtE(taux)+'</div><div style="font-size:10px;color:var(--muted)">'+(paid?'Acquis':'Prévu')+'</div></div></div>';
+        '<div style="text-align:right"><div style="font-weight:700;color:'+(paid?'var(--green)':'var(--muted)')+'">'+fmtE(payFor(i))+'</div><div style="font-size:10px;color:var(--muted)">'+(paid?'Acquis':'Prévu')+'</div></div></div>';
     }).join('');
     html+='<div style="display:flex;justify-content:space-between;padding:14px 16px;background:var(--bg);font-weight:700"><span>Total prévu '+MO[mois]+'</span><span style="color:var(--green)">'+fmtE(gagne+projete)+'</span></div>';
   }
@@ -2804,15 +2864,20 @@ function renderFinancePayroll(){
   // Commerciaux
   var commRows=loadAccounts().filter(function(a){return a.status==='active'&&a.role==='commercial';}).map(function(u){
     var prime=(DB.commercialPrimes&&DB.commercialPrimes[u.id])||0;
-    var ventes=DB.devis.filter(function(d){if(d.commercialId&&d.commercialId!==u.id)return false;if(d.statut!=='Accepté')return false;var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;}).length;
-    return {nom:u.name,role:'Commercial',taux:prime,term:ventes,prev:0,du:ventes*prime,projete:ventes*prime};
+    var ventesArr=DB.devis.filter(function(d){if(d.commercialId&&d.commercialId!==u.id)return false;if(d.statut!=='Accepté')return false;var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;});
+    function primeFor(d){var p=d.primeCommercial;return (p!==undefined&&p!=='')?(parseFloat(p)||0):prime;}
+    var du=ventesArr.reduce(function(s,d){return s+primeFor(d);},0);
+    return {nom:u.name,role:'Commercial',taux:prime,term:ventesArr.length,prev:0,du:du,projete:du};
   }).filter(function(r){return r.term>0;});
   var rows=(DB.installateurs||[]).map(function(inst){
     var nom=instName(inst.prenom,inst.nom);var taux=inst.remunInstall||0;
     var moisInsts=DB.installations.filter(function(i){if(i.installateur!==nom)return false;var dRef=i.dateFin||i.dateDebut;if(!dRef)return false;var d=new Date(dRef);return d.getMonth()===mois&&d.getFullYear()===an;});
-    var term=moisInsts.filter(function(i){return i.statut==='Terminée';}).length;
-    var prev=moisInsts.filter(function(i){return i.statut!=='Terminée'&&i.statut!=='Annulée';}).length;
-    return {nom:nom,taux:taux,term:term,prev:prev,du:term*taux,projete:(term+prev)*taux,color:inst.color};
+    function payFor(i){var rr=i.remunInstallateur;return (rr!==undefined&&rr!=='')?(parseFloat(rr)||0):taux;}
+    var termArr=moisInsts.filter(function(i){return i.statut==='Terminée';});
+    var prevArr=moisInsts.filter(function(i){return i.statut!=='Terminée'&&i.statut!=='Annulée';});
+    var du=termArr.reduce(function(s,i){return s+payFor(i);},0);
+    var projete=du+prevArr.reduce(function(s,i){return s+payFor(i);},0);
+    return {nom:nom,taux:taux,term:termArr.length,prev:prevArr.length,du:du,projete:projete,color:inst.color};
   }).map(function(r){r.role='Installateur';return r;}).filter(function(r){return r.term>0||r.prev>0;});
   var allRows=commRows.concat(rows);
   if(!allRows.length){el.innerHTML='<p style="color:var(--muted);font-size:13px;padding:10px 0">Aucune rémunération ce mois-ci</p>';return;}
