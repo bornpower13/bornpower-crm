@@ -691,8 +691,9 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 
     <!-- DASH COMMERCIAL -->
     <div class="pg" id="pgDashComm">
-      <div class="pgHead"><div><h1>Mon tableau de bord</h1><p class="sub">Mes performances</p></div><button class="btn bPrimary" onclick="openOppModal(-1)">+ Opportunité</button></div>
+      <div class="pgHead"><div><h1>Mon tableau de bord</h1><p class="sub">Mes performances</p></div><div style="display:flex;gap:8px"><button class="btn bGhost" onclick="showTemplates()" style="color:var(--blue)">✉️ Modèles</button><button class="btn bGhost" onclick="simADVENIR()" style="color:var(--gold)">🧮 Simulateur aides</button><button class="btn bPrimary" onclick="openOppModal(-1)">+ Opportunité</button></div></div>
       <div class="kpis" id="dashCommKpis"></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>✅ Mes tâches du jour</h3></div><div class="cardB" id="commTasks" style="padding:0"></div></div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;">
         <div class="card"><div class="cardH"><h3>Mes opportunités actives</h3></div><div class="cardB" id="commMyOpps"></div></div>
         <div class="card"><div class="cardH"><h3>Mes devis récents</h3></div><div class="cardB" id="commMyDevis"></div></div>
@@ -1456,6 +1457,14 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 <div class="ov" id="mProspect">
   <div class="modal">
     <div class="mh"><h2 id="mProspectT">Fiche prospect</h2><button class="mcl" onclick="closeProspectModal()">&#10005;</button></div>
+    <div style="background:var(--blue-bg);border-radius:10px;padding:12px;margin-bottom:14px">
+      <label style="font-size:12px;font-weight:700;color:var(--blue);display:block;margin-bottom:6px">🔍 Recherche entreprise (INSEE / SIRENE)</label>
+      <div style="display:flex;gap:8px">
+        <input id="inseeSearch" placeholder="Nom de société ou SIREN..." onkeydown="if(event.key==='Enter'){event.preventDefault();searchINSEE();}" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit">
+        <button class="btn bPrimary" type="button" onclick="searchINSEE()" style="font-size:13px">Rechercher</button>
+      </div>
+      <div id="inseeResults" style="margin-top:8px"></div>
+    </div>
     <div class="fgrid">
       <div class="fi"><label>Raison sociale *</label><input id="mProsNom" placeholder="Nom entreprise"></div>
       <div class="fi"><label>SIRET</label><input id="mProsSiret" placeholder="14 chiffres"></div>
@@ -1589,6 +1598,10 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="fi"><label>Métrage de câble (m)</label><input type="number" id="mIcable" min="0" placeholder="0"></div>
       <div class="fi"><label>🔧 Visite tech. — qui</label><select id="mIvisiteQui"></select></div>
       <div class="fi"><label>🔧 Visite tech. — date</label><input type="date" id="mIvisiteDate"></div>
+      <div class="fi full" style="grid-column:1/-1"><label>📦 Matériel utilisé (déduit du stock à la fin du chantier)</label>
+        <div style="display:flex;gap:6px;margin-bottom:8px"><select id="mImatSelect" style="flex:1;padding:7px;border:1px solid var(--border);border-radius:7px;font-family:inherit;font-size:13px"></select><input type="number" id="mImatQte" value="1" min="1" style="width:70px;padding:7px;border:1px solid var(--border);border-radius:7px;font-family:inherit;font-size:13px"><button type="button" class="btn bGhost" onclick="addMatUtilise()" style="font-size:12px">Ajouter</button></div>
+        <div id="mImatList"></div>
+      </div>
       <div class="fi"><label>Nb bornes</label><input type="number" id="mInbbornes" min="1" value="1"></div>
       <div class="fi"><label>Puissance</label>
         <select id="mIpuissance"><option>3.7 kW</option><option>7.4 kW</option><option>11 kW</option><option>22 kW</option><option>50 kW</option><option>150 kW</option></select>
@@ -1665,7 +1678,7 @@ var firebaseConfig={
 };
 var fbApp=null,db=null,fbReady=false,fbAuth=null;
 function initFirebase(){
-  try{fbApp=firebase.initializeApp(firebaseConfig);db=firebase.firestore();fbAuth=firebase.auth();fbReady=true;console.log('Firebase OK');}
+  try{fbApp=firebase.initializeApp(firebaseConfig);db=firebase.firestore();fbAuth=firebase.auth();fbReady=true;try{db.enablePersistence({synchronizeTabs:true}).catch(function(e){console.log('persistence:',e.code);});}catch(pe){}console.log('Firebase OK (offline activé)');}
   catch(e){console.log('Firebase error:',e);fbReady=false;}
 }
 function fbSave(collection,data){if(!fbReady||!db)return;db.collection(collection).doc('main').set(data).catch(function(e){console.log('fbSave error:',e);});}
@@ -1694,9 +1707,11 @@ function save(){
       commercialPrimes:DB.commercialPrimes||{},catalogue:DB.catalogue||[],
       activites:DB.activites,nextId:DB.nextId,updatedAt:new Date().toISOString()
     };
-    db.collection('crm_data').doc('main').set(payload).catch(function(e){
+    db.collection('crm_data').doc('main').set(payload).then(function(){
+      window._lastSaveOk=Date.now();
+    }).catch(function(e){
       console.log('save error:',e);
-      toast('⚠️ Erreur sync: '+(e.code||e.message||'inconnue'));
+      toast('⚠️ Sauvegarde cloud échouée: '+(e.code||e.message||'inconnue')+' — données gardées en local');
     });
   }
 }
@@ -1767,10 +1782,10 @@ function addActivite(type,txt){
   addNotif(type,txt,{install:'⚡',opp:'🎯',devis:'📋',sav:'🔧',contact:'👥'}[type]||'🔔');
 }
 
-function addNotif(type,txt,ico){
+function addNotif(type,txt,ico,forUser){
   if(!DB.notifications)DB.notifications=[];
   var now=new Date();
-  DB.notifications.unshift({id:DB.nextId++,type:type,txt:txt,ico:ico||'🔔',ts:now.getTime(),read:false});
+  DB.notifications.unshift({id:DB.nextId++,type:type,txt:txt,ico:ico||'🔔',ts:now.getTime(),read:false,forUser:forUser||''});
   if(DB.notifications.length>50)DB.notifications=DB.notifications.slice(0,50);
   updateNotifBadge();
 }
@@ -1963,9 +1978,10 @@ window.addEventListener('appinstalled',function(){var b=g('pwaInstallBanner');if
 function installPWA(){if(!deferredPrompt)return;deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;var b=g('pwaInstallBanner');if(b)b.style.display='none';});}
 
 // ── NOTIFICATIONS ──
-function updateNotifBadge(){var unread=(DB.notifications||[]).filter(function(n){return !n.read;}).length;var dot=g('notifDot');if(dot)dot.classList.toggle('on',unread>0);}
+function visibleNotifs(){var nm=curUserObj?curUserObj.name:'';return (DB.notifications||[]).filter(function(n){return !n.forUser||n.forUser===nm;});}
+function updateNotifBadge(){var unread=visibleNotifs().filter(function(n){return !n.read;}).length;var dot=g('notifDot');if(dot)dot.classList.toggle('on',unread>0);}
 function toggleNotifPanel(){var panel=g('notifPanel');panel.classList.toggle('on');if(panel.classList.contains('on'))renderNotifPanel();}
-function renderNotifPanel(){var notifs=DB.notifications||[];g('notifList').innerHTML=notifs.length?notifs.map(function(n,i){return '<div class="notifItem'+(n.read?'':' unread')+'" onclick="clickNotif('+i+')">'+'<div class="notifIco" style="background:'+(n.read?'var(--bg)':'var(--blue-bg)')+'">'+n.ico+'</div>'+'<div><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+fmtNotifTime(n.ts)+'</div></div></div>';}).join(''):'<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">Aucune notification</div>';}
+function renderNotifPanel(){var notifs=visibleNotifs();g('notifList').innerHTML=notifs.length?notifs.map(function(n){var gi=(DB.notifications||[]).indexOf(n);return '<div class="notifItem'+(n.read?'':' unread')+'" onclick="clickNotif('+gi+')">'+'<div class="notifIco" style="background:'+(n.read?'var(--bg)':'var(--blue-bg)')+'">'+n.ico+'</div>'+'<div><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+fmtNotifTime(n.ts)+'</div></div></div>';}).join(''):'<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">Aucune notification</div>';}
 function clickNotif(i){var n=DB.notifications[i];if(n)n.read=true;save();updateNotifBadge();renderNotifPanel();if(n&&n.type==='user'&&isAdmin()){var np=g('notifPanel');if(np)np.classList.remove('on');nav('pgUsers');}}
 function markAllRead(){(DB.notifications||[]).forEach(function(n){n.read=true;});save();updateNotifBadge();renderNotifPanel();}
 
@@ -2077,6 +2093,74 @@ function renderDashComm(){
   var caTotal=myDevis.filter(function(d){return d.statut==='Accepté';}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);
   var pipeline=myOpps.filter(function(o){return o.etape!=='Gagné'&&o.etape!=='Perdu';}).reduce(function(s,o){return s+o.montant;},0);
   g('dashCommKpis').innerHTML=kpi('🎯','Mes opportunités',myOpps.length,'blue')+kpi('💰','CA gagné',fmtE(caTotal),'green')+kpi('📋','Mes devis',myDevis.length,'orange')+kpi('💼','Pipeline',fmtE(pipeline),'purple');
+  renderCommTasks();
+}
+var MSG_TEMPLATES=[
+  {t:'Relance devis',m:'Bonjour,\n\nJe me permets de revenir vers vous concernant le devis pour votre borne de recharge que je vous ai transmis. Avez-vous pu en prendre connaissance ?\n\nJe reste à votre disposition pour toute question ou ajustement.\n\nBien cordialement,\nBornPower — 09 55 770 770'},
+  {t:'Remerciement après signature',m:'Bonjour,\n\nMerci pour votre confiance ! Nous sommes ravis de vous accompagner dans l\'installation de votre borne de recharge.\n\nNotre équipe technique vous contactera très prochainement pour planifier l\'intervention.\n\nÀ très bientôt,\nBornPower'},
+  {t:'Prise de RDV visite technique',m:'Bonjour,\n\nAfin d\'établir un devis précis pour votre borne de recharge, nous souhaitons réaliser une courte visite technique à votre domicile.\n\nQuelles seraient vos disponibilités cette semaine ou la semaine prochaine ?\n\nMerci,\nBornPower — 09 55 770 770'},
+  {t:'Suivi après installation',m:'Bonjour,\n\nVotre borne de recharge est désormais installée et opérationnelle. Tout fonctionne-t-il à votre entière satisfaction ?\n\nN\'hésitez pas à nous laisser un avis Google, cela nous aide beaucoup !\n\nBien cordialement,\nBornPower'}
+];
+function showTemplates(){
+  var body=MSG_TEMPLATES.map(function(tp,i){return '<div style="border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px"><div style="font-weight:700;font-size:13px;color:var(--navy);margin-bottom:6px">'+tp.t+'</div><div style="font-size:12px;color:var(--muted);white-space:pre-line;margin-bottom:8px;max-height:80px;overflow-y:auto">'+tp.m+'</div><button class="btn bGhost" style="font-size:12px" onclick="copyTemplate('+i+')">📋 Copier</button></div>';}).join('');
+  showModal('✉️ Modèles de messages', body, null, null);
+  var gm=document.getElementById('mGeneric');if(gm){var mf=gm.querySelector('.btn.bPrimary');if(mf){mf.textContent='Fermer';mf.onclick=closeModal;}}
+}
+function copyTemplate(i){
+  var txt=MSG_TEMPLATES[i].m;
+  if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){toast('Modèle copié ✅');});}
+  else{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Modèle copié ✅');}catch(e){}document.body.removeChild(ta);}
+}
+function simADVENIR(){
+  showModal('🧮 Simulateur aides ADVENIR',
+    '<p style="font-size:12px;color:var(--muted);margin-bottom:12px">Outil d\'aide à la vente. Entrez le montant et la prime estimée pour montrer au client son reste à charge.</p>'+
+    '<div class="fi" style="margin-bottom:10px"><label>Montant total HT (€)</label><input type="number" id="simHT" value="1500" oninput="calcADVENIR()"></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px"><div class="fi"><label>TVA (%)</label><select id="simTVA" onchange="calcADVENIR()"><option value="5.5">5,5% (résidentiel)</option><option value="10">10%</option><option value="20">20% (pro)</option></select></div>'+
+    '<div class="fi"><label>Prime ADVENIR (€)</label><input type="number" id="simPrime" value="600" oninput="calcADVENIR()"></div></div>'+
+    '<div style="font-size:11px;color:var(--muted);margin-bottom:12px">💡 Repères ADVENIR (à vérifier sur advenir.mobi) : résidentiel collectif individuel ≈ 50% plafonné à 600€ · partie commune copro ≈ 50% plafonné à 1660€/point.</div>'+
+    '<div id="simResult" style="background:var(--bg);border-radius:10px;padding:14px"></div>',
+    null,null);
+  var gm=document.getElementById('mGeneric');if(gm){var mf=gm.querySelector('.btn.bPrimary');if(mf)mf.textContent='Fermer';if(mf)mf.onclick=closeModal;}
+  calcADVENIR();
+}
+function calcADVENIR(){
+  var ht=parseFloat(g('simHT').value)||0;
+  var tva=parseFloat(g('simTVA').value)||5.5;
+  var prime=parseFloat(g('simPrime').value)||0;
+  var ttc=ht*(1+tva/100);
+  var reste=Math.max(0,ttc-prime);
+  var el=g('simResult');if(!el)return;
+  el.innerHTML='<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span>Total HT</span><strong>'+fmtE(ht)+'</strong></div>'+
+    '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span>Total TTC</span><strong>'+fmtE(ttc)+'</strong></div>'+
+    '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:var(--green)"><span>− Prime ADVENIR</span><strong>−'+fmtE(prime)+'</strong></div>'+
+    '<div style="display:flex;justify-content:space-between;padding:10px 0 0;margin-top:8px;border-top:2px solid var(--gold);font-size:16px;color:var(--navy)"><span style="font-weight:700">Reste à charge client</span><strong style="color:var(--gold)">'+fmtE(reste)+'</strong></div>';
+}
+function renderCommTasks(){
+  var el=g('commTasks');if(!el)return;
+  var uid=curUserObj?curUserObj.id:'';
+  var today=new Date();today.setHours(0,0,0,0);
+  var tasks=[];
+  // 1) Rappels clients dus (opportunités)
+  DB.opportunites.filter(function(o){return (!o.commercialId||o.commercialId===uid)&&o.dateRappel&&o.etape!=='Gagné'&&o.etape!=='Perdu';}).forEach(function(o){
+    var dr=new Date(o.dateRappel);dr.setHours(0,0,0,0);
+    if(dr<=today){var idx=DB.opportunites.indexOf(o);tasks.push({pri:dr<today?0:1,ico:'📞',col:'#dc2626',txt:'Rappeler '+(o.client||o.nom),sub:(dr<today?'En retard depuis le ':'Aujourd\'hui — prévu le ')+fmtD(o.dateRappel),act:"nav('pgPipeline');openOppModal("+idx+")"});}
+  });
+  // 2) Devis envoyés sans réponse depuis 5+ jours
+  DB.devis.filter(function(d){return (!d.commercialId||d.commercialId===uid)&&d.statut==='Envoyé';}).forEach(function(d){
+    var dt=d.date?new Date(d.date):null;if(!dt)return;
+    var jours=Math.floor((today-dt)/86400000);
+    if(jours>=5){var idx=DB.devis.indexOf(d);tasks.push({pri:2,ico:'📋',col:'#d97706',txt:'Relancer devis N°'+d.numero+' — '+(d.client||''),sub:'Envoyé il y a '+jours+' jours, sans réponse',act:"nav('pgDevis');openDM("+idx+")"});}
+  });
+  // 3) Visites techniques à venir (assignées)
+  // (informatif)
+  tasks.sort(function(a,b){return a.pri-b.pri;});
+  if(!tasks.length){el.innerHTML='<div style="padding:24px;text-align:center;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">🎉</div><p style="font-size:14px;font-weight:600;color:var(--navy)">Rien d\'urgent aujourd\'hui</p><p style="font-size:12px">Vos rappels et relances sont à jour.</p></div>';return;}
+  el.innerHTML=tasks.map(function(t){
+    return '<div onclick="'+t.act+'" style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer" onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'\'">'+
+      '<span style="font-size:20px;width:28px;text-align:center">'+t.ico+'</span>'+
+      '<div style="flex:1"><div style="font-weight:600;font-size:13px;color:var(--navy)">'+t.txt+'</div><div style="font-size:11px;color:'+t.col+'">'+t.sub+'</div></div>'+
+      '<span style="color:var(--muted);font-size:18px">›</span></div>';
+  }).join('');
 }
 
 function renderDashDT(){
@@ -2141,6 +2225,7 @@ function saveOpp(){
   var nom=g('mOnom').value.trim();if(!nom){alert('Nom requis');return;}
   var row={id:eOpp>=0?DB.opportunites[eOpp].id:DB.nextId++,nom:nom,client:g('mOclient').value,societe:g('mOsociete').value,montant:parseFloat(g('mOmontant').value)||0,proba:parseInt(g('mOproba').value)||50,etape:g('mOetape').value,close:g('mOclose').value,dateRappel:g('mOrappel')?g('mOrappel').value:'',visiteQui:g('mOvisiteQui')?g('mOvisiteQui').value:'',visiteDate:g('mOvisiteDate')?g('mOvisiteDate').value:'',source:g('mOsource').value,notes:g('mOnotes').value,commercialId:eOpp>=0?DB.opportunites[eOpp].commercialId:curUserObj?curUserObj.id:'',echanges:eOpp>=0?DB.opportunites[eOpp].echanges||[]:[],dateCreation:eOpp>=0?DB.opportunites[eOpp].dateCreation:new Date().toLocaleDateString('fr-FR'),creePar:eOpp>=0&&DB.opportunites[eOpp].creePar?DB.opportunites[eOpp].creePar:(curUserObj?curUserObj.name:''),proprietaire:eOpp>=0&&DB.opportunites[eOpp].proprietaire?DB.opportunites[eOpp].proprietaire:(curUserObj?curUserObj.name:'')};
   if(eOpp>=0)DB.opportunites[eOpp]=row;else DB.opportunites.push(row);
+  ensureContact({nom:row.client||row.nom,societe:row.societe,type:'Client',origine:'une opportunité'});
   addActivite('opp',(eOpp>=0?'Opportunité modifiée: ':'Nouvelle opportunité: ')+nom);
   save();closeOppModal();renderPipeline();toast('Opportunité enregistrée !');
 }
@@ -2447,6 +2532,19 @@ document.addEventListener('click',function(e){
   var sb=g('globalSearch');var box=g('globalSearchResults');
   if(box&&sb&&e.target!==sb&&!box.contains(e.target)){box.style.display='none';}
 });
+function ensureContact(opts){
+  if(!opts.nom||!opts.nom.toString().trim())return;
+  if(!DB.contacts)DB.contacts=[];
+  var nm=opts.nom.toString().trim().toLowerCase();
+  var tel=(opts.tel||'').toString().replace(/[^0-9]/g,'');
+  var exists=DB.contacts.some(function(c){
+    if(c.nom&&c.nom.toString().trim().toLowerCase()===nm)return true;
+    if(tel&&tel.length>=6&&c.tel&&c.tel.toString().replace(/[^0-9]/g,'').indexOf(tel)>=0)return true;
+    return false;
+  });
+  if(exists)return;
+  DB.contacts.push({id:DB.nextId++,nom:opts.nom.toString().trim(),prenom:'',nomFamille:'',societe:opts.societe||'',poste:'',tel:opts.tel||'',email:opts.email||'',adresse:opts.adresse||'',type:opts.type||'Client',statut:'Actif',notes:'Créé automatiquement depuis '+(opts.origine||'une fiche'),autoCreated:true});
+}
 function fillVisiteQui(selectId,selected){
   var sel=g(selectId);if(!sel)return;
   var opts='<option value="">--</option><option value="Florian Camps"'+(selected==='Florian Camps'?' selected':'')+'>Florian Camps (moi)</option>';
@@ -2477,7 +2575,7 @@ function saveProspect(){
 function delProspect(i){if(confirm('Supprimer ?')){DB.prospects.splice(i,1);save();renderProspects();}}
 function getProspectsEnRetard(){var today=new Date();return DB.prospects.filter(function(p){if(p.statut==='Gagné'||p.statut==='Perdu')return false;if(!p.lastContact)return true;var diff=Math.round((today-new Date(p.lastContact))/(1000*60*60*24));return diff>7;});}
 function searchINSEE(){var q=g('inseeSearch').value.trim();if(!q)return;g('inseeResults').innerHTML='<p style="color:var(--muted);font-size:13px">Recherche...</p>';fetch('https://recherche-entreprises.api.gouv.fr/search?q='+encodeURIComponent(q)+'&per_page=5').then(function(r){return r.json();}).then(function(data){var res=data.results||[];if(!res.length){g('inseeResults').innerHTML='<p style="color:var(--muted);font-size:13px">Aucun résultat</p>';return;}g('inseeResults').innerHTML=res.map(function(e){var nom=e.nom_complet||e.nom_raison_sociale||'';var siren=e.siren||'';var siege=e.siege||{};var adresse=[siege.numero_voie,siege.type_voie,siege.libelle_voie].filter(Boolean).join(' ');var ville=siege.code_postal?siege.code_postal+' '+siege.libelle_commune:'';return '<div class="inseeCard" onclick="selectINSEE(\''+nom.replace(/'/g,"&#39;")+'\',\''+siren+'\',\''+adresse.replace(/'/g,"&#39;")+'\',\''+ville.replace(/'/g,"&#39;")+'\')"><div style="font-weight:600;font-size:13px">'+nom+'</div><div style="font-size:11px;color:var(--muted)">SIREN: '+siren+' &middot; '+ville+'</div></div>';}).join('');}).catch(function(){g('inseeResults').innerHTML='<p style="color:var(--red);font-size:13px">Erreur de recherche</p>';});}
-function selectINSEE(nom,siren,adresse,ville){if(g('mProsNom'))g('mProsNom').value=nom;if(g('mProsSiret'))g('mProsSiret').value=siren;if(g('mProsAdresse'))g('mProsAdresse').value=adresse;if(g('mProsVille'))g('mProsVille').value=ville;g('inseeResults').innerHTML='<div style="color:var(--green);font-size:13px">✓ '+nom+' sélectionné. Ouvrez "+ Prospect" pour compléter.</div>';}
+function selectINSEE(nom,siren,adresse,ville){if(g('mProsNom'))g('mProsNom').value=nom;if(g('mProsSiret'))g('mProsSiret').value=siren;if(g('mProsAdresse'))g('mProsAdresse').value=adresse;if(g('mProsVille'))g('mProsVille').value=ville;g('inseeResults').innerHTML='<div style="color:var(--green);font-size:13px">✓ '+nom+' importé dans la fiche ci-dessous</div>';}
 
 // ── INSTALLATIONS ──
 var eInst=-1,eFicheIdx=-1;
@@ -2527,6 +2625,34 @@ function renderT(){
       +'</td></tr>';
   }).join('');
 }
+var matUtiliseTmp=[];
+function fillMatSelect(){
+  var sel=g('mImatSelect');if(!sel)return;
+  sel.innerHTML='<option value="">— Choisir un article —</option>'+(DB.materiel||[]).map(function(m,i){return '<option value="'+i+'">'+m.nom+' (stock: '+m.stock+')</option>';}).join('');
+}
+function renderMatUtilise(){
+  var el=g('mImatList');if(!el)return;
+  if(!matUtiliseTmp.length){el.innerHTML='<div style="font-size:12px;color:var(--muted)">Aucun matériel ajouté.</div>';return;}
+  el.innerHTML=matUtiliseTmp.map(function(m,i){return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:var(--bg);border-radius:7px;margin-bottom:5px;font-size:13px"><span>'+m.nom+' × '+m.qte+'</span><button type="button" onclick="removeMatUtilise('+i+')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px">×</button></div>';}).join('');
+}
+function addMatUtilise(){
+  var sel=g('mImatSelect');var qte=parseInt(g('mImatQte').value)||1;
+  if(!sel||sel.value==='')return;
+  var m=DB.materiel[parseInt(sel.value)];if(!m)return;
+  var existing=matUtiliseTmp.find(function(x){return x.matId===m.id;});
+  if(existing){existing.qte+=qte;}else{matUtiliseTmp.push({matId:m.id,nom:m.nom,qte:qte});}
+  renderMatUtilise();sel.value='';g('mImatQte').value=1;
+}
+function removeMatUtilise(i){matUtiliseTmp.splice(i,1);renderMatUtilise();}
+function deduireStock(inst){
+  if(!inst||inst.stockDeduit||!inst.materiaux||!inst.materiaux.length)return;
+  inst.materiaux.forEach(function(mu){
+    if(!mu.matId)return;
+    var stockItem=(DB.materiel||[]).find(function(m){return m.id===mu.matId;});
+    if(stockItem){stockItem.stock=Math.max(0,(stockItem.stock||0)-(mu.qte||0));}
+  });
+  inst.stockDeduit=true;
+}
 function openIM(idx){
   eInst=idx;var r=idx>=0?DB.installations[idx]:{};
   g('mInstT').textContent=idx>=0?'Modifier installation':'Nouvelle installation';
@@ -2554,6 +2680,8 @@ function openIM(idx){
   if(g('mIcable'))g('mIcable').value=r.cableM||'';
   fillVisiteQui('mIvisiteQui',r.visiteQui||'');
   if(g('mIvisiteDate'))g('mIvisiteDate').value=r.visiteDate||'';
+  matUtiliseTmp=(r.materiaux||[]).filter(function(m){return m&&m.matId;}).map(function(m){return {matId:m.matId,nom:m.nom,qte:m.qte};});
+  fillMatSelect();renderMatUtilise();
   if(g('mIremunInst')){
     var rem=r.remunInstallateur;
     if((rem===undefined||rem==='')&&r.installateur){var inst=DB.installateurs.find(function(x){return instName(x.prenom,x.nom)===r.installateur;});if(inst)rem=inst.remunInstall;}
@@ -2590,7 +2718,7 @@ function saveI(){
     installateur:g('mIinst').value,statut:g('mIstat').value,
     dateDebut:dateDebut,dateFin:g('mIfin').value,
     montant:parseFloat(g('mImontant').value)||0,
-    materiaux:existing.materiaux||[],notes:g('mInotes').value,
+    materiaux:matUtiliseTmp.slice(),notes:g('mInotes').value,
     signature:existing.signature||'',
     modifiedBy:curUserObj?curUserObj.name:'',
     creePar:existing.creePar||(curUserObj?curUserObj.name:''),
@@ -2618,7 +2746,14 @@ function saveI(){
       if(!confirm('⚠️ Conflit détecté !\n\n'+row.installateur+' est déjà sur le chantier "'+conflit.chantier+'" sur cette période.\n\nVoulez-vous quand même enregistrer ?'))return;
     }
   }
+  if(row.statut==='Terminée')deduireStock(row);
+  // Notification d'assignation à l'installateur
+  var prevInst=eInst>=0&&DB.installations[eInst]?DB.installations[eInst].installateur:'';
+  if(row.installateur&&row.installateur!==prevInst&&row.installateur!==(curUserObj?curUserObj.name:'')){
+    addNotif('assign','Nouveau chantier assigné : '+row.chantier+(row.dateDebut?' le '+fmtD(row.dateDebut):''),'⚡',row.installateur);
+  }
   if(eInst>=0)DB.installations[eInst]=row;else DB.installations.push(row);
+  ensureContact({nom:row.client,tel:row.tel,adresse:row.adresse,type:'Client',origine:'une installation'});
   addActivite('install',(eInst>=0?'Installation modifiée: ':'Nouvelle installation: ')+chantier);
   save();closeIM();renderT();toast('Installation enregistrée !');
 }
@@ -3053,7 +3188,7 @@ function renderMaJournee(){
 }
 function quickStatut(idx){
   var i=DB.installations[idx];if(!i)return;
-  if(i.statut==='En cours'){i.statut='Terminée';i.dateFinReelle=new Date().toISOString();toast('Chantier terminé ✅');}
+  if(i.statut==='En cours'){i.statut='Terminée';i.dateFinReelle=new Date().toISOString();deduireStock(i);toast('Chantier terminé ✅ (stock mis à jour)');}
   else{i.statut='En cours';i.dateDebutReelle=new Date().toISOString();toast('Chantier démarré ▶️');}
   save();renderMaJournee();
 }
