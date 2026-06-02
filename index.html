@@ -3039,25 +3039,37 @@ function renderPGantt(y,m){
   var headHTML='<div class="planHead"><div class="phName">Installateur</div><div class="phDays">';
   for(var d=1;d<=daysInMonth;d++){var dd=new Date(y,m,d),wd=dd.getDay();var cls='phD';if(wd===0||wd===6)cls+=' wknd';if(dd.toDateString()===today.toDateString())cls+=' today';headHTML+='<div class="'+cls+'"><span class="phDNum">'+d+'</span><span class="phDJr">'+JR[wd]+'</span></div>';}
   headHTML+='</div></div>';
-  var insts=DB.installateurs||[];
-  if(!insts.length){g('planWrap').innerHTML='<div style="background:var(--white);border-radius:var(--radius-lg);padding:40px;text-align:center;color:var(--muted);font-size:13px">Aucun installateur. Ajoutez votre équipe pour voir le planning Gantt.</div>';return;}
-  var rows=insts.map(function(inst){
-    var nm=instName(inst.prenom,inst.nom);
-    var myI=getVisibleInst().filter(function(i){return i.installateur===nm;});
+  var visible=getVisibleInst();
+  // Construire la liste des "lignes" : installateurs enregistrés + toute personne assignée + Non assigné
+  var rowNames=[];
+  (DB.installateurs||[]).forEach(function(inst){rowNames.push(instName(inst.prenom,inst.nom));});
+  visible.forEach(function(i){var nm=i.installateur||'(Non assigné)';if(rowNames.indexOf(nm)<0)rowNames.push(nm);});
+  // Garder seulement les lignes qui ont au moins une installation ce mois OU les installateurs enregistrés
+  var registered=(DB.installateurs||[]).map(function(inst){return instName(inst.prenom,inst.nom);});
+  rowNames=rowNames.filter(function(nm){
+    if(registered.indexOf(nm)>=0)return true;
+    return visible.some(function(i){return (i.installateur||'(Non assigné)')===nm&&i.dateDebut&&new Date(i.dateDebut).getMonth()===m&&new Date(i.dateDebut).getFullYear()===y;});
+  });
+  if(!rowNames.length){g('planWrap').innerHTML='<div style="background:var(--white);border-radius:var(--radius-lg);padding:40px;text-align:center;color:var(--muted);font-size:13px">Aucune installation. Créez une installation avec une date pour la voir ici.</div>';return;}
+  var rows=rowNames.map(function(nm){
+    var inst=(DB.installateurs||[]).find(function(x){return instName(x.prenom,x.nom)===nm;});
+    var myI=visible.filter(function(i){return (i.installateur||'(Non assigné)')===nm;});
     var cells='';
     for(var d2=1;d2<=daysInMonth;d2++){
       var dd2=new Date(y,m,d2),wd2=dd2.getDay();dd2.setHours(0,0,0,0);
       var cls2='prCell';if(wd2===0||wd2===6)cls2+=' wknd';if(dd2.toDateString()===today.toDateString())cls2+=' today';
       var blks='';
-      myI.forEach(function(i){if(!i.dateDebut||!i.dateFin)return;var s=new Date(i.dateDebut),e=new Date(i.dateFin);s.setHours(0,0,0,0);e.setHours(0,0,0,0);if(dd2>=s&&dd2<=e){var fi=ficheIdxFor(i);blks+='<div class="iBlk" style="background:'+(SCOLS[i.statut]||'#888')+';cursor:pointer" title="'+i.chantier+' — clic pour détails" onclick="openFiche('+fi+')">'+i.chantier+'</div>';}});
+      myI.forEach(function(i){if(!i.dateDebut)return;var s=new Date(i.dateDebut),e=i.dateFin?new Date(i.dateFin):new Date(i.dateDebut);s.setHours(0,0,0,0);e.setHours(0,0,0,0);if(dd2>=s&&dd2<=e){var fi=ficheIdxFor(i);blks+='<div class="iBlk" style="background:'+(SCOLS[i.statut]||'#888')+';cursor:pointer" title="'+i.chantier+' ('+i.statut+') — clic pour détails" onclick="openFiche('+fi+')">'+i.chantier+'</div>';}});
       cells+='<div class="'+cls2+'">'+blks+'</div>';
     }
-    var init=(inst.prenom[0]||'')+((inst.nom||'')[0]||'');
-    var dispoCol={Disponible:'#059669',Occupé:'#d97706',Congés:'#dc2626',Formation:'#7c3aed'}[inst.dispo||'Disponible']||'#888';
+    var color=inst?inst.color:'#6b7280';
+    var init=inst?((inst.prenom[0]||'')+((inst.nom||'')[0]||'')):'?';
+    var dispo=inst?(inst.dispo||'Disponible'):'Externe / Non assigné';
+    var dispoCol={Disponible:'#059669',Occupé:'#d97706',Congés:'#dc2626',Formation:'#7c3aed'}[dispo]||'#6b7280';
     var moisCount=myI.filter(function(x){if(!x.dateDebut)return false;var dx=new Date(x.dateDebut);return dx.getMonth()===m&&dx.getFullYear()===y&&x.statut!=='Annulée';}).length;
     var loadCol=moisCount>8?'#dc2626':moisCount>=4?'#d97706':'#059669';
     var loadLbl=moisCount>8?'Surchargé':moisCount>=4?'Bien rempli':'Disponible';
-    return '<div class="pRow"><div class="prName"><div class="prAv" style="background:'+inst.color+'">'+init+'</div><div><div class="prNm">'+nm+'</div><div class="prCnt"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+dispoCol+';margin-right:3px;vertical-align:middle"></span>'+(inst.dispo||'Disponible')+' &middot; <span style="color:'+loadCol+';font-weight:600">'+moisCount+' ce mois ('+loadLbl+')</span></div></div></div><div class="prCells">'+cells+'</div></div>';
+    return '<div class="pRow"><div class="prName"><div class="prAv" style="background:'+color+'">'+init+'</div><div><div class="prNm">'+nm+'</div><div class="prCnt"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+dispoCol+';margin-right:3px;vertical-align:middle"></span><span style="color:'+loadCol+';font-weight:600">'+moisCount+' ce mois ('+loadLbl+')</span></div></div></div><div class="prCells">'+cells+'</div></div>';
   }).join('');
   g('planWrap').innerHTML='<div style="overflow-x:auto">'+headHTML+rows+'</div>';
 }
@@ -3090,13 +3102,21 @@ function renderPWeek(){
 }
 
 function renderPList(y,m){
-  var allInsts=getVisibleInst().filter(function(i){if(!i.dateDebut)return false;var d=new Date(i.dateDebut);return d.getFullYear()===y&&d.getMonth()===m;}).sort(function(a,b){return new Date(a.dateDebut)-new Date(b.dateDebut);});
-  if(!allInsts.length){g('planWrap').innerHTML='<div style="background:var(--white);border-radius:var(--radius-lg);padding:40px;text-align:center;color:var(--muted);font-size:13px">Aucune installation ce mois-ci</div>';return;}
+  var visible=getVisibleInst();
+  var allInsts=visible.filter(function(i){if(!i.dateDebut)return false;var d=new Date(i.dateDebut);return d.getFullYear()===y&&d.getMonth()===m;}).sort(function(a,b){return new Date(a.dateDebut)-new Date(b.dateDebut);});
+  var sansDate=visible.filter(function(i){return !i.dateDebut&&i.statut!=='Terminée'&&i.statut!=='Annulée';});
+  var html2='';
+  if(sansDate.length){
+    html2+='<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:12px;padding:14px;margin-bottom:16px"><div style="font-weight:700;font-size:13px;color:#d97706;margin-bottom:8px">⚠️ '+sansDate.length+' installation(s) à planifier (sans date)</div>';
+    html2+=sansDate.map(function(i){var fi=ficheIdxFor(i);return '<div onclick="openFiche('+fi+')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--white);border-radius:8px;margin-bottom:6px"><div><div style="font-weight:600;font-size:13px">'+i.chantier+'</div><div style="font-size:11px;color:var(--muted)">'+(i.client||'')+' · '+(i.installateur||'Non assigné')+'</div></div><span class="btn bGhost" style="font-size:11px;padding:4px 10px">📅 Planifier</span></div>';}).join('');
+    html2+='</div>';
+  }
+  if(!allInsts.length){g('planWrap').innerHTML=html2+'<div style="background:var(--white);border-radius:var(--radius-lg);padding:40px;text-align:center;color:var(--muted);font-size:13px">Aucune installation datée ce mois-ci</div>';return;}
   // Group by day
   var groups={};
   allInsts.forEach(function(i){var key=i.dateDebut;if(!groups[key])groups[key]=[];groups[key].push(i);});
   var today=new Date();today.setHours(0,0,0,0);
-  var html='<div class="planListWrap">';
+  var html=html2+'<div class="planListWrap">';
   Object.keys(groups).sort().forEach(function(key){
     var d=new Date(key);d.setHours(0,0,0,0);
     var isToday=d.toDateString()===today.toDateString();
