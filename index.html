@@ -1273,6 +1273,8 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="fi"><label>Étape</label><select id="mOetape"><option>Prospection</option><option>Contact</option><option>Qualification</option><option>Proposition</option><option>Négociation</option><option>Gagné</option><option>Perdu</option></select></div>
       <div class="fi"><label>Clôture prévue</label><input id="mOclose" type="date"></div>
       <div class="fi"><label>📞 Date de rappel client</label><input id="mOrappel" type="date"></div>
+      <div class="fi"><label>🔧 Visite tech. — qui</label><select id="mOvisiteQui"></select></div>
+      <div class="fi"><label>🔧 Visite tech. — date</label><input id="mOvisiteDate" type="date"></div>
       <div class="fi"><label>Source</label><select id="mOsource"><option>Bouche à oreille</option><option>Site web</option><option>Réseaux sociaux</option><option>Prospection téléphonique</option><option>Partenaire</option><option>Autre</option></select></div>
       <div class="fi full"><label>Notes</label><textarea id="mOnotes" placeholder="Notes..."></textarea></div>
     </div>
@@ -1547,6 +1549,8 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
         <select id="mIraccord"><option value="">--</option><option>Tableau personnel</option><option>Tableau des communs</option></select>
       </div>
       <div class="fi"><label>Métrage de câble (m)</label><input type="number" id="mIcable" min="0" placeholder="0"></div>
+      <div class="fi"><label>🔧 Visite tech. — qui</label><select id="mIvisiteQui"></select></div>
+      <div class="fi"><label>🔧 Visite tech. — date</label><input type="date" id="mIvisiteDate"></div>
       <div class="fi"><label>Nb bornes</label><input type="number" id="mInbbornes" min="1" value="1"></div>
       <div class="fi"><label>Puissance</label>
         <select id="mIpuissance"><option>3.7 kW</option><option>7.4 kW</option><option>11 kW</option><option>22 kW</option><option>50 kW</option><option>150 kW</option></select>
@@ -2048,6 +2052,8 @@ function openOppModal(idx){
   g('mOmontant').value=r.montant||'';g('mOproba').value=r.proba||50;
   g('mOetape').value=r.etape||'Prospection';g('mOclose').value=r.close||'';
   if(g('mOrappel'))g('mOrappel').value=r.dateRappel||'';
+  fillVisiteQui('mOvisiteQui',r.visiteQui||'');
+  if(g('mOvisiteDate'))g('mOvisiteDate').value=r.visiteDate||'';
   g('mOsource').value=r.source||'Bouche à oreille';g('mOnotes').value=r.notes||'';
   // Afficher la date de création
   var ci=g('mOcreationInfo');
@@ -2058,7 +2064,7 @@ function openOppModal(idx){
 function closeOppModal(){g('mOpp').classList.remove('on');}
 function saveOpp(){
   var nom=g('mOnom').value.trim();if(!nom){alert('Nom requis');return;}
-  var row={id:eOpp>=0?DB.opportunites[eOpp].id:DB.nextId++,nom:nom,client:g('mOclient').value,societe:g('mOsociete').value,montant:parseFloat(g('mOmontant').value)||0,proba:parseInt(g('mOproba').value)||50,etape:g('mOetape').value,close:g('mOclose').value,dateRappel:g('mOrappel')?g('mOrappel').value:'',source:g('mOsource').value,notes:g('mOnotes').value,commercialId:eOpp>=0?DB.opportunites[eOpp].commercialId:curUserObj?curUserObj.id:'',echanges:eOpp>=0?DB.opportunites[eOpp].echanges||[]:[],dateCreation:eOpp>=0?DB.opportunites[eOpp].dateCreation:new Date().toLocaleDateString('fr-FR'),creePar:eOpp>=0&&DB.opportunites[eOpp].creePar?DB.opportunites[eOpp].creePar:(curUserObj?curUserObj.name:''),proprietaire:eOpp>=0&&DB.opportunites[eOpp].proprietaire?DB.opportunites[eOpp].proprietaire:(curUserObj?curUserObj.name:'')};
+  var row={id:eOpp>=0?DB.opportunites[eOpp].id:DB.nextId++,nom:nom,client:g('mOclient').value,societe:g('mOsociete').value,montant:parseFloat(g('mOmontant').value)||0,proba:parseInt(g('mOproba').value)||50,etape:g('mOetape').value,close:g('mOclose').value,dateRappel:g('mOrappel')?g('mOrappel').value:'',visiteQui:g('mOvisiteQui')?g('mOvisiteQui').value:'',visiteDate:g('mOvisiteDate')?g('mOvisiteDate').value:'',source:g('mOsource').value,notes:g('mOnotes').value,commercialId:eOpp>=0?DB.opportunites[eOpp].commercialId:curUserObj?curUserObj.id:'',echanges:eOpp>=0?DB.opportunites[eOpp].echanges||[]:[],dateCreation:eOpp>=0?DB.opportunites[eOpp].dateCreation:new Date().toLocaleDateString('fr-FR'),creePar:eOpp>=0&&DB.opportunites[eOpp].creePar?DB.opportunites[eOpp].creePar:(curUserObj?curUserObj.name:''),proprietaire:eOpp>=0&&DB.opportunites[eOpp].proprietaire?DB.opportunites[eOpp].proprietaire:(curUserObj?curUserObj.name:'')};
   if(eOpp>=0)DB.opportunites[eOpp]=row;else DB.opportunites.push(row);
   addActivite('opp',(eOpp>=0?'Opportunité modifiée: ':'Nouvelle opportunité: ')+nom);
   save();closeOppModal();renderPipeline();toast('Opportunité enregistrée !');
@@ -2363,6 +2369,8 @@ function openIM(idx){
   g('mIacompte').value=r.acompte||0;g('mIpaiement').value=r.paiementStatut||'En attente';
   if(g('mIraccord'))g('mIraccord').value=r.raccordement||'';
   if(g('mIcable'))g('mIcable').value=r.cableM||'';
+  fillVisiteQui('mIvisiteQui',r.visiteQui||'');
+  if(g('mIvisiteDate'))g('mIvisiteDate').value=r.visiteDate||'';
   if(g('mIremunInst')){
     var rem=r.remunInstallateur;
     if((rem===undefined||rem==='')&&r.installateur){var inst=DB.installateurs.find(function(x){return instName(x.prenom,x.nom)===r.installateur;});if(inst)rem=inst.remunInstall;}
@@ -2393,6 +2401,7 @@ function saveI(){
     type:g('mItype').value,typeBien:g('mIbien').value,
     raccordement:g('mIraccord')?g('mIraccord').value:'',
     cableM:g('mIcable')?parseInt(g('mIcable').value)||0:0,
+    visiteQui:g('mIvisiteQui')?g('mIvisiteQui').value:'',visiteDate:g('mIvisiteDate')?g('mIvisiteDate').value:'',
     remunInstallateur:g('mIremunInst')&&g('mIremunInst').value!==''?parseFloat(g('mIremunInst').value)||0:'',
     nbBornes:parseInt(g('mInbbornes').value)||0,puissance:g('mIpuissance').value,
     installateur:g('mIinst').value,statut:g('mIstat').value,
@@ -2672,6 +2681,8 @@ function getVisitesTechniques(){
   var visites=[];
   (DB.prospects||[]).forEach(function(p,i){if(p.visiteDate)visites.push({type:'prospect',idx:i,nom:p.nom,qui:p.visiteQui||'Non assigné',date:p.visiteDate,heure:p.visiteHeure||'',stat:p.visiteStat||'',tel:p.tel||'',adresse:[p.adresse,p.ville].filter(Boolean).join(', ')});});
   (DB.contacts||[]).forEach(function(c,i){if(c.visiteDate)visites.push({type:'contact',idx:i,nom:c.nom,qui:c.visiteQui||'Non assigné',date:c.visiteDate,heure:c.visiteHeure||'',stat:c.visiteStat||'',tel:c.tel||'',adresse:c.adresse||''});});
+  (DB.opportunites||[]).forEach(function(o,i){if(o.visiteDate)visites.push({type:'opp',idx:i,nom:o.nom||o.client,qui:o.visiteQui||'Non assigné',date:o.visiteDate,heure:'',stat:'',tel:'',adresse:''});});
+  (DB.installations||[]).forEach(function(ins,i){if(ins.visiteDate)visites.push({type:'inst',idx:i,nom:ins.chantier||ins.client,qui:ins.visiteQui||'Non assigné',date:ins.visiteDate,heure:'',stat:'',tel:ins.tel||'',adresse:ins.adresse||''});});
   return visites;
 }
 function renderPlanSummary(){
@@ -2731,7 +2742,7 @@ function renderPWeek(){
     var blocks=dayInsts.map(function(inst){var fi=ficheIdxFor(inst);return '<div onclick="openFiche('+fi+')" style="background:'+(SCOLS[inst.statut]||'#888')+';color:#fff;border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;font-size:12px"><div style="font-weight:700;margin-bottom:2px">'+inst.chantier+'</div><div style="opacity:.9;font-size:11px">'+(inst.installateur||'Non assigné')+'</div></div>';}).join('');
     // Visites techniques du jour
     var dayVisites=allVisites.filter(function(v){var vd=new Date(v.date);vd.setHours(0,0,0,0);return vd.getTime()===day.getTime();});
-    blocks+=dayVisites.map(function(v){return '<div onclick="'+(v.type==='prospect'?'nav(\'pgProspects\');openProspectModal('+v.idx+')':'nav(\'pgContacts\');openContactModal('+v.idx+')')+'" style="background:#0891b2;color:#fff;border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;font-size:12px;border-left:3px solid #fff"><div style="font-weight:700;margin-bottom:2px">🔧 '+(v.heure?v.heure+' ':'')+v.nom+'</div><div style="opacity:.9;font-size:11px">Visite tech · '+v.qui+'</div></div>';}).join('');
+    blocks+=dayVisites.map(function(v){var act=v.type==='prospect'?'nav(\'pgProspects\');openProspectModal('+v.idx+')':v.type==='contact'?'nav(\'pgContacts\');openContactModal('+v.idx+')':v.type==='opp'?'nav(\'pgPipeline\');openOppModal('+v.idx+')':'nav(\'pgInst\');openIM('+v.idx+')';return '<div onclick="'+act+'" style="background:#0891b2;color:#fff;border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;font-size:12px;border-left:3px solid #fff"><div style="font-weight:700;margin-bottom:2px">🔧 '+(v.heure?v.heure+' ':'')+v.nom+'</div><div style="opacity:.9;font-size:11px">Visite tech · '+v.qui+'</div></div>';}).join('');
     if(!blocks)blocks='<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px 0">—</div>';
     var dayName=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'][i];
     cols+='<div style="flex:1;min-width:130px;border-right:1px solid var(--border)">'+
@@ -3473,6 +3484,10 @@ function showModal(title, bodyHTML, onSave, onDelete){
   window._modalDelete=onDelete||function(){};
 }
 function closeModal(){var m=document.getElementById('mGeneric');if(m)m.remove();}
+function closePM(){var m=g('mProf');if(m)m.classList.remove('on');}
+function closeMvtM(){var m=g('mMvt');if(m)m.classList.remove('on');}
+function closeProspectModal(){var m=g('mProspect');if(m)m.classList.remove('on');}
+function closeContactModal(){var m=g('mContact');if(m)m.classList.remove('on');}
 
 
 
