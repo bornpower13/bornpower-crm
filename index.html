@@ -1673,9 +1673,12 @@ function save(){
   if(fbReady&&db){
     db.collection('crm_data').doc('main').set({
       installations:DB.installations,installateurs:DB.installateurs,materiel:DB.materiel,
-      opportunites:DB.opportunites,contacts:DB.contacts,devis:DB.devis,prospects:DB.prospects,
+      mouvements:DB.mouvements||[],opportunites:DB.opportunites,contacts:DB.contacts,devis:DB.devis,prospects:DB.prospects,
       savTickets:DB.savTickets,notifications:DB.notifications,objectifs:DB.objectifs,
       conges:DB.conges,certifications:DB.certifications,candidatures:DB.candidatures,
+      paiements:DB.paiements||[],mediaGallery:DB.mediaGallery||[],editorialCal:DB.editorialCal||[],
+      contentIdeas:DB.contentIdeas||[],socialObjectifs:DB.socialObjectifs||[],socialStats:DB.socialStats||[],
+      commercialPrimes:DB.commercialPrimes||{},catalogue:DB.catalogue||[],
       activites:DB.activites,nextId:DB.nextId,updatedAt:new Date().toISOString()
     }).catch(function(e){console.log('save error:',e);});
   }
@@ -1685,11 +1688,15 @@ function loadFromFirebase(callback){
   fbLoad('crm_data',function(data){
     if(data){
       DB.installations=data.installations||[];DB.installateurs=data.installateurs||[];
-      DB.materiel=data.materiel||[];DB.opportunites=data.opportunites||[];
+      DB.materiel=data.materiel||[];DB.mouvements=data.mouvements||DB.mouvements||[];DB.opportunites=data.opportunites||[];
       DB.contacts=data.contacts||[];DB.devis=data.devis||[];DB.prospects=data.prospects||[];
       DB.savTickets=data.savTickets||[];DB.notifications=data.notifications||[];
       DB.objectifs=data.objectifs||[];DB.conges=data.conges||[];
       DB.certifications=data.certifications||[];DB.candidatures=data.candidatures||[];
+      DB.paiements=data.paiements||DB.paiements||[];DB.mediaGallery=data.mediaGallery||DB.mediaGallery||[];
+      DB.editorialCal=data.editorialCal||DB.editorialCal||[];DB.contentIdeas=data.contentIdeas||DB.contentIdeas||[];
+      DB.socialObjectifs=data.socialObjectifs||DB.socialObjectifs||[];DB.socialStats=data.socialStats||DB.socialStats||[];
+      DB.commercialPrimes=data.commercialPrimes||DB.commercialPrimes||{};DB.catalogue=data.catalogue||DB.catalogue||[];
       DB.activites=data.activites||[];DB.nextId=data.nextId||DB.nextId;
       try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}
     }
@@ -2703,7 +2710,6 @@ function renderProfils(){
   var se=g('profilSearch');var q=se?(se.value||'').toLowerCase():'';
   var myId=curUserObj?curUserObj.id:'';
   var list=(DB.installateurs||[]).filter(function(p){
-    if(isDirtech()&&p.managerId!==myId)return false;
     return !q||(instName(p.prenom,p.nom)+( p.spec||'')).toLowerCase().includes(q);
   });
   if(!list.length){g('profilGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted)"><div style="font-size:42px;margin-bottom:12px">👷</div><p style="font-size:15px;font-weight:600;margin-bottom:6px">Aucun installateur enregistré</p><p style="font-size:13px">Cliquez sur "+ Installateur" pour ajouter votre équipe terrain.</p></div>';return;}
@@ -2721,6 +2727,7 @@ function renderProfils(){
         +'<div style="font-size:12px;color:var(--muted)">'+(p.email||'')+'</div>'
         +'<div style="font-size:12px;color:var(--muted);margin-top:2px">'+(p.tel||'')+'</div>'
       +'</div>'
+      +(isDirtech()?(function(){var myId=curUserObj?curUserObj.id:'';var inTeam=p.managerId===myId;return '<div style="margin-top:8px"><button class="btn '+(inTeam?'bSuccess':'bGhost')+'" style="font-size:12px;width:100%" onclick="toggleTeam('+idx+')">'+(inTeam?'✓ Dans mon équipe':'➕ Ajouter à mon équipe')+'</button></div>';})():'')
       +'<div style="margin-top:8px;display:flex;gap:6px">'
         +(isAdmin()||isDirtech()?'<button class="btn bGhost" style="font-size:12px;flex:1" onclick="openProfModal('+idx+')">✏️ Modifier</button>':'')
         +((isAdmin()||isDirtech())?'<button class="act dl" onclick="delProf('+idx+')">🗑</button>':'')
@@ -2736,6 +2743,7 @@ function fillManagerSelect(selectId,selected){
 function openProfModal(idx){eProfil=idx;var r=idx>=0?DB.installateurs[idx]:{};g('mProfT').textContent=idx>=0?'Modifier':'Nouvel installateur';g('mPp').value=r.prenom||'';g('mPn').value=r.nom||'';g('mPtel').value=r.tel||'';g('mPemail').value=r.email||'';g('mPspec').value=r.spec||'';g('mPdispo').value=r.dispo||'Disponible';initDeptTags(r.depts||'');g('mPnotes').value=r.notes||'';if(g('mPremun'))g('mPremun').value=r.remunInstall||'';fillManagerSelect('mPmanager',r.managerId||'');profColSel=r.color||COLS[0];document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col===profColSel);});g('mProf').classList.add('on');}
 function saveP(){var p=g('mPp').value.trim();if(!p){alert('Prénom requis');return;}var row={id:eProfil>=0?DB.installateurs[eProfil].id:DB.nextId++,prenom:p,nom:g('mPn').value,tel:g('mPtel').value,email:g('mPemail').value,spec:g('mPspec').value,dispo:g('mPdispo').value,color:profColSel,depts:g('mPdepts').value,notes:g('mPnotes').value,remunInstall:g('mPremun')?parseFloat(g('mPremun').value)||0:0,managerId:g('mPmanager')?g('mPmanager').value:'',userId:eProfil>=0?DB.installateurs[eProfil].userId:''};if(eProfil>=0)DB.installateurs[eProfil]=row;else DB.installateurs.push(row);save();g('mProf').classList.remove('on');renderProfils();toast('Installateur enregistré !');}
 function delProf(i){if(confirm('Supprimer ?')){DB.installateurs.splice(i,1);save();renderProfils();}}
+function toggleTeam(idx){var p=DB.installateurs[idx];if(!p)return;var myId=curUserObj?curUserObj.id:'';if(p.managerId===myId){p.managerId='';toast('Retiré de votre équipe');}else{p.managerId=myId;toast('Ajouté à votre équipe ✅');}save();renderProfils();}
 
 // ── DEPARTEMENTS ──
 function addDept(){var sel=g('mPdeptSelect');if(!sel||!sel.value)return;if(selectedDepts.indexOf(sel.value)>=0){sel.value='';return;}selectedDepts.push(sel.value);renderDeptTags();if(g('mPdepts'))g('mPdepts').value=selectedDepts.join(', ');sel.value='';}
@@ -3346,9 +3354,15 @@ document.addEventListener('DOMContentLoaded',function(){
       DB.objectifs=data.objectifs||DB.objectifs;DB.conges=data.conges||DB.conges;
       DB.certifications=data.certifications||DB.certifications;DB.candidatures=data.candidatures||DB.candidatures;
       DB.notifications=data.notifications||DB.notifications;DB.activites=data.activites||DB.activites;
+      DB.mouvements=data.mouvements||DB.mouvements;DB.paiements=data.paiements||DB.paiements;
+      DB.mediaGallery=data.mediaGallery||DB.mediaGallery;DB.editorialCal=data.editorialCal||DB.editorialCal;
+      DB.contentIdeas=data.contentIdeas||DB.contentIdeas;DB.socialObjectifs=data.socialObjectifs||DB.socialObjectifs;
+      DB.socialStats=data.socialStats||DB.socialStats;DB.commercialPrimes=data.commercialPrimes||DB.commercialPrimes;
+      DB.catalogue=data.catalogue||DB.catalogue;
       DB.nextId=data.nextId||DB.nextId;
+      try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}
       var ap=document.querySelector('.pg.on');
-      if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();}
+      if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgMaJournee')renderMaJournee();}
     });
     fbListen(FIREBASE_ACCOUNTS_COLLECTION,function(data){
       if(data&&data.accounts){
