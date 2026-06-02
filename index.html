@@ -88,6 +88,7 @@ body{font-family:'DM Sans',sans-serif;background:#f0f2f8;color:var(--text);font-
 #sidebar nav::-webkit-scrollbar-track{background:transparent;}
 #sidebar nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px;}
 .navSection{padding:8px 12px 4px;font-size:10px;font-weight:600;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.07em;}
+.navSec{padding:12px 14px 5px;font-size:10px;font-weight:700;color:rgba(255,255,255,.40);text-transform:uppercase;letter-spacing:.08em;}
 #sidebar nav a{display:flex;align-items:center;gap:9px;padding:9px 14px;color:rgba(255,255,255,.45);font-size:13px;font-weight:500;cursor:pointer;border-left:2px solid transparent;transition:.2s;text-decoration:none;border-radius:0 8px 8px 0;margin:1px 8px 1px 0;}
 #sidebar nav a:hover{color:#fff;background:rgba(255,255,255,.07);}
 #sidebar nav a.on{color:var(--gold2);border-left-color:var(--gold2);background:linear-gradient(90deg,rgba(199,151,50,.15),rgba(199,151,50,.05));}
@@ -871,6 +872,17 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
     </div>
 
     <!-- SAV -->
+    <!-- VISITES TECHNIQUES -->
+    <div class="pg" id="pgVisites">
+      <div class="pgHead"><div><h1>Visites techniques</h1><p class="sub">Toutes les visites programmées</p></div></div>
+      <div class="kpiRow" id="visitesKpis" style="margin-bottom:16px"></div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <select class="fsl" id="visiteFilterQui" onchange="renderVisites()"><option value="">Tout le monde</option></select>
+        <select class="fsl" id="visiteFilterPeriode" onchange="renderVisites()"><option value="">Toutes les dates</option><option value="today">Aujourd'hui</option><option value="week">Cette semaine</option><option value="upcoming">À venir</option><option value="past">Passées</option></select>
+      </div>
+      <div class="card"><div class="cardB" id="visitesList" style="padding:0"></div></div>
+    </div>
+
     <div class="pg" id="pgSAV">
       <div class="pgHead">
         <div><h1>SAV</h1><p class="sub">Tickets de support et interventions</p></div>
@@ -1723,6 +1735,7 @@ var NAV_MAP={
     {id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgObjectifs',ico:'🎯',lbl:'Objectifs CA'},
     {id:'pgRapports',ico:'📈',lbl:'Rapports'},{id:'pgCommerciaux',ico:'💼',lbl:'Commerciaux'},
     {s:'Installateurs'},{id:'pgInst',ico:'⚡',lbl:'Installations'},{id:'pgSAV',ico:'🔧',lbl:'SAV'},
+    {id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},
     {id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgStock',ico:'📦',lbl:'Stock'},
     {id:'pgProfils',ico:'👷',lbl:'Installateurs'},
     {s:'Gestion'},{id:'pgRH',ico:'👥',lbl:'RH'},{id:'pgFinance',ico:'💰',lbl:'Finance'},{id:'pgRecrutement',ico:'🎯',lbl:'Recrutement'},
@@ -1732,6 +1745,7 @@ var NAV_MAP={
   dirtech:[
     {s:"Vue d'ensemble"},{id:'pgDashDT',ico:'📊',lbl:'Tableau de bord'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
     {s:'Installateurs'},{id:'pgInst',ico:'⚡',lbl:'Installations'},{id:'pgSAV',ico:'🔧',lbl:'SAV'},
+    {id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},
     {id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgStock',ico:'📦',lbl:'Stock'},{id:'pgProfils',ico:'👷',lbl:'Installateurs'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
     {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
@@ -1740,12 +1754,13 @@ var NAV_MAP={
     {s:'Mon espace'},{id:'pgDashComm',ico:'📊',lbl:'Tableau de bord'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
     {id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgProspects',ico:'🔍',lbl:'Prospects'},
     {id:'pgContacts',ico:'👥',lbl:'Mes contacts'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},
+    {id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
     {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
   ],
   installer:[
     {s:'Mes chantiers'},{id:'pgInst',ico:'⚡',lbl:'Mes installations'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
-    {id:'pgSAV',ico:'🔧',lbl:'SAV'},{id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgStock',ico:'📦',lbl:'Stock'},
+    {id:'pgSAV',ico:'🔧',lbl:'SAV'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},{id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgStock',ico:'📦',lbl:'Stock'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
     {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
   ],
@@ -1787,6 +1802,7 @@ function nav(id){
   if(id==='pgDevis')renderDevis();
   if(id==='pgInst')renderT();
   if(id==='pgStock')renderS();
+  if(id==='pgVisites')renderVisites();
   if(id==='pgProfils'){if(fbReady&&db){loadFromFirebase(function(){renderProfils();});}else{renderProfils();}}
   if(id==='pgProspects')renderProspects();
   if(id==='pgSAV')renderSAV();
@@ -2684,6 +2700,52 @@ function getVisitesTechniques(){
   (DB.opportunites||[]).forEach(function(o,i){if(o.visiteDate)visites.push({type:'opp',idx:i,nom:o.nom||o.client,qui:o.visiteQui||'Non assigné',date:o.visiteDate,heure:'',stat:'',tel:'',adresse:''});});
   (DB.installations||[]).forEach(function(ins,i){if(ins.visiteDate)visites.push({type:'inst',idx:i,nom:ins.chantier||ins.client,qui:ins.visiteQui||'Non assigné',date:ins.visiteDate,heure:'',stat:'',tel:ins.tel||'',adresse:ins.adresse||''});});
   return visites;
+}
+
+var TYPE_LABELS={prospect:'Prospect',contact:'Client',opp:'Opportunité',inst:'Installation'};
+var TYPE_COLORS={prospect:'#d97706',contact:'#059669',opp:'#7c3aed',inst:'#2563eb'};
+function renderVisites(){
+  // Populate qui filter
+  var sel=g('visiteFilterQui');
+  if(sel&&sel.options.length<=1){
+    var noms=['Florian Camps'];(DB.installateurs||[]).forEach(function(i){noms.push(instName(i.prenom,i.nom));});
+    noms.forEach(function(n){var o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);});
+  }
+  var fq=g('visiteFilterQui')?g('visiteFilterQui').value:'';
+  var fp=g('visiteFilterPeriode')?g('visiteFilterPeriode').value:'';
+  var today=new Date();today.setHours(0,0,0,0);
+  var weekStart=new Date(today);var dow=(today.getDay()+6)%7;weekStart.setDate(today.getDate()-dow);
+  var weekEnd=new Date(weekStart);weekEnd.setDate(weekStart.getDate()+6);
+  var all=getVisitesTechniques().filter(function(v){
+    if(fq&&v.qui!==fq)return false;
+    var vd=new Date(v.date);vd.setHours(0,0,0,0);
+    if(fp==='today'&&vd.getTime()!==today.getTime())return false;
+    if(fp==='week'&&(vd<weekStart||vd>weekEnd))return false;
+    if(fp==='upcoming'&&vd<today)return false;
+    if(fp==='past'&&vd>=today)return false;
+    return true;
+  }).sort(function(a,b){return new Date(a.date)-new Date(b.date);});
+
+  // KPIs
+  var allV=getVisitesTechniques();
+  var todayC=allV.filter(function(v){var d=new Date(v.date);d.setHours(0,0,0,0);return d.getTime()===today.getTime();}).length;
+  var weekC=allV.filter(function(v){var d=new Date(v.date);d.setHours(0,0,0,0);return d>=weekStart&&d<=weekEnd;}).length;
+  var upC=allV.filter(function(v){var d=new Date(v.date);d.setHours(0,0,0,0);return d>=today;}).length;
+  g('visitesKpis').innerHTML=kpi('📍',"Aujourd'hui",todayC,'blue')+kpi('📆','Cette semaine',weekC,'purple')+kpi('🔧','À venir',upC,'green')+kpi('📋','Total',allV.length,'orange');
+
+  if(!all.length){g('visitesList').innerHTML='<div style="text-align:center;padding:50px;color:var(--muted)"><div style="font-size:42px;margin-bottom:12px">🔧</div><p style="font-size:15px;font-weight:600;margin-bottom:6px">Aucune visite technique</p><p style="font-size:13px">Programmez une visite depuis une fiche prospect, client, opportunité ou installation.</p></div>';return;}
+  g('visitesList').innerHTML=all.map(function(v){
+    var vd=new Date(v.date);vd.setHours(0,0,0,0);
+    var isPast=vd<today;var isToday=vd.getTime()===today.getTime();
+    var col=TYPE_COLORS[v.type]||'#888';
+    var act=v.type==='prospect'?"nav('pgProspects');openProspectModal("+v.idx+")":v.type==='contact'?"nav('pgContacts');openContactModal("+v.idx+")":v.type==='opp'?"nav('pgPipeline');openOppModal("+v.idx+")":"nav('pgInst');openIM("+v.idx+")";
+    return '<div onclick="'+act+'" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer'+(isToday?';background:var(--gold-bg,#fdf6e3)':'')+'">'+
+      '<div style="width:48px;height:48px;border-radius:12px;background:'+col+'18;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0"><div style="font-size:16px;font-weight:800;color:'+col+';line-height:1">'+vd.getDate()+'</div><div style="font-size:9px;color:'+col+';text-transform:uppercase">'+MO[vd.getMonth()].slice(0,3)+'</div></div>'+
+      '<div style="flex:1"><div style="font-weight:700;font-size:14px;color:var(--navy)">🔧 '+v.nom+(v.heure?' <span style="color:var(--muted);font-weight:500">· '+v.heure+'</span>':'')+'</div>'+
+      '<div style="font-size:12px;color:var(--muted)">'+(v.adresse?v.adresse+' · ':'')+'Assignée à <strong style="color:var(--navy)">'+v.qui+'</strong></div></div>'+
+      '<div style="text-align:right;flex-shrink:0"><span class="badge" style="background:'+col+'22;color:'+col+'">'+(TYPE_LABELS[v.type]||v.type)+'</span>'+
+      (isToday?'<div style="font-size:11px;color:var(--gold);font-weight:700;margin-top:4px">AUJOURD\'HUI</div>':isPast?'<div style="font-size:11px;color:var(--muted);margin-top:4px">Passée</div>':'')+'</div></div>';
+  }).join('');
 }
 function renderPlanSummary(){
   var el=g('planSummary');if(!el)return;
