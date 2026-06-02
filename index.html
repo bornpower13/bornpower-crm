@@ -1669,25 +1669,49 @@ function fbLoad(collection,callback){if(!fbReady||!db){callback(null);return;}db
 function fbListen(collection,callback){if(!fbReady||!db)return;db.collection(collection).doc('main').onSnapshot(function(doc){if(doc.exists){callback(doc.data());}});}
 
 function save(){
-  try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}
+  try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){console.log('localStorage plein:',e);toast('⚠️ Stockage local plein (trop de photos)');}
   if(fbReady&&db){
-    db.collection('crm_data').doc('main').set({
-      installations:DB.installations,installateurs:DB.installateurs,materiel:DB.materiel,
+    // Version "légère" pour Firestore : on retire les médias lourds (base64) qui font exploser la limite de 1 Mo
+    var instLight=(DB.installations||[]).map(function(i){
+      var c=Object.assign({},i);
+      // Garder une trace du nombre de photos mais ne pas envoyer le base64 vers Firestore
+      if(c.photos&&c.photos.length){c._nbPhotos=c.photos.length;c.photos=[];}
+      if(c.signature){c.signature='';}
+      if(c.devisPDF){c.devisPDF='';c._hasDevisPDF=true;}
+      return c;
+    });
+    var payload={
+      installations:instLight,installateurs:DB.installateurs,materiel:DB.materiel,
       mouvements:DB.mouvements||[],opportunites:DB.opportunites,contacts:DB.contacts,devis:DB.devis,prospects:DB.prospects,
       savTickets:DB.savTickets,notifications:DB.notifications,objectifs:DB.objectifs,
       conges:DB.conges,certifications:DB.certifications,candidatures:DB.candidatures,
-      paiements:DB.paiements||[],mediaGallery:DB.mediaGallery||[],editorialCal:DB.editorialCal||[],
+      paiements:DB.paiements||[],editorialCal:DB.editorialCal||[],
       contentIdeas:DB.contentIdeas||[],socialObjectifs:DB.socialObjectifs||[],socialStats:DB.socialStats||[],
       commercialPrimes:DB.commercialPrimes||{},catalogue:DB.catalogue||[],
       activites:DB.activites,nextId:DB.nextId,updatedAt:new Date().toISOString()
-    }).catch(function(e){console.log('save error:',e);});
+    };
+    db.collection('crm_data').doc('main').set(payload).catch(function(e){
+      console.log('save error:',e);
+      toast('⚠️ Erreur sync: '+(e.code||e.message||'inconnue'));
+    });
   }
 }
 function load(){try{var d=localStorage.getItem(KEY);if(d){DB=JSON.parse(d);}}catch(e){}}
 function loadFromFirebase(callback){
   fbLoad('crm_data',function(data){
     if(data){
-      DB.installations=data.installations||[];DB.installateurs=data.installateurs||[];
+      // Fusion : récupérer les photos/signatures locales pour les réattacher aux installations Firebase
+      var localInst={};(DB.installations||[]).forEach(function(i){localInst[i.id]=i;});
+      DB.installations=(data.installations||[]).map(function(i){
+        var loc=localInst[i.id];
+        if(loc){
+          if((!i.photos||!i.photos.length)&&loc.photos&&loc.photos.length)i.photos=loc.photos;
+          if(!i.signature&&loc.signature)i.signature=loc.signature;
+          if(!i.devisPDF&&loc.devisPDF){i.devisPDF=loc.devisPDF;i.devisPDFName=loc.devisPDFName;}
+        }
+        return i;
+      });
+      DB.installateurs=data.installateurs||[];
       DB.materiel=data.materiel||[];DB.mouvements=data.mouvements||DB.mouvements||[];DB.opportunites=data.opportunites||[];
       DB.contacts=data.contacts||[];DB.devis=data.devis||[];DB.prospects=data.prospects||[];
       DB.savTickets=data.savTickets||[];DB.notifications=data.notifications||[];
@@ -3367,7 +3391,8 @@ document.addEventListener('DOMContentLoaded',function(){
     });
     fbListen('crm_data',function(data){
       if(!curUserObj)return;
-      DB.installations=data.installations||DB.installations;DB.installateurs=data.installateurs||DB.installateurs;
+      if(data.installations){var locI={};(DB.installations||[]).forEach(function(i){locI[i.id]=i;});DB.installations=data.installations.map(function(i){var loc=locI[i.id];if(loc){if((!i.photos||!i.photos.length)&&loc.photos&&loc.photos.length)i.photos=loc.photos;if(!i.signature&&loc.signature)i.signature=loc.signature;if(!i.devisPDF&&loc.devisPDF){i.devisPDF=loc.devisPDF;i.devisPDFName=loc.devisPDFName;}}return i;});}
+      DB.installateurs=data.installateurs||DB.installateurs;
       DB.materiel=data.materiel||DB.materiel;DB.opportunites=data.opportunites||DB.opportunites;
       DB.contacts=data.contacts||DB.contacts;DB.devis=data.devis||DB.devis;
       DB.prospects=data.prospects||DB.prospects;DB.savTickets=data.savTickets||DB.savTickets;
