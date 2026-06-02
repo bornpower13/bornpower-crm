@@ -11,8 +11,8 @@
 <meta name="apple-mobile-web-app-title" content="BornPower">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23222651'/><text y='.9em' font-size='80' x='10'>⚡</text></svg>">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23222651'/><text y='.9em' font-size='80' x='10'>⚡</text></svg>">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root{
@@ -642,6 +642,13 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 <!-- APP -->
 
 <div id="sidebarOverlay" onclick="toggleMobileMenu()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:49;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);"></div>
+<div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,#222651,#2d3270);color:#fff;padding:14px 16px;box-shadow:0 -4px 20px rgba(0,0,0,.3)">
+  <div style="display:flex;align-items:center;gap:12px;max-width:560px;margin:0 auto">
+    <img src="icon-180.png" style="width:42px;height:42px;border-radius:10px;flex-shrink:0">
+    <div style="flex:1;font-size:13px;line-height:1.4" id="installText">Installez BornPower sur votre écran d'accueil pour un accès rapide.</div>
+    <button onclick="dismissInstall()" style="background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:8px 12px;font-size:12px;cursor:pointer;font-family:inherit;flex-shrink:0">OK</button>
+  </div>
+</div>
 <div id="app">
   <div id="sidebar">
     <div class="sLogo">
@@ -3569,6 +3576,26 @@ function changePassword(){var old=g('oldPass').value;var nw=g('newPass').value;v
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',function(){
   if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(e){console.log('SW error:',e);});}
+  // Guide d'installation PWA
+  var deferredPrompt=null;
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;showInstallBanner('android');});
+  function isStandalone(){return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;}
+  function isIOS(){return /iphone|ipad|ipod/i.test(navigator.userAgent);}
+  function showInstallBanner(mode){
+    if(isStandalone()){return;} // déjà installé
+    if(localStorage.getItem('bp_install_dismissed')==='1'){return;}
+    var b=document.getElementById('installBanner');var t=document.getElementById('installText');if(!b)return;
+    if(mode==='android'&&deferredPrompt){
+      t.innerHTML='📲 <strong>Installer BornPower</strong> comme application sur votre téléphone.';
+      var btn=b.querySelector('button');btn.textContent='Installer';btn.onclick=function(){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){dismissInstall();});};
+    }else if(isIOS()){
+      t.innerHTML='📲 <strong>Installer BornPower :</strong> appuyez sur <strong>Partager</strong> (⬆️) en bas, puis <strong>« Sur l\'écran d\'accueil »</strong>.';
+    }else{return;}
+    b.style.display='block';
+  }
+  window.dismissInstall=function(){var b=document.getElementById('installBanner');if(b)b.style.display='none';localStorage.setItem('bp_install_dismissed','1');};
+  // iOS : montrer le guide après un court délai si pas installé
+  setTimeout(function(){if(isIOS()&&!isStandalone())showInstallBanner('ios');},2500);
   ['mInst','mFiche','mProf','mMat','mMvt','mOpp','mContact','mDevis','mProspect','mSAV','mSAVDetail','mOppDetail','mSignature','mCompteRendu','mRecrut'].forEach(function(id){var el=g(id);if(el)el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('on');});});
 
   initFirebase();
