@@ -801,11 +801,11 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
     <!-- STOCK -->
     <div class="pg" id="pgStock">
       <div class="pgHead"><div><h1>Stock matériel</h1><p class="sub">Inventaire et mouvements</p></div>
-        <div id="stockAddBtn"></div>
+        <button class="btn bPrimary" id="stockAddBtn" onclick="openMatModal(-1)">+ Ajouter un article</button>
       </div>
       <div class="tbar" style="border-radius:var(--radius-lg);border:1px solid var(--border);margin-bottom:14px;">
         <div class="srch"><input id="stockSearch" oninput="renderS()" placeholder="Rechercher..."></div><span id="stockCount" style="font-size:12px;color:var(--muted);margin-left:8px"></span>
-        <select class="fsl" id="stockCatF" onchange="renderS()"><option value="">Toutes catégories</option><option>Panneaux solaires</option><option>Onduleurs</option><option>Cablage</option><option>Bornes</option><option>Éclairage</option><option>Fixation</option><option>Protection</option><option>Autre</option></select>
+        <select class="fsl" id="stockCatF" onchange="renderS()"><option value="">Toutes catégories</option><option>Bornes</option><option>Disjoncteurs</option><option>Câbles</option><option>Protection</option><option>Coffrets</option><option>Fixation</option><option>Connectique</option><option>Autre</option></select>
         <select class="fsl" id="stockStatF" onchange="renderS()"><option value="">Tous niveaux</option><option>OK</option><option>Faible</option><option>Critique</option></select>
       </div>
       <div class="sgrid" id="stockTable"></div>
@@ -961,6 +961,10 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
           <div class="cardH"><h3>⚠️ Relances à faire</h3></div>
           <div class="cardB" id="finRelances"></div>
         </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="cardH"><h3>💰 Rémunérations & primes (mois en cours)</h3></div>
+        <div class="cardB" id="finPayroll"></div>
       </div>
     </div>
 
@@ -1233,25 +1237,10 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
   <div id="mPdeptTags" style="display:flex;flex-wrap:wrap;gap:6px;min-height:28px;padding:4px 0"></div>
   <input type="hidden" id="mPdepts">
 </div>
+      <div class="fi"><label>Rémunération par installation (€)</label><input type="number" id="mPremun" min="0" placeholder="Ex: 200"></div>
       <div class="fi full"><label>Notes</label><textarea id="mPnotes" placeholder="Notes..."></textarea></div>
     </div>
     <div class="mf"><button class="btn bGhost" onclick="closePM()">Annuler</button><button class="btn bPrimary" onclick="saveP()">Enregistrer</button></div>
-  </div>
-</div>
-
-<div class="ov" id="mMat">
-  <div class="modal sm">
-    <div class="mh"><h2 id="mMatT">Nouveau matériel</h2><button class="mcl" onclick="closeMtM()">&#10005;</button></div>
-    <div class="fgrid">
-      <div class="fi full"><label>Nom *</label><input id="mMnom" placeholder="Ex: Panneau 400W"></div>
-      <div class="fi"><label>Catégorie</label><select id="mMcat"><option>Panneaux solaires</option><option>Onduleurs</option><option>Cablage</option><option>Bornes</option><option>Éclairage</option><option>Fixation</option><option>Protection</option><option>Autre</option></select></div>
-      <div class="fi"><label>Unité</label><select id="mMunit"><option>unité(s)</option><option>mètre(s)</option><option>lot(s)</option><option>kg</option></select></div>
-      <div class="fi"><label>Stock</label><input id="mMstock" type="number" min="0" placeholder="0"></div>
-      <div class="fi"><label>Seuil alerte</label><input id="mMmin" type="number" min="0" placeholder="5"></div>
-      <div class="fi"><label>Référence</label><input id="mMref" placeholder="REF-001"></div>
-      <div class="fi full"><label>Notes</label><textarea id="mMnotes" placeholder="Notes..."></textarea></div>
-    </div>
-    <div class="mf"><button class="btn bGhost" onclick="closeMtM()">Annuler</button><button class="btn bPrimary" onclick="saveMt()">Enregistrer</button></div>
   </div>
 </div>
 
@@ -1583,6 +1572,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 <div class="ov" id="mOpp">
   <div class="modal">
     <div class="mh"><h2 id="mOppT">Opportunité</h2><button class="mcl" onclick="closeOppModal()">&#10005;</button></div>
+    <div id="mOcreationInfo"></div>
     <div class="fgrid">
       <div class="fi"><label>Nom *</label><input id="mOnom" placeholder="Nom de l'affaire"></div>
       <div class="fi"><label>Client</label><input id="mOclient" placeholder="Nom du client"></div>
@@ -1592,7 +1582,8 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="fi"><label>Étape</label>
         <select id="mOetape"><option>Prospection</option><option>Contact</option><option>Qualification</option><option>Proposition</option><option>Négociation</option><option>Gagné</option><option>Perdu</option></select>
       </div>
-      <div class="fi"><label>Date de clôture</label><input type="date" id="mOclose"></div>
+      <div class="fi"><label>Date de clôture prévue</label><input type="date" id="mOclose"></div>
+      <div class="fi"><label>📞 Date de rappel client</label><input type="date" id="mOrappel"></div>
       <div class="fi"><label>Source</label>
         <select id="mOsource"><option>Bouche à oreille</option><option>Site web</option><option>Réseaux sociaux</option><option>Prospection téléphonique</option><option>Partenaire</option><option>Autre</option></select>
       </div>
@@ -1749,7 +1740,8 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
   <div class="modal sm">
     <div class="mh"><h2 id="mMatT">Matériel</h2><button class="mcl" onclick="g('mMat').classList.remove('on')">&#10005;</button></div>
     <div class="fgrid">
-      <div class="fi full"><label>Nom *</label><input id="mMnom" placeholder="Nom du matériel"></div>
+      <div class="fi full"><label>Nom *</label><input id="mMnom" placeholder="Ex: Disjoncteur 40A, Borne 7.4kW, Câble 5G6..."></div>
+      <div class="fi"><label>Catégorie</label><select id="mMcat"><option>Bornes</option><option>Disjoncteurs</option><option>Câbles</option><option>Protection</option><option>Coffrets</option><option>Fixation</option><option>Connectique</option><option>Autre</option></select></div>
       <div class="fi"><label>Référence</label><input id="mMref" placeholder="Réf. fournisseur"></div>
       <div class="fi"><label>Unité</label><select id="mMunite"><option>Unité</option><option>Mètre</option><option>Rouleau</option><option>Boîte</option><option>Kg</option></select></div>
       <div class="fi"><label>Stock actuel</label><input type="number" id="mMstock" value="0" min="0"></div>
@@ -1773,42 +1765,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 </div>
 
 <!-- PROFIL INSTALLATEUR -->
-<div class="ov" id="mProf">
-  <div class="modal">
-    <div class="mh"><h2 id="mProfT">Installateur</h2><button class="mcl" onclick="g('mProf').classList.remove('on')">&#10005;</button></div>
-    <div class="fgrid">
-      <div class="fi"><label>Prénom *</label><input id="mPp" placeholder="Prénom"></div>
-      <div class="fi"><label>Nom</label><input id="mPn" placeholder="Nom"></div>
-      <div class="fi"><label>Téléphone</label><input id="mPtel" placeholder="06 00 00 00 00"></div>
-      <div class="fi"><label>Email</label><input type="email" id="mPemail" placeholder="email@exemple.fr"></div>
-      <div class="fi"><label>Spécialité</label><input id="mPspec" placeholder="Ex: IRVE, Solaire..."></div>
-      <div class="fi"><label>Disponibilité</label>
-        <select id="mPdispo"><option>Disponible</option><option>Occupé</option><option>Congés</option><option>Formation</option></select>
-      </div>
-      <div class="fi full">
-        <label>Départements d'intervention</label>
-        <div id="mPdeptTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:28px"></div>
-        <div style="display:flex;gap:8px">
-          <select id="mPdeptSelect" style="flex:1;border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:12px;outline:none;font-family:inherit">
-            <option value="">Choisir un département...</option>
-            <option>01 - Ain</option><option>02 - Aisne</option><option>03 - Allier</option><option>04 - Alpes-de-Haute-Provence</option><option>05 - Hautes-Alpes</option><option>06 - Alpes-Maritimes</option><option>07 - Ardèche</option><option>08 - Ardennes</option><option>09 - Ariège</option><option>10 - Aube</option><option>11 - Aude</option><option>12 - Aveyron</option><option>13 - Bouches-du-Rhône</option><option>14 - Calvados</option><option>15 - Cantal</option><option>16 - Charente</option><option>17 - Charente-Maritime</option><option>18 - Cher</option><option>19 - Corrèze</option><option>20 - Corse</option><option>21 - Côte-d'Or</option><option>22 - Côtes-d'Armor</option><option>23 - Creuse</option><option>24 - Dordogne</option><option>25 - Doubs</option><option>26 - Drôme</option><option>27 - Eure</option><option>28 - Eure-et-Loir</option><option>29 - Finistère</option><option>30 - Gard</option><option>31 - Haute-Garonne</option><option>32 - Gers</option><option>33 - Gironde</option><option>34 - Hérault</option><option>35 - Ille-et-Vilaine</option><option>36 - Indre</option><option>37 - Indre-et-Loire</option><option>38 - Isère</option><option>39 - Jura</option><option>40 - Landes</option><option>41 - Loir-et-Cher</option><option>42 - Loire</option><option>43 - Haute-Loire</option><option>44 - Loire-Atlantique</option><option>45 - Loiret</option><option>46 - Lot</option><option>47 - Lot-et-Garonne</option><option>48 - Lozère</option><option>49 - Maine-et-Loire</option><option>50 - Manche</option><option>51 - Marne</option><option>52 - Haute-Marne</option><option>53 - Mayenne</option><option>54 - Meurthe-et-Moselle</option><option>55 - Meuse</option><option>56 - Morbihan</option><option>57 - Moselle</option><option>58 - Nièvre</option><option>59 - Nord</option><option>60 - Oise</option><option>61 - Orne</option><option>62 - Pas-de-Calais</option><option>63 - Puy-de-Dôme</option><option>64 - Pyrénées-Atlantiques</option><option>65 - Hautes-Pyrénées</option><option>66 - Pyrénées-Orientales</option><option>67 - Bas-Rhin</option><option>68 - Haut-Rhin</option><option>69 - Rhône</option><option>70 - Haute-Saône</option><option>71 - Saône-et-Loire</option><option>72 - Sarthe</option><option>73 - Savoie</option><option>74 - Haute-Savoie</option><option>75 - Paris</option><option>76 - Seine-Maritime</option><option>77 - Seine-et-Marne</option><option>78 - Yvelines</option><option>79 - Deux-Sèvres</option><option>80 - Somme</option><option>81 - Tarn</option><option>82 - Tarn-et-Garonne</option><option>83 - Var</option><option>84 - Vaucluse</option><option>85 - Vendée</option><option>86 - Vienne</option><option>87 - Haute-Vienne</option><option>88 - Vosges</option><option>89 - Yonne</option><option>90 - Territoire de Belfort</option><option>91 - Essonne</option><option>92 - Hauts-de-Seine</option><option>93 - Seine-Saint-Denis</option><option>94 - Val-de-Marne</option><option>95 - Val-d'Oise</option><option>971 - Guadeloupe</option><option>972 - Martinique</option><option>973 - Guyane</option><option>974 - La Réunion</option><option>976 - Mayotte</option>
-          </select>
-          <button class="btn bGhost" onclick="addDept()" style="font-size:12px">+ Ajouter</button>
-        </div>
-        <input type="hidden" id="mPdepts">
-      </div>
-      <div class="fi full"><label>Notes</label><textarea id="mPnotes" placeholder="Notes..."></textarea></div>
-      <div class="fi full">
-        <label>Couleur</label>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><div class="cSwatch" data-col="#2563eb" onclick="profColSel='#2563eb';document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col==='#2563eb');})" style="background:#2563eb"></div><div class="cSwatch" data-col="#7c3aed" onclick="profColSel='#7c3aed';document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col==='#7c3aed');})" style="background:#7c3aed"></div><div class="cSwatch" data-col="#059669" onclick="profColSel='#059669';document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col==='#059669');})" style="background:#059669"></div><div class="cSwatch" data-col="#d97706" onclick="profColSel='#d97706';document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col==='#d97706');})" style="background:#d97706"></div><div class="cSwatch" data-col="#dc2626" onclick="profColSel='#dc2626';document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col==='#dc2626');})" style="background:#dc2626"></div><div class="cSwatch" data-col="#0891b2" onclick="profColSel='#0891b2';document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col==='#0891b2');})" style="background:#0891b2"></div><div class="cSwatch" data-col="#c79732" onclick="profColSel='#c79732';document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col==='#c79732');})" style="background:#c79732"></div><div class="cSwatch" data-col="#6b7280" onclick="profColSel='#6b7280';document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col==='#6b7280');})" style="background:#6b7280"></div><div class="cSwatch" data-col="#222651" onclick="profColSel='#222651';document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col==='#222651');})" style="background:#222651"></div><div class="cSwatch" data-col="#be185d" onclick="profColSel='#be185d';document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col==='#be185d');})" style="background:#be185d"></div>
-        </div>
-      </div>
-    </div>
-    <div class="mf"><button class="btn bGhost" onclick="g('mProf').classList.remove('on')">Annuler</button><button class="btn bPrimary" onclick="saveP()">Enregistrer</button></div>
-  </div>
-</div>
 
-<!-- SAV MODAL -->
 <div class="ov" id="mSAV">
   <div class="modal">
     <div class="mh"><h2 id="mSAVT">Ticket SAV</h2><button class="mcl" onclick="closeSAVModal()">&#10005;</button></div>
@@ -1869,7 +1826,7 @@ var ROLE_CSS={admin:'roleAdmin',dirtech:'roleDirtech',commercial:'roleCommercial
 
 var ADMIN={id:'florian',name:'Florian',prenom:'Florian',nom:'',email:'contact@bornpower.fr',pass:'Admin2026@',role:'admin',avatar:'F',color:'#c79732',status:'active'};
 
-var DB={installations:[],installateurs:[],materiel:[],mouvements:[],opportunites:[],contacts:[],devis:[],prospects:[],savTickets:[],chatMessages:[],notifications:[],activites:[],objectifs:[],conges:[],certifications:[],paiements:[],candidatures:[],mediaGallery:[],editorialCal:[],socialStats:[],contentIdeas:[],socialObjectifs:[],nextId:1};
+var DB={installations:[],installateurs:[],materiel:[],mouvements:[],opportunites:[],contacts:[],devis:[],prospects:[],savTickets:[],chatMessages:[],notifications:[],activites:[],objectifs:[],conges:[],certifications:[],paiements:[],candidatures:[],mediaGallery:[],editorialCal:[],socialStats:[],contentIdeas:[],socialObjectifs:[],commercialPrimes:{},nextId:1};
 var curUserObj=null;
 
 // ── FIREBASE ──
@@ -2289,6 +2246,7 @@ function renderPipeline(){
             +'<span class="pCardAmt">'+fmtE(o.montant)+'</span>'
             +'<span style="font-size:11px;color:var(--muted)">'+o.proba+'%</span>'
           +'</div>'
+          +(o.dateRappel?(function(){var dr=new Date(o.dateRappel);var t=new Date();t.setHours(0,0,0,0);dr.setHours(0,0,0,0);var due=dr<=t;return '<div style="margin-top:6px;font-size:11px;padding:3px 7px;border-radius:6px;background:'+(due?'var(--red-bg)':'var(--blue-bg)')+';color:'+(due?'var(--red)':'var(--blue)')+';font-weight:600">📞 Rappel '+(due?'aujourd\'hui/en retard':'le '+fmtD(o.dateRappel))+'</div>';})():'')
           +'<div style="margin-top:6px;display:flex;gap:4px">'
             +'<button class="act" style="font-size:11px;padding:3px 7px" onclick="openOppDetail('+idx+')">📋 Historique</button>'
             +'<button class="act" style="font-size:11px;padding:3px 7px" onclick="openOppModal('+idx+')">✏️</button>'
@@ -2306,14 +2264,18 @@ function openOppModal(idx){
   g('mOnom').value=r.nom||'';g('mOclient').value=r.client||'';g('mOsociete').value=r.societe||'';
   g('mOmontant').value=r.montant||'';g('mOproba').value=r.proba||50;
   g('mOetape').value=r.etape||'Prospection';g('mOclose').value=r.close||'';
+  if(g('mOrappel'))g('mOrappel').value=r.dateRappel||'';
   g('mOsource').value=r.source||'Bouche à oreille';g('mOnotes').value=r.notes||'';
+  // Afficher la date de création
+  var ci=g('mOcreationInfo');
+  if(ci){var dc=r.dateCreation||(idx<0?new Date().toLocaleDateString('fr-FR'):'');ci.innerHTML=dc?'<div style="background:var(--bg);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--muted);margin-bottom:10px">📅 Fiche créée le <strong style="color:var(--navy)">'+dc+'</strong>'+(r.proprietaire?' par <strong style="color:var(--navy)">'+r.proprietaire+'</strong>':'')+'</div>':'';}
   var cb=g('mOppConvertBtn');if(cb)cb.style.display=(r.etape==='Gagné'&&idx>=0)?'inline-flex':'none';
   g('mOpp').classList.add('on');
 }
 function closeOppModal(){g('mOpp').classList.remove('on');}
 function saveOpp(){
   var nom=g('mOnom').value.trim();if(!nom){alert('Nom requis');return;}
-  var row={id:eOpp>=0?DB.opportunites[eOpp].id:DB.nextId++,nom:nom,client:g('mOclient').value,societe:g('mOsociete').value,montant:parseFloat(g('mOmontant').value)||0,proba:parseInt(g('mOproba').value)||50,etape:g('mOetape').value,close:g('mOclose').value,source:g('mOsource').value,notes:g('mOnotes').value,commercialId:eOpp>=0?DB.opportunites[eOpp].commercialId:curUserObj?curUserObj.id:'',echanges:eOpp>=0?DB.opportunites[eOpp].echanges||[]:[],dateCreation:eOpp>=0?DB.opportunites[eOpp].dateCreation:new Date().toLocaleDateString('fr-FR'),creePar:eOpp>=0&&DB.opportunites[eOpp].creePar?DB.opportunites[eOpp].creePar:(curUserObj?curUserObj.name:''),proprietaire:eOpp>=0&&DB.opportunites[eOpp].proprietaire?DB.opportunites[eOpp].proprietaire:(curUserObj?curUserObj.name:'')};
+  var row={id:eOpp>=0?DB.opportunites[eOpp].id:DB.nextId++,nom:nom,client:g('mOclient').value,societe:g('mOsociete').value,montant:parseFloat(g('mOmontant').value)||0,proba:parseInt(g('mOproba').value)||50,etape:g('mOetape').value,close:g('mOclose').value,dateRappel:g('mOrappel')?g('mOrappel').value:'',source:g('mOsource').value,notes:g('mOnotes').value,commercialId:eOpp>=0?DB.opportunites[eOpp].commercialId:curUserObj?curUserObj.id:'',echanges:eOpp>=0?DB.opportunites[eOpp].echanges||[]:[],dateCreation:eOpp>=0?DB.opportunites[eOpp].dateCreation:new Date().toLocaleDateString('fr-FR'),creePar:eOpp>=0&&DB.opportunites[eOpp].creePar?DB.opportunites[eOpp].creePar:(curUserObj?curUserObj.name:''),proprietaire:eOpp>=0&&DB.opportunites[eOpp].proprietaire?DB.opportunites[eOpp].proprietaire:(curUserObj?curUserObj.name:'')};
   if(eOpp>=0)DB.opportunites[eOpp]=row;else DB.opportunites.push(row);
   addActivite('opp',(eOpp>=0?'Opportunité modifiée: ':'Nouvelle opportunité: ')+nom);
   save();closeOppModal();renderPipeline();toast('Opportunité enregistrée !');
@@ -2767,25 +2729,35 @@ function viewDevisPDF(idx){var r=DB.installations[idx];if(!r||!r.devisPDF)return
 var eMat=-1,eMvt=-1;
 function renderS(){
   var q=(g('stockSearch').value||'').toLowerCase();
-  var list=DB.materiel.filter(function(m){return !q||(m.nom+(m.ref||'')).toLowerCase().includes(q);});
+  var cf=g('stockCatF')?g('stockCatF').value:'';
+  var sf=g('stockStatF')?g('stockStatF').value:'';
+  var list=DB.materiel.filter(function(m){
+    if(q&&!(m.nom+(m.ref||'')).toLowerCase().includes(q))return false;
+    if(cf&&m.cat!==cf)return false;
+    if(sf){var niveau=m.stock<=0?'Critique':m.stock<=m.seuil?'Faible':'OK';if(niveau!==sf)return false;}
+    return true;
+  });
   g('stockCount').textContent=list.length+' article(s)';
+  if(!list.length){g('stockTable').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted)"><div style="font-size:42px;margin-bottom:12px">📦</div><p style="font-size:15px;font-weight:600;margin-bottom:6px">Aucun article en stock</p><p style="font-size:13px">Cliquez sur "+ Ajouter un article" pour créer votre inventaire (bornes, disjoncteurs, câbles...).</p></div>';return;}
+  var catColors={Bornes:'#2563eb',Disjoncteurs:'#d97706',Câbles:'#7c3aed',Protection:'#dc2626',Coffrets:'#0891b2',Fixation:'#059669',Connectique:'#be185d',Autre:'#6b7280'};
   g('stockTable').innerHTML=list.map(function(m){
-    var idx=DB.materiel.indexOf(m);var alert2=m.stock<=m.seuil;
-    return '<tr'+(alert2?' style="background:#fff5f5"':'')+'>'
-      +'<td><strong>'+m.nom+'</strong>'+(m.ref?'<br><span style="font-size:11px;color:var(--muted)">Réf: '+m.ref+'</span>':'')+'</td>'
-      +'<td>'+m.unite+'</td>'
-      +'<td style="font-weight:600;color:'+(alert2?'var(--red)':'var(--navy)')+'">'+m.stock+'</td>'
-      +'<td>'+m.seuil+'</td>'
-      +'<td class="acts">'
-        +'<button class="act" onclick="openMvtModal('+idx+',\'Entrée\')" style="color:var(--green)">⬆️ In</button>'
-        +'<button class="act" onclick="openMvtModal('+idx+',\'Sortie\')" style="color:var(--orange)">⬇️ Out</button>'
-        +'<button class="act" onclick="openMatModal('+idx+')">✏️</button>'
-        +(isAdmin()?'<button class="act dl" onclick="delMat('+idx+')">🗑</button>':'')
-      +'</td></tr>';
+    var idx=DB.materiel.indexOf(m);var alert2=m.stock<=m.seuil;var critique=m.stock<=0;
+    var cc=catColors[m.cat]||'#6b7280';
+    return '<div style="background:var(--white);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:16px;border-left:4px solid '+(critique?'var(--red)':alert2?'var(--orange)':cc)+'">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'+
+      '<div style="flex:1"><div style="font-weight:700;font-size:14px;color:var(--navy)">'+m.nom+'</div>'+(m.ref?'<div style="font-size:11px;color:var(--muted)">Réf: '+m.ref+'</div>':'')+'</div>'+
+      '<span class="badge" style="background:'+cc+'22;color:'+cc+';font-size:10px">'+(m.cat||'Autre')+'</span></div>'+
+      '<div style="display:flex;align-items:baseline;gap:6px;margin:10px 0"><span style="font-size:26px;font-weight:800;color:'+(alert2?'var(--red)':'var(--navy)')+'">'+m.stock+'</span><span style="font-size:12px;color:var(--muted)">'+m.unite+(alert2?' &middot; ⚠️ sous seuil ('+m.seuil+')':' &middot; seuil '+m.seuil)+'</span></div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">'+
+      '<button class="btn bGhost" style="font-size:12px;padding:5px 10px;color:var(--green)" onclick="openMvtModal('+idx+',\'Entrée\')">⬆️ Entrée</button>'+
+      '<button class="btn bGhost" style="font-size:12px;padding:5px 10px;color:var(--orange)" onclick="openMvtModal('+idx+',\'Sortie\')">⬇️ Sortie</button>'+
+      '<button class="btn bGhost" style="font-size:12px;padding:5px 10px" onclick="openMatModal('+idx+')">✏️</button>'+
+      (isAdmin()||isDirtech()?'<button class="btn bGhost" style="font-size:12px;padding:5px 10px;color:var(--red)" onclick="delMat('+idx+')">🗑</button>':'')+
+      '</div></div>';
   }).join('');
 }
-function openMatModal(idx){eMat=idx;var r=idx>=0?DB.materiel[idx]:{};g('mMatT').textContent=idx>=0?'Modifier':'Nouveau matériel';g('mMnom').value=r.nom||'';g('mMref').value=r.ref||'';g('mMunite').value=r.unite||'Unité';g('mMstock').value=r.stock||0;g('mMseuil').value=r.seuil||5;g('mMat').classList.add('on');}
-function saveMat(){var nom=g('mMnom').value.trim();if(!nom){alert('Nom requis');return;}var row={id:eMat>=0?DB.materiel[eMat].id:DB.nextId++,nom:nom,ref:g('mMref').value,unite:g('mMunite').value,stock:parseInt(g('mMstock').value)||0,seuil:parseInt(g('mMseuil').value)||5};if(eMat>=0)DB.materiel[eMat]=row;else DB.materiel.push(row);save();g('mMat').classList.remove('on');renderS();toast('Matériel enregistré !');}
+function openMatModal(idx){eMat=idx;var r=idx>=0?DB.materiel[idx]:{};g('mMatT').textContent=idx>=0?'Modifier':'Nouveau matériel';g('mMnom').value=r.nom||'';if(g('mMcat'))g('mMcat').value=r.cat||'Bornes';g('mMref').value=r.ref||'';g('mMunite').value=r.unite||'Unité';g('mMstock').value=r.stock||0;g('mMseuil').value=r.seuil||5;g('mMat').classList.add('on');}
+function saveMat(){var nom=g('mMnom').value.trim();if(!nom){alert('Nom requis');return;}var row={id:eMat>=0?DB.materiel[eMat].id:DB.nextId++,nom:nom,cat:g('mMcat')?g('mMcat').value:'Autre',ref:g('mMref').value,unite:g('mMunite').value,stock:parseInt(g('mMstock').value)||0,seuil:parseInt(g('mMseuil').value)||5};if(eMat>=0)DB.materiel[eMat]=row;else DB.materiel.push(row);save();g('mMat').classList.remove('on');renderS();toast('Matériel enregistré !');}
 function delMat(i){if(confirm('Supprimer ?')){DB.materiel.splice(i,1);save();renderS();}}
 function openMvtModal(matIdx,type){eMvt=matIdx;g('mMvtT').textContent=type+' stock — '+DB.materiel[matIdx].nom;g('mMvtype').value=type;g('mMvqte').value=1;g('mMvnotes').value='';g('mMvt').classList.add('on');}
 function saveMvt(){var q=parseInt(g('mMvqte').value)||0;if(!q){alert('Quantité requise');return;}var type=g('mMvtype').value;var mat=DB.materiel[eMvt];mat.stock+=type==='Entrée'?q:-q;if(mat.stock<0)mat.stock=0;DB.mouvements.push({id:DB.nextId++,matId:mat.id,nom:mat.nom,type:type,qte:q,notes:g('mMvnotes').value,date:new Date().toLocaleDateString('fr-FR'),author:curUserObj?curUserObj.name:''});save();g('mMvt').classList.remove('on');renderS();toast('Mouvement enregistré !');}
@@ -2818,8 +2790,8 @@ function renderProfils(){
       +'</div></div>';
   }).join('');
 }
-function openProfModal(idx){eProfil=idx;var r=idx>=0?DB.installateurs[idx]:{};g('mProfT').textContent=idx>=0?'Modifier':'Nouvel installateur';g('mPp').value=r.prenom||'';g('mPn').value=r.nom||'';g('mPtel').value=r.tel||'';g('mPemail').value=r.email||'';g('mPspec').value=r.spec||'';g('mPdispo').value=r.dispo||'Disponible';initDeptTags(r.depts||'');g('mPnotes').value=r.notes||'';profColSel=r.color||COLS[0];document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col===profColSel);});g('mProf').classList.add('on');}
-function saveP(){var p=g('mPp').value.trim();if(!p){alert('Prénom requis');return;}var row={id:eProfil>=0?DB.installateurs[eProfil].id:DB.nextId++,prenom:p,nom:g('mPn').value,tel:g('mPtel').value,email:g('mPemail').value,spec:g('mPspec').value,dispo:g('mPdispo').value,color:profColSel,depts:g('mPdepts').value,notes:g('mPnotes').value,userId:eProfil>=0?DB.installateurs[eProfil].userId:''};if(eProfil>=0)DB.installateurs[eProfil]=row;else DB.installateurs.push(row);save();g('mProf').classList.remove('on');renderProfils();toast('Installateur enregistré !');}
+function openProfModal(idx){eProfil=idx;var r=idx>=0?DB.installateurs[idx]:{};g('mProfT').textContent=idx>=0?'Modifier':'Nouvel installateur';g('mPp').value=r.prenom||'';g('mPn').value=r.nom||'';g('mPtel').value=r.tel||'';g('mPemail').value=r.email||'';g('mPspec').value=r.spec||'';g('mPdispo').value=r.dispo||'Disponible';initDeptTags(r.depts||'');g('mPnotes').value=r.notes||'';if(g('mPremun'))g('mPremun').value=r.remunInstall||'';profColSel=r.color||COLS[0];document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col===profColSel);});g('mProf').classList.add('on');}
+function saveP(){var p=g('mPp').value.trim();if(!p){alert('Prénom requis');return;}var row={id:eProfil>=0?DB.installateurs[eProfil].id:DB.nextId++,prenom:p,nom:g('mPn').value,tel:g('mPtel').value,email:g('mPemail').value,spec:g('mPspec').value,dispo:g('mPdispo').value,color:profColSel,depts:g('mPdepts').value,notes:g('mPnotes').value,remunInstall:g('mPremun')?parseFloat(g('mPremun').value)||0:0,userId:eProfil>=0?DB.installateurs[eProfil].userId:''};if(eProfil>=0)DB.installateurs[eProfil]=row;else DB.installateurs.push(row);save();g('mProf').classList.remove('on');renderProfils();toast('Installateur enregistré !');}
 function delProf(i){if(confirm('Supprimer ?')){DB.installateurs.splice(i,1);save();renderProfils();}}
 
 // ── DEPARTEMENTS ──
@@ -2972,7 +2944,67 @@ function renderChatMessages(){if(!curChatChannel)return;var msgs=(DB.chatMessage
 function sendChatMsg(){var txt=g('chatInputMsg').value.trim();if(!txt||!curChatChannel)return;if(!DB.chatMessages)DB.chatMessages=[];var u=curUserObj||{name:'?',id:'?',avatar:'?',color:'#888'};var now=new Date();var time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');DB.chatMessages.push({id:DB.nextId++,channel:curChatChannel,text:txt,authorId:u.id,author:u.name,authorAvatar:u.avatar,authorColor:u.color,time:time,date:now.toLocaleDateString('fr-FR'),readBy:[u.id]});g('chatInputMsg').value='';save();renderChatMessages();renderChat();}
 
 // ── MON CA ──
-function renderMonCA(){var u=curUserObj;if(!u)return;var role=getRole();var uid=u.id;var nom=u.name;var el=g('monCAContent');if(!el)return;var caTotal=0,caMonth=0,caNbDossiers=0;var now=new Date(),mois=now.getMonth(),an=now.getFullYear();if(role==='commercial'){var myDevis=DB.devis.filter(function(d){return (!d.commercialId||d.commercialId===uid)&&d.statut==='Accepté';});caTotal=myDevis.reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);caMonth=myDevis.filter(function(d){var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);caNbDossiers=myDevis.length;}else{var myInsts=role==='installer'?DB.installations.filter(function(i){return i.installateur===nom&&i.statut==='Terminée';}):DB.installations.filter(function(i){return i.statut==='Terminée';});caTotal=myInsts.reduce(function(s,i){return s+(i.montant||0);},0);caMonth=myInsts.filter(function(i){if(!i.dateFin)return false;var d=new Date(i.dateFin);return d.getMonth()===mois&&d.getFullYear()===an;}).reduce(function(s,i){return s+(i.montant||0);},0);caNbDossiers=myInsts.length;}var obj=DB.objectifs.find(function(o){return o.userId===uid&&o.mois===mois&&o.an===an;});var objVal=obj?obj.montant:0;var pct=objVal>0?Math.min(100,Math.round(caMonth/objVal*100)):0;var ranking=buildRanking(role);var html='<div class="myCACard"><div class="myCATitle">CA total généré</div><div class="myCAVal">'+fmtE(caTotal)+'</div><div class="myCASubVal">'+caNbDossiers+' dossier(s) &middot; '+fmtE(caMonth)+' ce mois</div></div>';if(objVal>0){html+='<div class="card" style="margin-bottom:16px"><div class="cardH"><h3>Objectif du mois</h3></div><div class="cardB"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:var(--muted)">Objectif</span><span style="font-size:13px;font-weight:600">'+fmtE(objVal)+'</span></div><div class="objBar"><div class="objBarF" style="width:'+pct+'%"></div></div><div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)">'+fmtE(caMonth)+' atteint</span><span style="font-size:12px;font-weight:600;color:'+(pct>=100?'var(--green)':'var(--orange)')+'">'+pct+'%</span></div></div></div>';}html+='<div class="card"><div class="cardH"><h3>🏆 Classement</h3></div><div class="cardB"><div class="rankCard">'+ranking.slice(0,10).map(function(r,i){var pos=i+1;var cls=pos===1?'first':pos===2?'second':pos===3?'third':'';var isMe=r.id===uid;return '<div class="rankRow'+(isMe?' myRankRow':'')+'"><div class="rankPos '+cls+'">'+pos+'</div><div style="width:28px;height:28px;border-radius:50%;background:'+r.color+';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">'+r.avatar+'</div><div style="flex:1"><div style="font-size:13px;font-weight:'+(isMe?'700':'500')+'">'+r.name+(isMe?' (moi)':'')+'</div></div><div style="font-size:13px;font-weight:600;color:var(--green)">'+fmtE(r.ca)+'</div></div>';}).join('')+'</div></div></div>';el.innerHTML=html;}
+function renderCommercialPay(uid,mois,an){
+  var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
+  // Ventes signées (devis acceptés) ce mois
+  var moisVentes=DB.devis.filter(function(d){
+    if((d.commercialId&&d.commercialId!==uid))return false;
+    if(d.statut!=='Accepté')return false;
+    var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;
+  }).sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+  var gagne=moisVentes.length*prime;
+  var html='<div class="myCACard" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)"><div class="myCATitle">Ma prime — '+MO[mois]+' '+an+'</div><div class="myCAVal">'+fmtE(gagne)+'</div><div class="myCASubVal">'+moisVentes.length+' vente(s) signée(s) &times; '+fmtE(prime)+'</div></div>';
+  if(!prime){html+='<div class="card" style="margin-bottom:16px"><div class="cardB" style="text-align:center;color:var(--muted);font-size:13px;padding:20px">💡 Votre prime par vente n\'est pas encore définie. Demandez à votre responsable de la configurer.</div></div>';return html;}
+  html+='<div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📅 Mes primes — '+MO[mois]+'</h3></div><div class="cardB" style="padding:0">';
+  if(!moisVentes.length){html+='<div style="text-align:center;color:var(--muted);font-size:13px;padding:30px">Aucune vente signée ce mois-ci</div>';}
+  else{
+    html+=moisVentes.map(function(d){
+      var montant=d.lignes.reduce(function(s,l){return s+l.qte*l.pu;},0);
+      return '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border)">'+
+        '<div style="width:40px;height:40px;border-radius:10px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center;font-size:18px">💶</div>'+
+        '<div style="flex:1"><div style="font-weight:600;font-size:13px">'+(d.client||d.numero||'Vente')+'</div><div style="font-size:11px;color:var(--muted)">'+fmtD(d.date)+' &middot; CA: '+fmtE(montant)+'</div></div>'+
+        '<div style="text-align:right"><div style="font-weight:700;color:var(--green)">'+fmtE(prime)+'</div><div style="font-size:10px;color:var(--muted)">Acquis</div></div></div>';
+    }).join('');
+    html+='<div style="display:flex;justify-content:space-between;padding:14px 16px;background:var(--bg);font-weight:700"><span>Total prime '+MO[mois]+'</span><span style="color:var(--green)">'+fmtE(gagne)+'</span></div>';
+  }
+  html+='</div></div>';
+  return html;
+}
+function renderInstallerPay(nom,mois,an){
+  var inst=DB.installateurs.find(function(i){return instName(i.prenom,i.nom)===nom;});
+  var taux=inst&&inst.remunInstall?inst.remunInstall:0;
+  // Installations du mois en cours assignées à cet installateur
+  var moisInsts=DB.installations.filter(function(i){
+    if(i.installateur!==nom)return false;
+    var dRef=i.dateFin||i.dateDebut;if(!dRef)return false;
+    var d=new Date(dRef);return d.getMonth()===mois&&d.getFullYear()===an;
+  }).sort(function(a,b){return new Date(a.dateDebut||a.dateFin)-new Date(b.dateDebut||b.dateFin);});
+  var terminees=moisInsts.filter(function(i){return i.statut==='Terminée';});
+  var aVenir=moisInsts.filter(function(i){return i.statut!=='Terminée'&&i.statut!=='Annulée';});
+  var gagne=terminees.length*taux;
+  var projete=aVenir.length*taux;
+  var html='<div class="myCACard" style="background:linear-gradient(135deg,#059669,#047857)"><div class="myCATitle">Ma rémunération — '+MO[mois]+' '+an+'</div><div class="myCAVal">'+fmtE(gagne)+'</div><div class="myCASubVal">'+terminees.length+' installation(s) terminée(s) &times; '+fmtE(taux)+(projete>0?' &middot; +'+fmtE(projete)+' à venir':'')+'</div></div>';
+  if(!taux){html+='<div class="card" style="margin-bottom:16px"><div class="cardB" style="text-align:center;color:var(--muted);font-size:13px;padding:20px">💡 Votre taux de rémunération par installation n\'est pas encore défini. Demandez à votre responsable de le configurer.</div></div>';return html;}
+  html+='<div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📅 Calendrier de paiement — '+MO[mois]+'</h3></div><div class="cardB" style="padding:0">';
+  if(!moisInsts.length){html+='<div style="text-align:center;color:var(--muted);font-size:13px;padding:30px">Aucune installation ce mois-ci</div>';}
+  else{
+    html+=moisInsts.map(function(i){
+      var paid=i.statut==='Terminée';
+      var dRef=i.dateFin||i.dateDebut;
+      return '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border)">'+
+        '<div style="width:40px;height:40px;border-radius:10px;background:'+(paid?'var(--green-bg)':'var(--bg)')+';display:flex;align-items:center;justify-content:center;font-size:18px">'+(paid?'✅':'🗓️')+'</div>'+
+        '<div style="flex:1"><div style="font-weight:600;font-size:13px">'+i.chantier+'</div><div style="font-size:11px;color:var(--muted)">'+(dRef?fmtD(dRef):'--')+' &middot; '+i.statut+'</div></div>'+
+        '<div style="text-align:right"><div style="font-weight:700;color:'+(paid?'var(--green)':'var(--muted)')+'">'+fmtE(taux)+'</div><div style="font-size:10px;color:var(--muted)">'+(paid?'Acquis':'Prévu')+'</div></div></div>';
+    }).join('');
+    html+='<div style="display:flex;justify-content:space-between;padding:14px 16px;background:var(--bg);font-weight:700"><span>Total prévu '+MO[mois]+'</span><span style="color:var(--green)">'+fmtE(gagne+projete)+'</span></div>';
+  }
+  html+='</div></div>';
+  return html;
+}
+function renderMonCA(){var u=curUserObj;if(!u)return;var role=getRole();var uid=u.id;var nom=u.name;var el=g('monCAContent');if(!el)return;var caTotal=0,caMonth=0,caNbDossiers=0;var now=new Date(),mois=now.getMonth(),an=now.getFullYear();if(role==='commercial'){var myDevis=DB.devis.filter(function(d){return (!d.commercialId||d.commercialId===uid)&&d.statut==='Accepté';});caTotal=myDevis.reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);caMonth=myDevis.filter(function(d){var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);caNbDossiers=myDevis.length;}else{var myInsts=role==='installer'?DB.installations.filter(function(i){return i.installateur===nom&&i.statut==='Terminée';}):DB.installations.filter(function(i){return i.statut==='Terminée';});caTotal=myInsts.reduce(function(s,i){return s+(i.montant||0);},0);caMonth=myInsts.filter(function(i){if(!i.dateFin)return false;var d=new Date(i.dateFin);return d.getMonth()===mois&&d.getFullYear()===an;}).reduce(function(s,i){return s+(i.montant||0);},0);caNbDossiers=myInsts.length;}var obj=DB.objectifs.find(function(o){return o.userId===uid&&o.mois===mois&&o.an===an;});var objVal=obj?obj.montant:0;var pct=objVal>0?Math.min(100,Math.round(caMonth/objVal*100)):0;var ranking=buildRanking(role);var caCardTitle=role==='installer'?'CA généré pour l\'entreprise':'CA total généré';
+var html='<div class="myCACard"><div class="myCATitle">'+caCardTitle+'</div><div class="myCAVal">'+fmtE(caTotal)+'</div><div class="myCASubVal">'+caNbDossiers+' dossier(s) &middot; '+fmtE(caMonth)+' ce mois</div></div>';
+if(role==='installer'){html+=renderInstallerPay(nom,mois,an);}
+if(role==='commercial'){html+=renderCommercialPay(uid,mois,an);}if(objVal>0){html+='<div class="card" style="margin-bottom:16px"><div class="cardH"><h3>Objectif du mois</h3></div><div class="cardB"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:var(--muted)">Objectif</span><span style="font-size:13px;font-weight:600">'+fmtE(objVal)+'</span></div><div class="objBar"><div class="objBarF" style="width:'+pct+'%"></div></div><div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)">'+fmtE(caMonth)+' atteint</span><span style="font-size:12px;font-weight:600;color:'+(pct>=100?'var(--green)':'var(--orange)')+'">'+pct+'%</span></div></div></div>';}html+='<div class="card"><div class="cardH"><h3>🏆 Classement</h3></div><div class="cardB"><div class="rankCard">'+ranking.slice(0,10).map(function(r,i){var pos=i+1;var cls=pos===1?'first':pos===2?'second':pos===3?'third':'';var isMe=r.id===uid;return '<div class="rankRow'+(isMe?' myRankRow':'')+'"><div class="rankPos '+cls+'">'+pos+'</div><div style="width:28px;height:28px;border-radius:50%;background:'+r.color+';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">'+r.avatar+'</div><div style="flex:1"><div style="font-size:13px;font-weight:'+(isMe?'700':'500')+'">'+r.name+(isMe?' (moi)':'')+'</div></div><div style="font-size:13px;font-weight:600;color:var(--green)">'+fmtE(r.ca)+'</div></div>';}).join('')+'</div></div></div>';el.innerHTML=html;}
 function buildRanking(role){var accounts=role==='commercial'?loadAccounts().filter(function(a){return a.status==='active'&&a.role==='commercial';}):loadAccounts().filter(function(a){return a.status==='active'&&(a.role==='installer'||a.role==='dirtech');});return accounts.map(function(u){var ca=role==='commercial'?DB.devis.filter(function(d){return (!d.commercialId||d.commercialId===u.id)&&d.statut==='Accepté';}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0):DB.installations.filter(function(i){return i.installateur===u.name&&i.statut==='Terminée';}).reduce(function(s,i){return s+(i.montant||0);},0);return {id:u.id,name:u.name,avatar:u.avatar||'?',color:u.color||'#888',ca:ca,role:u.role};}).sort(function(a,b){return b.ca-a.ca;});}
 
 // ── OBJECTIFS ──
@@ -2993,10 +3025,46 @@ function saveCert(){if(!DB.certifications)DB.certifications=[];DB.certifications
 function delCert(i){DB.certifications.splice(i,1);save();renderRH();}
 
 // ── FINANCE ──
-function renderFinance(){var paiements=DB.installations.filter(function(i){return i.montant>0;}).map(function(i){var acompte=i.acompte||0;return {chantier:i.chantier,client:i.client,montant:i.montant,acompte:acompte,solde:(i.montant||0)-acompte,statut:i.paiementStatut||'En attente'};});var totCA=paiements.reduce(function(s,p){return s+p.montant;},0);var totAcompte=paiements.reduce(function(s,p){return s+p.acompte;},0);var totSolde=paiements.reduce(function(s,p){return s+p.solde;},0);var enRetard=paiements.filter(function(p){return p.statut==='En retard';}).length;g('finKpis').innerHTML=kpi('💰','CA total',fmtE(totCA),'green')+kpi('✅','Acomptes reçus',fmtE(totAcompte),'blue')+kpi('⏳','Soldes restants',fmtE(totSolde),'orange')+kpi('⚠️','En retard',enRetard,'red');setTimeout(function(){var ctx=g('finChart');if(!ctx)return;var now=new Date();var labels=[],data=[];for(var i=11;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);labels.push(MO[d.getMonth()].slice(0,3)+' '+d.getFullYear().toString().slice(2));var m=d.getMonth(),y=d.getFullYear();data.push(DB.installations.filter(function(inst){if(!inst.dateFin||inst.statut!=='Terminée')return false;var df=new Date(inst.dateFin);return df.getMonth()===m&&df.getFullYear()===y;}).reduce(function(s,inst){return s+(inst.montant||0);},0));}if(window._finChart)window._finChart.destroy();window._finChart=new Chart(ctx,{type:'bar',data:{labels:labels,datasets:[{label:'CA (€)',data:data,backgroundColor:'rgba(34,38,81,.7)',borderColor:'#222651',borderWidth:1,borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:function(v){return v>999?(v/1000).toFixed(0)+'k€':v+'€';}}}}}});},100);g('finPaiements').innerHTML=paiements.length?paiements.map(function(p){var cls=p.statut==='Payé'?'payPaid':p.statut==='En retard'?'payLate':'payPending';var pct=p.montant>0?Math.round(p.acompte/p.montant*100):0;return '<div class="payCard"><div class="payCardH"><div><div style="font-size:13px;font-weight:600;color:var(--navy)">'+p.chantier+'</div><div style="font-size:11px;color:var(--muted)">'+p.client+'</div></div><span class="payBadge '+cls+'">'+p.statut+'</span></div><div class="payBar"><div class="payBarF" style="width:'+pct+'%"></div></div><div style="display:flex;justify-content:space-between;font-size:12px"><span>Acompte: <strong>'+fmtE(p.acompte)+'</strong></span><span>Solde: <strong style="color:'+(p.solde>0?'var(--orange)':'var(--green)')+'">'+fmtE(p.solde)+'</strong></span><span><strong>'+fmtE(p.montant)+'</strong></span></div></div>';}).join(''):'<p style="color:var(--muted);font-size:13px">Aucun paiement</p>';var relances=paiements.filter(function(p){return p.statut!=='Payé'&&p.solde>0;}).slice(0,5);g('finRelances').innerHTML=relances.length?relances.map(function(p){return '<div class="finRow"><div><div style="font-size:13px;font-weight:500">'+p.chantier+'</div><div style="font-size:11px;color:var(--muted)">Solde: '+fmtE(p.solde)+'</div></div><button class="act" onclick="toast(\'Relance pour '+p.client+'\')" style="font-size:12px">Relancer</button></div>';}).join(''):'<p style="color:var(--muted);font-size:13px;padding:10px 0">Aucune relance ✓</p>';}
+function renderFinance(){var paiements=DB.installations.filter(function(i){return i.montant>0;}).map(function(i){var acompte=i.acompte||0;return {chantier:i.chantier,client:i.client,montant:i.montant,acompte:acompte,solde:(i.montant||0)-acompte,statut:i.paiementStatut||'En attente'};});var totCA=paiements.reduce(function(s,p){return s+p.montant;},0);var totAcompte=paiements.reduce(function(s,p){return s+p.acompte;},0);var totSolde=paiements.reduce(function(s,p){return s+p.solde;},0);var enRetard=paiements.filter(function(p){return p.statut==='En retard';}).length;g('finKpis').innerHTML=kpi('💰','CA total',fmtE(totCA),'green')+kpi('✅','Acomptes reçus',fmtE(totAcompte),'blue')+kpi('⏳','Soldes restants',fmtE(totSolde),'orange')+kpi('⚠️','En retard',enRetard,'red');setTimeout(function(){var ctx=g('finChart');if(!ctx)return;var now=new Date();var labels=[],data=[];for(var i=11;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);labels.push(MO[d.getMonth()].slice(0,3)+' '+d.getFullYear().toString().slice(2));var m=d.getMonth(),y=d.getFullYear();data.push(DB.installations.filter(function(inst){if(!inst.dateFin||inst.statut!=='Terminée')return false;var df=new Date(inst.dateFin);return df.getMonth()===m&&df.getFullYear()===y;}).reduce(function(s,inst){return s+(inst.montant||0);},0));}if(window._finChart)window._finChart.destroy();window._finChart=new Chart(ctx,{type:'bar',data:{labels:labels,datasets:[{label:'CA (€)',data:data,backgroundColor:'rgba(34,38,81,.7)',borderColor:'#222651',borderWidth:1,borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:function(v){return v>999?(v/1000).toFixed(0)+'k€':v+'€';}}}}}});},100);g('finPaiements').innerHTML=paiements.length?paiements.map(function(p){var cls=p.statut==='Payé'?'payPaid':p.statut==='En retard'?'payLate':'payPending';var pct=p.montant>0?Math.round(p.acompte/p.montant*100):0;return '<div class="payCard"><div class="payCardH"><div><div style="font-size:13px;font-weight:600;color:var(--navy)">'+p.chantier+'</div><div style="font-size:11px;color:var(--muted)">'+p.client+'</div></div><span class="payBadge '+cls+'">'+p.statut+'</span></div><div class="payBar"><div class="payBarF" style="width:'+pct+'%"></div></div><div style="display:flex;justify-content:space-between;font-size:12px"><span>Acompte: <strong>'+fmtE(p.acompte)+'</strong></span><span>Solde: <strong style="color:'+(p.solde>0?'var(--orange)':'var(--green)')+'">'+fmtE(p.solde)+'</strong></span><span><strong>'+fmtE(p.montant)+'</strong></span></div></div>';}).join(''):'<p style="color:var(--muted);font-size:13px">Aucun paiement</p>';var relances=paiements.filter(function(p){return p.statut!=='Payé'&&p.solde>0;}).slice(0,5);g('finRelances').innerHTML=relances.length?relances.map(function(p){return '<div class="finRow"><div><div style="font-size:13px;font-weight:500">'+p.chantier+'</div><div style="font-size:11px;color:var(--muted)">Solde: '+fmtE(p.solde)+'</div></div><button class="act" onclick="toast(\'Relance pour '+p.client+'\')" style="font-size:12px">Relancer</button></div>';}).join(''):'<p style="color:var(--muted);font-size:13px;padding:10px 0">Aucune relance ✓</p>';
+  renderFinancePayroll();}
+function renderFinancePayroll(){
+  var el=g('finPayroll');if(!el)return;
+  var now=new Date(),mois=now.getMonth(),an=now.getFullYear();
+  // Commerciaux
+  var commRows=loadAccounts().filter(function(a){return a.status==='active'&&a.role==='commercial';}).map(function(u){
+    var prime=(DB.commercialPrimes&&DB.commercialPrimes[u.id])||0;
+    var ventes=DB.devis.filter(function(d){if(d.commercialId&&d.commercialId!==u.id)return false;if(d.statut!=='Accepté')return false;var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;}).length;
+    return {nom:u.name,role:'Commercial',taux:prime,term:ventes,prev:0,du:ventes*prime,projete:ventes*prime};
+  }).filter(function(r){return r.term>0;});
+  var rows=(DB.installateurs||[]).map(function(inst){
+    var nom=instName(inst.prenom,inst.nom);var taux=inst.remunInstall||0;
+    var moisInsts=DB.installations.filter(function(i){if(i.installateur!==nom)return false;var dRef=i.dateFin||i.dateDebut;if(!dRef)return false;var d=new Date(dRef);return d.getMonth()===mois&&d.getFullYear()===an;});
+    var term=moisInsts.filter(function(i){return i.statut==='Terminée';}).length;
+    var prev=moisInsts.filter(function(i){return i.statut!=='Terminée'&&i.statut!=='Annulée';}).length;
+    return {nom:nom,taux:taux,term:term,prev:prev,du:term*taux,projete:(term+prev)*taux,color:inst.color};
+  }).map(function(r){r.role='Installateur';return r;}).filter(function(r){return r.term>0||r.prev>0;});
+  var allRows=commRows.concat(rows);
+  if(!allRows.length){el.innerHTML='<p style="color:var(--muted);font-size:13px;padding:10px 0">Aucune rémunération ce mois-ci</p>';return;}
+  var totalDu=allRows.reduce(function(s,r){return s+r.du;},0);
+  var totalProj=allRows.reduce(function(s,r){return s+r.projete;},0);
+  el.innerHTML='<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Nom</th><th>Rôle</th><th>Taux/prime</th><th>Réalisées</th><th>À venir</th><th>À payer</th><th>Total prévu</th></tr></thead><tbody>'+
+    allRows.map(function(r){return '<tr><td style="font-weight:600">'+r.nom+'</td><td><span style="font-size:11px;color:var(--muted)">'+r.role+'</span></td><td>'+fmtE(r.taux)+'</td><td>'+r.term+'</td><td>'+r.prev+'</td><td style="font-weight:600;color:var(--green)">'+fmtE(r.du)+'</td><td>'+fmtE(r.projete)+'</td></tr>';}).join('')+
+    '<tr style="background:var(--bg);font-weight:700"><td colspan="5">TOTAL À PAYER</td><td style="color:var(--green)">'+fmtE(totalDu)+'</td><td>'+fmtE(totalProj)+'</td></tr>'+
+    '</tbody></table></div>';
+}
 
 // ── COMMERCIAUX ──
-function renderCommerciaux(){var accounts=loadAccounts().filter(function(a){return a.status==='active'&&a.role==='commercial';});var grid=g('commerciauxGrid');if(!accounts.length){grid.innerHTML='<p style="color:var(--muted);font-size:13px;padding:20px">Aucun commercial actif.</p>';return;}grid.innerHTML=accounts.map(function(u){var myOpps=DB.opportunites.filter(function(o){return !o.commercialId||o.commercialId===u.id;});var myDevis=DB.devis.filter(function(d){return (!d.commercialId||d.commercialId===u.id)&&d.statut==='Accepté';});var caTotal=myDevis.reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);var pipeline=myOpps.filter(function(o){return o.etape!=='Gagné'&&o.etape!=='Perdu';}).reduce(function(s,o){return s+o.montant;},0);var txConv=myOpps.length>0?Math.round(myOpps.filter(function(o){return o.etape==='Gagné';}).length/myOpps.length*100):0;var now=new Date();var caMonth=myDevis.filter(function(d){var dt=new Date(d.date);return dt.getMonth()===now.getMonth()&&dt.getFullYear()===now.getFullYear();}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);return '<div class="pcard"><div class="pcardH"><div class="pcAv" style="background:'+(u.color||'#888')+'">'+u.avatar+'</div><div><div class="pcNm">'+u.name+'</div><div class="pcSp">Commercial</div></div></div><div class="pcardb"><div class="pcStats"><div class="pcSt"><div class="pcStV">'+myOpps.length+'</div><div class="pcStL">Opportunités</div></div><div class="pcSt"><div class="pcStV">'+txConv+'%</div><div class="pcStL">Conversion</div></div><div class="pcSt"><div class="pcStV">'+myDevis.length+'</div><div class="pcStL">Devis signés</div></div></div><div style="font-size:12px;color:var(--muted)">'+(u.email||'')+'</div><div style="font-size:12px;color:var(--muted);margin-top:2px">'+(u.tel||'')+'</div><div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">CA total</span><span style="font-weight:600;color:var(--green)">'+fmtE(caTotal)+'</span></div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">CA ce mois</span><span style="font-weight:600;color:var(--blue)">'+fmtE(caMonth)+'</span></div><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">Pipeline actif</span><span style="font-weight:600;color:var(--orange)">'+fmtE(pipeline)+'</span></div></div></div></div>';}).join('');}
+function renderCommerciaux(){var accounts=loadAccounts().filter(function(a){return a.status==='active'&&a.role==='commercial';});var grid=g('commerciauxGrid');if(!accounts.length){grid.innerHTML='<p style="color:var(--muted);font-size:13px;padding:20px">Aucun commercial actif.</p>';return;}grid.innerHTML=accounts.map(function(u){var myOpps=DB.opportunites.filter(function(o){return !o.commercialId||o.commercialId===u.id;});var myDevis=DB.devis.filter(function(d){return (!d.commercialId||d.commercialId===u.id)&&d.statut==='Accepté';});var caTotal=myDevis.reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);var pipeline=myOpps.filter(function(o){return o.etape!=='Gagné'&&o.etape!=='Perdu';}).reduce(function(s,o){return s+o.montant;},0);var txConv=myOpps.length>0?Math.round(myOpps.filter(function(o){return o.etape==='Gagné';}).length/myOpps.length*100):0;var now=new Date();var caMonth=myDevis.filter(function(d){var dt=new Date(d.date);return dt.getMonth()===now.getMonth()&&dt.getFullYear()===now.getFullYear();}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);return '<div class="pcard"><div class="pcardH"><div class="pcAv" style="background:'+(u.color||'#888')+'">'+u.avatar+'</div><div><div class="pcNm">'+u.name+'</div><div class="pcSp">Commercial</div></div></div><div class="pcardb"><div class="pcStats"><div class="pcSt"><div class="pcStV">'+myOpps.length+'</div><div class="pcStL">Opportunités</div></div><div class="pcSt"><div class="pcStV">'+txConv+'%</div><div class="pcStL">Conversion</div></div><div class="pcSt"><div class="pcStV">'+myDevis.length+'</div><div class="pcStL">Devis signés</div></div></div><div style="font-size:12px;color:var(--muted)">'+(u.email||'')+'</div><div style="font-size:12px;color:var(--muted);margin-top:2px">'+(u.tel||'')+'</div><div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">CA total</span><span style="font-weight:600;color:var(--green)">'+fmtE(caTotal)+'</span></div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">CA ce mois</span><span style="font-weight:600;color:var(--blue)">'+fmtE(caMonth)+'</span></div><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">Pipeline actif</span><span style="font-weight:600;color:var(--orange)">'+fmtE(pipeline)+'</span></div>'+(isAdmin()?'<div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px;padding-top:6px;border-top:1px dashed var(--border)"><span style="color:var(--muted)">Prime / vente</span><span style="font-weight:600;color:var(--navy)">'+fmtE((DB.commercialPrimes&&DB.commercialPrimes[u.id])||0)+' <button class="act" onclick="setCommercialPrime(\''+u.id+'\',\''+u.name+'\')" style="font-size:11px;padding:1px 6px">✏️</button></span></div>':'')+'</div></div></div>';}).join('');}
+function setCommercialPrime(uid,uname){
+  var current=(DB.commercialPrimes&&DB.commercialPrimes[uid])||'';
+  showModal('💶 Prime par vente — '+uname,
+    '<div class="fi" style="margin-bottom:10px"><label>Montant de la prime par vente signée (€)</label><input type="number" id="cpInput" min="0" value="'+current+'" placeholder="Ex: 300"></div><p style="font-size:12px;color:var(--muted)">Le commercial gagnera ce montant pour chaque devis signé (accepté).</p>',
+    function(){
+      if(!DB.commercialPrimes)DB.commercialPrimes={};
+      DB.commercialPrimes[uid]=parseFloat(g('cpInput').value)||0;
+      save();closeModal();renderCommerciaux();toast('Prime enregistrée');
+    },null);
+}
 
 // ── RECRUTEMENT ──
 var eRecrut=-1;
