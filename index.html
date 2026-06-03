@@ -1168,6 +1168,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
     <button id="notifPermBtn" class="btn bPrimary" style="font-size:12px;flex:1;min-width:140px" onclick="requestNotifPerm()">🔔 Activer les notifications</button>
     <button class="btn bGhost" style="font-size:12px" onclick="fireLocalNotif('BornPower','Ceci est une notification de test 🔔')">Tester</button>
   </div>
+  <div id="notifDiag" style="padding:8px 14px;font-size:11px;color:var(--muted);background:var(--bg);border-bottom:1px solid var(--border);line-height:1.6"></div>
   <div class="notifList" id="notifList"></div>
 </div>
 
@@ -2036,6 +2037,7 @@ function savePushToken(token){
   var ex=DB.pushTokens.find(function(t){return t.token===token;});
   if(ex){ex.user=curUserObj.name;ex.ts=Date.now();}
   else{DB.pushTokens.push({token:token,user:curUserObj.name,userId:curUserObj.id,ts:Date.now()});}
+  window._fcmTokenOk=true;window._fcmTokenVal=token;updateNotifDiag();
   save();
 }
 function notifPermState(){return (typeof Notification!=='undefined')?Notification.permission:'unsupported';}
@@ -2076,7 +2078,21 @@ function checkNewNotifs(incoming){
 }
 function updateNotifBadge(){var unread=visibleNotifs().filter(function(n){return !n.read;}).length;var dot=g('notifDot');if(dot)dot.classList.toggle('on',unread>0);try{if('setAppBadge' in navigator){if(unread>0)navigator.setAppBadge(unread);else navigator.clearAppBadge();}}catch(e){}}
 function toggleNotifPanel(){var panel=g('notifPanel');panel.classList.toggle('on');if(panel.classList.contains('on'))renderNotifPanel();}
-function renderNotifPanel(){var pb=g('notifPermBtn');if(pb){var st=notifPermState();pb.textContent=st==='granted'?'🔔 Notifications activées':(st==='denied'?'🔕 Bloquées (voir réglages)':'🔔 Activer les notifications');pb.disabled=(st==='granted');pb.style.opacity=st==='granted'?'.6':'1';}var notifs=visibleNotifs();g('notifList').innerHTML=notifs.length?notifs.map(function(n){var gi=(DB.notifications||[]).indexOf(n);return '<div class="notifItem'+(n.read?'':' unread')+'" onclick="clickNotif('+gi+')">'+'<div class="notifIco" style="background:'+(n.read?'var(--bg)':'var(--blue-bg)')+'">'+n.ico+'</div>'+'<div><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+fmtNotifTime(n.ts)+'</div></div></div>';}).join(''):'<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">Aucune notification</div>';}
+function updateNotifDiag(){
+  var el=g('notifDiag');if(!el)return;
+  var supported=(typeof Notification!=='undefined');
+  var perm=supported?Notification.permission:'non supporté';
+  var standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true;
+  var iosVer='';try{var mm=(navigator.userAgent||'').match(/OS (\d+)_/);if(mm)iosVer=mm[1];}catch(e){}
+  function dot(ok){return ok?'<span style="color:#16a34a">●</span>':'<span style="color:#dc2626">●</span>';}
+  el.innerHTML=
+    dot(supported)+' Notifications supportées : <b>'+(supported?'oui':'NON')+'</b><br>'+
+    dot(perm==='granted')+' Autorisation : <b>'+perm+'</b><br>'+
+    dot(standalone)+' Mode app (écran d\'accueil) : <b>'+(standalone?'oui':'NON (ouvert dans Safari ?)')+'</b><br>'+
+    dot(!!window._fcmTokenOk)+' Jeton push obtenu : <b>'+(window._fcmTokenOk?'oui ✅':'pas encore')+'</b>'+
+    (iosVer?'<br>📱 iOS détecté : <b>'+iosVer+'</b>':'');
+}
+function renderNotifPanel(){updateNotifDiag();var pb=g('notifPermBtn');if(pb){var st=notifPermState();pb.textContent=st==='granted'?'🔔 Notifications activées':(st==='denied'?'🔕 Bloquées (voir réglages)':'🔔 Activer les notifications');pb.disabled=(st==='granted');pb.style.opacity=st==='granted'?'.6':'1';}var notifs=visibleNotifs();g('notifList').innerHTML=notifs.length?notifs.map(function(n){var gi=(DB.notifications||[]).indexOf(n);return '<div class="notifItem'+(n.read?'':' unread')+'" onclick="clickNotif('+gi+')">'+'<div class="notifIco" style="background:'+(n.read?'var(--bg)':'var(--blue-bg)')+'">'+n.ico+'</div>'+'<div><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+fmtNotifTime(n.ts)+'</div></div></div>';}).join(''):'<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">Aucune notification</div>';}
 function clickNotif(i){var n=DB.notifications[i];if(n)n.read=true;save();updateNotifBadge();renderNotifPanel();if(n&&n.type==='user'&&isAdmin()){var np=g('notifPanel');if(np)np.classList.remove('on');nav('pgUsers');}}
 function markAllRead(){(DB.notifications||[]).forEach(function(n){n.read=true;});save();updateNotifBadge();renderNotifPanel();}
 
