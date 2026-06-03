@@ -4533,9 +4533,9 @@ function jarvisSpeakText(text, callback) {
       text: text,
       model_id: 'eleven_multilingual_v2',
       voice_settings: {
-        stability: 0.82,
-        similarity_boost: 0.90,
-        style: 0.12,
+        stability: 0.92,
+        similarity_boost: 0.92,
+        style: 0.0,
         use_speaker_boost: true
       }
     })
@@ -4662,20 +4662,30 @@ function askClaude(question, callback) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 500,
       system: buildJarvisContext(),
       messages: [{ role: 'user', content: question }]
     })
   })
-  .then(function(r){
-    if (!r.ok) throw new Error('Proxy error ' + r.status);
-    return r.json();
-  })
-  .then(function(data){
-    console.log('Claude -> Jarvis:', data);
-    if (data.error) {
-      callback("Pardonnez-moi Monsieur, une erreur technique. " + (data.error.message || ''));
+  .then(function(r){ return r.text().then(function(t){ return {status:r.status, ok:r.ok, body:t}; }); })
+  .then(function(res){
+    console.log('Claude proxy status:', res.status, 'body:', res.body);
+    var data={};
+    try{ data=JSON.parse(res.body); }catch(pe){ data={}; }
+    // Détection précise du problème
+    var errMsg=(data.error&&(data.error.message||data.error.type))||'';
+    var lc=(res.body||'').toLowerCase();
+    if (lc.indexOf('credit')>=0 || lc.indexOf('billing')>=0 || lc.indexOf('insufficient')>=0 || lc.indexOf('quota')>=0) {
+      callback("Monsieur, mon intelligence est hors-ligne : le credit Anthropic est epuise ou absent. Veuillez l'activer sur la console.");
+      return;
+    }
+    if (res.status===401 || lc.indexOf('authentication')>=0 || lc.indexOf('invalid x-api-key')>=0 || lc.indexOf('api key')>=0) {
+      callback("Monsieur, ma cle d'acces a Claude est invalide. Verifiez la cle dans le worker.");
+      return;
+    }
+    if (!res.ok || data.error) {
+      callback("Pardonnez-moi Monsieur, une erreur technique. " + errMsg);
       return;
     }
     var response = data.content && data.content[0] ? data.content[0].text : "Je n'ai pas pu traiter votre demande, Monsieur.";
@@ -4683,7 +4693,7 @@ function askClaude(question, callback) {
   })
   .catch(function(e){
     console.log('Claude error:', e);
-    callback("Pardonnez-moi Monsieur. Erreur de connexion au serveur.");
+    callback("Pardonnez-moi Monsieur. Je n'arrive pas a joindre mon serveur. Verifiez le worker Jarvis.");
   });
 }
 
