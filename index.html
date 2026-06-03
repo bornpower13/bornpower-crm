@@ -450,9 +450,9 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 .notifBell:hover{background:rgba(255,255,255,.08);}
 .notifDot{position:absolute;top:2px;right:2px;width:8px;height:8px;background:var(--red);border-radius:50%;display:none;}
 .notifDot.on{display:block;}
-.notifPanel{position:fixed;top:0;right:0;width:320px;height:100vh;background:var(--white);border-left:1px solid var(--border);z-index:100;display:none;flex-direction:column;box-shadow:-4px 0 20px rgba(0,0,0,.1);}
+.notifPanel{position:fixed;top:0;right:0;width:320px;max-width:92vw;height:100vh;background:var(--white);border-left:1px solid var(--border);z-index:200;display:none;flex-direction:column;box-shadow:-4px 0 20px rgba(0,0,0,.1);padding-bottom:env(safe-area-inset-bottom);box-sizing:border-box;}
 .notifPanel.on{display:flex;}
-.notifPanelH{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.notifPanelH{padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top));border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .notifPanelH h3{font-size:14px;font-weight:600;color:var(--navy);}
 .notifList{flex:1;overflow-y:auto;}
 .notifItem{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;gap:10px;}
@@ -474,7 +474,10 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
   .pgHead .btn,.pgHead button{width:auto;}
   .fgrid{grid-template-columns:1fr !important;}
   .kpis,.kpiRow{grid-template-columns:1fr 1fr !important;}
-  .modal{width:94vw !important;max-width:94vw !important;max-height:88vh !important;}
+  .ov{align-items:flex-start !important;padding:0;overflow-y:auto;}
+  .modal{width:94vw !important;max-width:94vw !important;max-height:none !important;margin:calc(12px + env(safe-area-inset-top)) auto calc(12px + env(safe-area-inset-bottom)) auto;padding-bottom:16px;}
+  .mf{position:sticky;bottom:0;background:var(--white);padding:12px 0 4px;margin-top:12px;border-top:1px solid var(--border);z-index:2;}
+  .mf .btn{flex:1;min-width:0;}
   table{display:block;overflow-x:auto;white-space:nowrap;}
   .card{overflow-x:auto;}
   div[style*="grid-template-columns:2fr 1fr"]{grid-template-columns:1fr !important;}
@@ -1718,6 +1721,8 @@ var firebaseConfig={
 var fbApp=null,db=null,fbReady=false,fbAuth=null,fbMessaging=null;
 // ⚠️ REMPLACE par ta clé VAPID (Firebase Console > Paramètres projet > Cloud Messaging > Certificats Web Push)
 var FCM_VAPID_KEY="BM1OnkoqJUdKy4hPMi8NiG2cZrjTArsUiNu5vEbbKSSoEgorZv8ADD__ZBycSu1wzD1gfzIGu8eklFNCbN9hlSk";
+// ⚠️ REMPLACE par l'URL de ton worker push Cloudflare (ex: https://bornpower-push.xxx.workers.dev)
+var PUSH_PROXY_URL="COLLE_URL_WORKER_PUSH_ICI";
 function initFirebase(){
   try{fbApp=firebase.initializeApp(firebaseConfig);db=firebase.firestore();fbAuth=firebase.auth();fbReady=true;try{db.enablePersistence({synchronizeTabs:true}).catch(function(e){console.log('persistence:',e.code);});}catch(pe){}console.log('Firebase OK (offline activé)');}
   catch(e){console.log('Firebase error:',e);fbReady=false;}
@@ -1748,12 +1753,20 @@ function save(){
       commercialPrimes:DB.commercialPrimes||{},catalogue:DB.catalogue||[],pushTokens:DB.pushTokens||[],
       activites:DB.activites,nextId:DB.nextId,updatedAt:new Date().toISOString()
     };
-    db.collection('crm_data').doc('main').set(payload).then(function(){
-      window._lastSaveOk=Date.now();
-    }).catch(function(e){
-      console.log('save error:',e);
-      toast('⚠️ Sauvegarde cloud échouée: '+(e.code||e.message||'inconnue')+' — données gardées en local');
-    });
+    // Nettoyage : retire les valeurs undefined/fonctions qui font planter Firestore (erreur synchrone)
+    var cleanPayload;
+    try{cleanPayload=JSON.parse(JSON.stringify(payload));}catch(je){cleanPayload=payload;}
+    try{
+      db.collection('crm_data').doc('main').set(cleanPayload).then(function(){
+        window._lastSaveOk=Date.now();
+      }).catch(function(e){
+        console.log('save error:',e);
+        toast('⚠️ Sauvegarde cloud échouée: '+(e.code||e.message||'inconnue')+' — données gardées en local');
+      });
+    }catch(syncErr){
+      console.log('save sync error:',syncErr);
+      toast('⚠️ Sync cloud impossible (données gardées en local)');
+    }
   }
 }
 function load(){try{var d=localStorage.getItem(KEY);if(d){DB=JSON.parse(d);}}catch(e){}}
@@ -1823,12 +1836,31 @@ function addActivite(type,txt){
   addNotif(type,txt,{install:'⚡',opp:'🎯',devis:'📋',sav:'🔧',contact:'👥'}[type]||'🔔');
 }
 
+function resolveTokensForNotif(forUser){
+  var list=DB.pushTokens||[];var myName=curUserObj?curUserObj.name:'';
+  var sel;
+  if(!forUser){sel=list;}
+  else if(forUser==='@admin'){sel=list.filter(function(t){return t.role==='admin';});}
+  else{sel=list.filter(function(t){return t.user===forUser;});}
+  // ne pas se notifier soi-même (on regarde déjà l'écran)
+  sel=sel.filter(function(t){return t.user!==myName;});
+  return sel.map(function(t){return t.token;});
+}
+function sendPushForNotif(forUser,txt){
+  try{
+    if(!PUSH_PROXY_URL||PUSH_PROXY_URL.indexOf('COLLE_URL')>=0)return;
+    var tokens=resolveTokensForNotif(forUser);
+    if(!tokens.length)return;
+    fetch(PUSH_PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tokens:tokens,title:'BornPower',body:txt,url:location.origin+location.pathname})}).catch(function(e){console.log('push send err',e);});
+  }catch(e){console.log('sendPushForNotif err',e);}
+}
 function addNotif(type,txt,ico,forUser){
   if(!DB.notifications)DB.notifications=[];
   var now=new Date();
   DB.notifications.unshift({id:DB.nextId++,type:type,txt:txt,ico:ico||'🔔',ts:now.getTime(),read:false,forUser:forUser||''});
   if(DB.notifications.length>50)DB.notifications=DB.notifications.slice(0,50);
   updateNotifBadge();
+  sendPushForNotif(forUser||'',txt);
 }
 
 function fmtNotifTime(ts){
@@ -2035,8 +2067,8 @@ function savePushToken(token){
   if(!curUserObj)return;
   if(!DB.pushTokens)DB.pushTokens=[];
   var ex=DB.pushTokens.find(function(t){return t.token===token;});
-  if(ex){ex.user=curUserObj.name;ex.ts=Date.now();}
-  else{DB.pushTokens.push({token:token,user:curUserObj.name,userId:curUserObj.id,ts:Date.now()});}
+  if(ex){ex.user=curUserObj.name;ex.role=getRole();ex.ts=Date.now();}
+  else{DB.pushTokens.push({token:token,user:curUserObj.name,userId:curUserObj.id,role:getRole(),ts:Date.now()});}
   window._fcmTokenOk=true;window._fcmTokenVal=token;updateNotifDiag();
   save();
 }
@@ -3087,7 +3119,7 @@ function fillManagerSelect(selectId,selected){
   sel.innerHTML=opts;
 }
 function openProfModal(idx){eProfil=idx;var r=idx>=0?DB.installateurs[idx]:{};g('mProfT').textContent=idx>=0?'Modifier':'Nouvel installateur';g('mPp').value=r.prenom||'';g('mPn').value=r.nom||'';g('mPtel').value=r.tel||'';g('mPemail').value=r.email||'';g('mPspec').value=r.spec||'';g('mPdispo').value=r.dispo||'Disponible';initDeptTags(r.depts||'');g('mPnotes').value=r.notes||'';if(g('mPremun'))g('mPremun').value=r.remunInstall||'';fillManagerSelect('mPmanager',r.managerId||'');profColSel=r.color||COLS[0];document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col===profColSel);});g('mProf').classList.add('on');}
-function saveP(){var p=g('mPp').value.trim();if(!p){alert('Prénom requis');return;}var row={id:eProfil>=0?DB.installateurs[eProfil].id:DB.nextId++,prenom:p,nom:g('mPn').value,tel:g('mPtel').value,email:g('mPemail').value,spec:g('mPspec').value,dispo:g('mPdispo').value,color:profColSel,depts:g('mPdepts').value,notes:g('mPnotes').value,remunInstall:g('mPremun')?parseFloat(g('mPremun').value)||0:0,managerId:g('mPmanager')?g('mPmanager').value:'',userId:eProfil>=0?DB.installateurs[eProfil].userId:''};if(eProfil>=0)DB.installateurs[eProfil]=row;else DB.installateurs.push(row);save();g('mProf').classList.remove('on');renderProfils();toast('Installateur enregistré !');}
+function saveP(){var p=g('mPp').value.trim();if(!p){alert('Prénom requis');return;}var row={id:eProfil>=0?DB.installateurs[eProfil].id:DB.nextId++,prenom:p,nom:g('mPn').value,tel:g('mPtel').value,email:g('mPemail').value,spec:g('mPspec').value,dispo:g('mPdispo').value,color:profColSel,depts:g('mPdepts').value,notes:g('mPnotes').value,remunInstall:g('mPremun')?parseFloat(g('mPremun').value)||0:0,managerId:g('mPmanager')?g('mPmanager').value:'',userId:eProfil>=0?(DB.installateurs[eProfil].userId||''):''};if(eProfil>=0)DB.installateurs[eProfil]=row;else DB.installateurs.push(row);save();g('mProf').classList.remove('on');renderProfils();toast('Installateur enregistré !');}
 function delProf(i){if(confirm('Supprimer ?')){DB.installateurs.splice(i,1);save();renderProfils();}}
 function toggleTeam(idx){var p=DB.installateurs[idx];if(!p)return;var myId=curUserObj?curUserObj.id:'';if(p.managerId===myId){p.managerId='';toast('Retiré de votre équipe');}else{p.managerId=myId;toast('Ajouté à votre équipe ✅');}save();renderProfils();}
 
