@@ -4132,7 +4132,7 @@ function showTutorialStep() {
     ? '<img src="'+logoSrc+'" style="height:60px;margin-bottom:8px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))">'
     : '<div style="font-size:48px;margin-bottom:8px">'+step.icon+'</div>';
 
-  var html = '<div id="tutorialOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px">'
+  var html = '<div id="tutorialOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;padding-top:calc(20px + env(safe-area-inset-top));padding-bottom:calc(20px + env(safe-area-inset-bottom))">'
     + '<div style="background:#fff;border-radius:20px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden">'
     // Header
     + '<div style="background:linear-gradient(135deg,#222651,#2d3270);padding:24px;text-align:center">'
@@ -4201,14 +4201,14 @@ function showPageHelp(pageId) {
   var existing = document.getElementById('pageHelpPanel');
   if (existing) { existing.remove(); return; }
 
-  var html = '<div id="pageHelpPanel" style="position:fixed;top:0;right:0;bottom:0;width:320px;background:#fff;box-shadow:-4px 0 20px rgba(0,0,0,.15);z-index:200;display:flex;flex-direction:column;border-left:3px solid #c79732">'
-    + '<div style="background:linear-gradient(135deg,#222651,#2d3270);padding:16px 20px;display:flex;justify-content:space-between;align-items:center">'
+  var html = '<div id="pageHelpPanel" style="position:fixed;top:0;right:0;bottom:0;width:320px;max-width:92vw;background:#fff;box-shadow:-4px 0 20px rgba(0,0,0,.15);z-index:300;display:flex;flex-direction:column;border-left:3px solid #c79732">'
+    + '<div style="background:linear-gradient(135deg,#222651,#2d3270);padding:16px 20px;padding-top:calc(16px + env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:center">'
       + '<div><div style="font-size:11px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.05em">Aide</div>'
         + '<div style="color:#ffe576;font-size:15px;font-weight:700;margin-top:2px">' + help.title + '</div>'
       + '</div>'
-      + '<button onclick="document.getElementById(\'pageHelpPanel\').remove()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center">×</button>'
+      + '<button onclick="document.getElementById(\'pageHelpPanel\').remove()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:40px;height:40px;border-radius:8px;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent">×</button>'
     + '</div>'
-    + '<div style="flex:1;overflow-y:auto;padding:16px">'
+    + '<div style="flex:1;overflow-y:auto;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom))">'
       + help.sections.map(function(s) {
           return '<div style="margin-bottom:16px;padding:12px;background:#f8f9ff;border-radius:10px;border-left:3px solid #c79732">'
             + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
