@@ -2074,7 +2074,7 @@ function checkNewNotifs(incoming){
   });
   setAlertedNotifs(alerted);
 }
-function updateNotifBadge(){var unread=visibleNotifs().filter(function(n){return !n.read;}).length;var dot=g('notifDot');if(dot)dot.classList.toggle('on',unread>0);}
+function updateNotifBadge(){var unread=visibleNotifs().filter(function(n){return !n.read;}).length;var dot=g('notifDot');if(dot)dot.classList.toggle('on',unread>0);try{if('setAppBadge' in navigator){if(unread>0)navigator.setAppBadge(unread);else navigator.clearAppBadge();}}catch(e){}}
 function toggleNotifPanel(){var panel=g('notifPanel');panel.classList.toggle('on');if(panel.classList.contains('on'))renderNotifPanel();}
 function renderNotifPanel(){var pb=g('notifPermBtn');if(pb){var st=notifPermState();pb.textContent=st==='granted'?'🔔 Notifications activées':(st==='denied'?'🔕 Bloquées (voir réglages)':'🔔 Activer les notifications');pb.disabled=(st==='granted');pb.style.opacity=st==='granted'?'.6':'1';}var notifs=visibleNotifs();g('notifList').innerHTML=notifs.length?notifs.map(function(n){var gi=(DB.notifications||[]).indexOf(n);return '<div class="notifItem'+(n.read?'':' unread')+'" onclick="clickNotif('+gi+')">'+'<div class="notifIco" style="background:'+(n.read?'var(--bg)':'var(--blue-bg)')+'">'+n.ico+'</div>'+'<div><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+fmtNotifTime(n.ts)+'</div></div></div>';}).join(''):'<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">Aucune notification</div>';}
 function clickNotif(i){var n=DB.notifications[i];if(n)n.read=true;save();updateNotifBadge();renderNotifPanel();if(n&&n.type==='user'&&isAdmin()){var np=g('notifPanel');if(np)np.classList.remove('on');nav('pgUsers');}}

@@ -25,11 +25,13 @@ messaging.onBackgroundMessage(function(payload) {
     tag: 'bornpower',
     data: { url: (payload.data && payload.data.url) || '/bornpower-crm/' }
   };
+  try { if (self.navigator && self.navigator.setAppBadge) self.navigator.setAppBadge((payload.data && parseInt(payload.data.badge)) || 1); } catch(e){}
   return self.registration.showNotification(title, options);
 });
 
 self.addEventListener('notificationclick', function(e) {
   e.notification.close();
+  try { if (self.navigator && self.navigator.clearAppBadge) self.navigator.clearAppBadge(); } catch(err){}
   const url = (e.notification.data && e.notification.data.url) || '/bornpower-crm/';
   e.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(list) {

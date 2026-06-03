@@ -42,11 +42,13 @@ self.addEventListener('push', function(e) {
     data: { url: (data.data && data.data.url) || n.url || '/bornpower-crm/' },
     requireInteraction: false
   };
+  try { if (self.navigator && self.navigator.setAppBadge) self.navigator.setAppBadge((data.data && parseInt(data.data.badge)) || 1); } catch(err){}
   e.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.addEventListener('notificationclick', function(e) {
   e.notification.close();
+  try { if (self.navigator && self.navigator.clearAppBadge) self.navigator.clearAppBadge(); } catch(err){}
   var url = (e.notification.data && e.notification.data.url) || '/bornpower-crm/';
   e.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(list) {
