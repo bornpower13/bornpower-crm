@@ -1854,10 +1854,10 @@ function sendPushForNotif(forUser,txt){
     fetch(PUSH_PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tokens:tokens,title:'BornPower',body:txt,url:location.origin+location.pathname})}).catch(function(e){console.log('push send err',e);});
   }catch(e){console.log('sendPushForNotif err',e);}
 }
-function addNotif(type,txt,ico,forUser){
+function addNotif(type,txt,ico,forUser,link){
   if(!DB.notifications)DB.notifications=[];
   var now=new Date();
-  DB.notifications.unshift({id:DB.nextId++,type:type,txt:txt,ico:ico||'🔔',ts:now.getTime(),read:false,forUser:forUser||''});
+  DB.notifications.unshift({id:DB.nextId++,type:type,txt:txt,ico:ico||'🔔',ts:now.getTime(),read:false,forUser:forUser||'',link:link||null});
   if(DB.notifications.length>50)DB.notifications=DB.notifications.slice(0,50);
   updateNotifBadge();
   sendPushForNotif(forUser||'',txt);
@@ -2124,8 +2124,19 @@ function updateNotifDiag(){
     dot(!!window._fcmTokenOk)+' Jeton push obtenu : <b>'+(window._fcmTokenOk?'oui ✅':'pas encore')+'</b>'+
     (iosVer?'<br>📱 iOS détecté : <b>'+iosVer+'</b>':'');
 }
-function renderNotifPanel(){updateNotifDiag();var pb=g('notifPermBtn');if(pb){var st=notifPermState();pb.textContent=st==='granted'?'🔔 Notifications activées':(st==='denied'?'🔕 Bloquées (voir réglages)':'🔔 Activer les notifications');pb.disabled=(st==='granted');pb.style.opacity=st==='granted'?'.6':'1';}var notifs=visibleNotifs();g('notifList').innerHTML=notifs.length?notifs.map(function(n){var gi=(DB.notifications||[]).indexOf(n);return '<div class="notifItem'+(n.read?'':' unread')+'" onclick="clickNotif('+gi+')">'+'<div class="notifIco" style="background:'+(n.read?'var(--bg)':'var(--blue-bg)')+'">'+n.ico+'</div>'+'<div><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+fmtNotifTime(n.ts)+'</div></div></div>';}).join(''):'<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">Aucune notification</div>';}
-function clickNotif(i){var n=DB.notifications[i];if(n)n.read=true;save();updateNotifBadge();renderNotifPanel();if(n&&n.type==='user'&&isAdmin()){var np=g('notifPanel');if(np)np.classList.remove('on');nav('pgUsers');}}
+function renderNotifPanel(){updateNotifDiag();var pb=g('notifPermBtn');if(pb){var st=notifPermState();pb.textContent=st==='granted'?'🔔 Notifications activées':(st==='denied'?'🔕 Bloquées (voir réglages)':'🔔 Activer les notifications');pb.disabled=(st==='granted');pb.style.opacity=st==='granted'?'.6':'1';}var notifs=visibleNotifs();g('notifList').innerHTML=notifs.length?notifs.map(function(n){var gi=(DB.notifications||[]).indexOf(n);return '<div class="notifItem'+(n.read?'':' unread')+'" onclick="clickNotif('+gi+')">'+'<div class="notifIco" style="background:'+(n.read?'var(--bg)':'var(--blue-bg)')+'">'+n.ico+'</div>'+'<div style="flex:1"><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+fmtNotifTime(n.ts)+(n.link?' · <span style="color:var(--blue)">Voir la fiche ›</span>':'')+'</div></div></div>';}).join(''):'<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">Aucune notification</div>';}
+function clickNotif(i){var n=DB.notifications[i];if(n)n.read=true;save();updateNotifBadge();renderNotifPanel();if(n&&n.link){openFromNotif(n.link);return;}if(n&&n.type==='user'&&isAdmin()){var np=g('notifPanel');if(np)np.classList.remove('on');nav('pgUsers');}}
+function openFromNotif(link){
+  if(!link||!link.kind)return;
+  var np=g('notifPanel');if(np)np.classList.remove('on');
+  if(typeof isMobile==='function'&&isMobile())closeMobileMenu();
+  var idx;
+  if(link.kind==='opp'){idx=(DB.opportunites||[]).findIndex(function(o){return o.id===link.id;});nav('pgPipeline');if(idx>=0)openOppModal(idx);}
+  else if(link.kind==='devis'){idx=(DB.devis||[]).findIndex(function(d){return d.id===link.id;});nav('pgDevis');if(idx>=0)openDM(idx);}
+  else if(link.kind==='install'){idx=(DB.installations||[]).findIndex(function(i){return i.id===link.id;});if(idx>=0)openFiche(idx);else nav('pgInst');}
+  else if(link.kind==='sav'){idx=(DB.savTickets||[]).findIndex(function(s){return s.id===link.id;});nav('pgSAV');if(idx>=0)openSAVModal(idx);}
+  else if(link.kind==='visite'){nav('pgVisites');}
+}
 function markAllRead(){(DB.notifications||[]).forEach(function(n){n.read=true;});save();updateNotifBadge();renderNotifPanel();}
 
 // ── AUTH ──
@@ -2371,9 +2382,9 @@ function saveOpp(){
   var _prevEtapeOpp=eOpp>=0&&DB.opportunites[eOpp]?DB.opportunites[eOpp].etape:'';
   var _prevVisOpp=eOpp>=0&&DB.opportunites[eOpp]?(DB.opportunites[eOpp].visiteDate||'')+'|'+(DB.opportunites[eOpp].visiteQui||''):'';
   if(eOpp>=0)DB.opportunites[eOpp]=row;else DB.opportunites.push(row);
-  if(eOpp<0){addNotif('opp','Nouvelle opportunité : '+nom+(row.client?' ('+row.client+')':'')+' • par '+(curUserObj?curUserObj.name:'?'),'📊','@admin');}
-  if(row.etape==='Gagné'&&_prevEtapeOpp!=='Gagné'){addNotif('win','🎉 Opportunité GAGNÉE : '+(row.client||nom)+' — '+fmtE(row.montant),'🎉','@admin');}
-  if(row.visiteDate&&row.visiteQui&&(row.visiteDate+'|'+row.visiteQui)!==_prevVisOpp&&row.visiteQui!=='Non assigné'&&row.visiteQui!==(curUserObj?curUserObj.name:'')){addNotif('visite','🔧 Visite technique : '+(row.client||nom)+' le '+fmtD(row.visiteDate)+(row.visiteHeure?' à '+row.visiteHeure:''),'🔧',row.visiteQui);}
+  if(eOpp<0){addNotif('opp','Nouvelle opportunité : '+nom+(row.client?' ('+row.client+')':'')+' • par '+(curUserObj?curUserObj.name:'?'),'📊','@admin',{kind:'opp',id:row.id});}
+  if(row.etape==='Gagné'&&_prevEtapeOpp!=='Gagné'){addNotif('win','🎉 Opportunité GAGNÉE : '+(row.client||nom)+' — '+fmtE(row.montant),'🎉','@admin',{kind:'opp',id:row.id});}
+  if(row.visiteDate&&row.visiteQui&&(row.visiteDate+'|'+row.visiteQui)!==_prevVisOpp&&row.visiteQui!=='Non assigné'&&row.visiteQui!==(curUserObj?curUserObj.name:'')){addNotif('visite','🔧 Visite technique : '+(row.client||nom)+' le '+fmtD(row.visiteDate)+(row.visiteHeure?' à '+row.visiteHeure:''),'🔧',row.visiteQui,{kind:'opp',id:row.id});}
   ensureContact({nom:row.client||row.nom,societe:row.societe,type:'Client',origine:'une opportunité'});
   addActivite('opp',(eOpp>=0?'Opportunité modifiée: ':'Nouvelle opportunité: ')+nom);
   save();closeOppModal();renderPipeline();toast('Opportunité enregistrée !');
@@ -2562,8 +2573,8 @@ function saveD(){
   var row={id:eDevis>=0?DB.devis[eDevis].id:DB.nextId++,client:client,societe:g('mDsociete').value,adresse:g('mDadresse').value,ville:g('mDville').value,emailClient:g('mDemail').value,telClient:g('mDtel').value,date:g('mDdate').value,validite:parseInt(g('mDvalidite').value)||30,tva:tva,statut:g('mDstat').value,lignes:lignes,notes:g('mDnotes').value,advenir:g('mDadvenir').value,conditionsPaiement:g('mDpaiement').value,numero:eDevis>=0?DB.devis[eDevis].numero:genDevisNum(),commercialId:eDevis>=0&&DB.devis[eDevis].commercialId?DB.devis[eDevis].commercialId:(curUserObj?curUserObj.id:''),primeCommercial:g('mDprime')&&g('mDprime').value!==''?parseFloat(g('mDprime').value)||0:''};
   var _prevStatD=eDevis>=0&&DB.devis[eDevis]?DB.devis[eDevis].statut:'';
   if(eDevis>=0)DB.devis[eDevis]=row;else DB.devis.push(row);
-  if(eDevis<0){addNotif('devis','Nouveau devis N°'+row.numero+' — '+client+' • par '+(curUserObj?curUserObj.name:'?'),'📋','@admin');}
-  if(row.statut==='Accepté'&&_prevStatD!=='Accepté'){addNotif('devis','✅ Devis ACCEPTÉ N°'+row.numero+' — '+client,'✅','@admin');}
+  if(eDevis<0){addNotif('devis','Nouveau devis N°'+row.numero+' — '+client+' • par '+(curUserObj?curUserObj.name:'?'),'📋','@admin',{kind:'devis',id:row.id});}
+  if(row.statut==='Accepté'&&_prevStatD!=='Accepté'){addNotif('devis','✅ Devis ACCEPTÉ N°'+row.numero+' — '+client,'✅','@admin',{kind:'devis',id:row.id});}
   addActivite('devis',(eDevis>=0?'Devis modifié: ':'Nouveau devis: ')+client+' N°'+row.numero);
   save();closeDM();renderDevis();toast('Devis enregistré !');
 }
@@ -2903,13 +2914,13 @@ function saveI(){
   var _prevStatI=eInst>=0&&DB.installations[eInst]?DB.installations[eInst].statut:'';
   var _prevVisI=eInst>=0&&DB.installations[eInst]?(DB.installations[eInst].visiteDate||'')+'|'+(DB.installations[eInst].visiteQui||''):'';
   if(row.statut==='Terminée')deduireStock(row);
-  if(eInst<0){addNotif('install','Nouvelle installation : '+row.chantier+(row.client?' ('+row.client+')':'')+' • par '+(curUserObj?curUserObj.name:'?'),'⚡','@admin');}
-  if(row.statut==='Terminée'&&_prevStatI!=='Terminée'){addNotif('done','✅ Chantier terminé : '+row.chantier,'✅','@admin');}
-  if(row.visiteDate&&row.visiteQui&&(row.visiteDate+'|'+row.visiteQui)!==_prevVisI&&row.visiteQui!=='Non assigné'&&row.visiteQui!==(curUserObj?curUserObj.name:'')){addNotif('visite','🔧 Visite technique : '+(row.chantier||row.client)+' le '+fmtD(row.visiteDate)+(row.visiteHeure?' à '+row.visiteHeure:''),'🔧',row.visiteQui);}
+  if(eInst<0){addNotif('install','Nouvelle installation : '+row.chantier+(row.client?' ('+row.client+')':'')+' • par '+(curUserObj?curUserObj.name:'?'),'⚡','@admin',{kind:'install',id:row.id});}
+  if(row.statut==='Terminée'&&_prevStatI!=='Terminée'){addNotif('done','✅ Chantier terminé : '+row.chantier,'✅','@admin',{kind:'install',id:row.id});}
+  if(row.visiteDate&&row.visiteQui&&(row.visiteDate+'|'+row.visiteQui)!==_prevVisI&&row.visiteQui!=='Non assigné'&&row.visiteQui!==(curUserObj?curUserObj.name:'')){addNotif('visite','🔧 Visite technique : '+(row.chantier||row.client)+' le '+fmtD(row.visiteDate)+(row.visiteHeure?' à '+row.visiteHeure:''),'🔧',row.visiteQui,{kind:'install',id:row.id});}
   // Notification d'assignation à l'installateur
   var prevInst=eInst>=0&&DB.installations[eInst]?DB.installations[eInst].installateur:'';
   if(row.installateur&&row.installateur!==prevInst&&row.installateur!==(curUserObj?curUserObj.name:'')){
-    addNotif('assign','Nouveau chantier assigné : '+row.chantier+(row.dateDebut?' le '+fmtD(row.dateDebut):''),'⚡',row.installateur);
+    addNotif('assign','Nouveau chantier assigné : '+row.chantier+(row.dateDebut?' le '+fmtD(row.dateDebut):''),'⚡',row.installateur,{kind:'install',id:row.id});
   }
   if(eInst>=0)DB.installations[eInst]=row;else DB.installations.push(row);
   ensureContact({nom:row.client,tel:row.tel,adresse:row.adresse,type:'Client',origine:'une installation'});
@@ -3156,7 +3167,7 @@ function renderSAV(){
 }
 function openSAVModal(idx){eSAV=idx;var r=idx>=0?DB.savTickets[idx]:{};g('mSAVT').textContent=idx>=0?'Modifier le ticket':'Nouveau ticket SAV';g('mSAVtitle').value=r.title||'';g('mSAVcat').value=r.categorie||'Panne';g('mSAVprio').value=r.priorite||'Normal';g('mSAVstat').value=r.statut||'Ouvert';g('mSAVclient').value=r.client||'';g('mSAVtel').value=r.tel||'';g('mSAVdesc').value=r.description||'';var iSel=g('mSAVinst');iSel.innerHTML='<option value="">Aucune</option>';DB.installations.forEach(function(i){var o=document.createElement('option');o.value=i.chantier;o.textContent=i.chantier;if(i.chantier===r.installation)o.selected=true;iSel.appendChild(o);});var aSel=g('mSAVassign');aSel.innerHTML='<option value="">Non assigné</option>';DB.installateurs.forEach(function(i){var nm=instName(i.prenom,i.nom);var o=document.createElement('option');o.value=nm;o.textContent=nm;if(nm===r.assignedTo)o.selected=true;aSel.appendChild(o);});g('mSAV').classList.add('on');}
 function closeSAVModal(){g('mSAV').classList.remove('on');}
-function saveSAV(){var title=g('mSAVtitle').value.trim();if(!title){alert('Titre requis');return;}var row={id:eSAV>=0?DB.savTickets[eSAV].id:DB.nextId++,title:title,categorie:g('mSAVcat').value,priorite:g('mSAVprio').value,statut:g('mSAVstat').value,client:g('mSAVclient').value,tel:g('mSAVtel').value,installation:g('mSAVinst').value,assignedTo:g('mSAVassign').value,description:g('mSAVdesc').value,comments:eSAV>=0?(DB.savTickets[eSAV].comments||[]):[],createdAt:eSAV>=0?DB.savTickets[eSAV].createdAt:new Date().toLocaleDateString('fr-FR'),createdBy:curUserObj?curUserObj.name:''};var _prevSAVassign=eSAV>=0&&DB.savTickets[eSAV]?DB.savTickets[eSAV].assignedTo:'';if(eSAV>=0)DB.savTickets[eSAV]=row;else DB.savTickets.push(row);if(eSAV<0){addNotif('sav','🛠️ Nouveau SAV : '+title+(row.client?' ('+row.client+')':'')+' • par '+(curUserObj?curUserObj.name:'?'),'🛠️','@admin');}if(row.assignedTo&&row.assignedTo!==_prevSAVassign&&row.assignedTo!==(curUserObj?curUserObj.name:'')){addNotif('sav','🛠️ SAV assigné : '+title,'🛠️',row.assignedTo);}addActivite('sav','Ticket SAV "'+title+'" '+(eSAV>=0?'modifié':'créé'));save();closeSAVModal();renderSAV();toast('Ticket SAV enregistré !');}
+function saveSAV(){var title=g('mSAVtitle').value.trim();if(!title){alert('Titre requis');return;}var row={id:eSAV>=0?DB.savTickets[eSAV].id:DB.nextId++,title:title,categorie:g('mSAVcat').value,priorite:g('mSAVprio').value,statut:g('mSAVstat').value,client:g('mSAVclient').value,tel:g('mSAVtel').value,installation:g('mSAVinst').value,assignedTo:g('mSAVassign').value,description:g('mSAVdesc').value,comments:eSAV>=0?(DB.savTickets[eSAV].comments||[]):[],createdAt:eSAV>=0?DB.savTickets[eSAV].createdAt:new Date().toLocaleDateString('fr-FR'),createdBy:curUserObj?curUserObj.name:''};var _prevSAVassign=eSAV>=0&&DB.savTickets[eSAV]?DB.savTickets[eSAV].assignedTo:'';if(eSAV>=0)DB.savTickets[eSAV]=row;else DB.savTickets.push(row);if(eSAV<0){addNotif('sav','🛠️ Nouveau SAV : '+title+(row.client?' ('+row.client+')':'')+' • par '+(curUserObj?curUserObj.name:'?'),'🛠️','@admin',{kind:'sav',id:row.id});}if(row.assignedTo&&row.assignedTo!==_prevSAVassign&&row.assignedTo!==(curUserObj?curUserObj.name:'')){addNotif('sav','🛠️ SAV assigné : '+title,'🛠️',row.assignedTo,{kind:'sav',id:row.id});}addActivite('sav','Ticket SAV "'+title+'" '+(eSAV>=0?'modifié':'créé'));save();closeSAVModal();renderSAV();toast('Ticket SAV enregistré !');}
 function delSAV(i){if(confirm('Supprimer ?')){DB.savTickets.splice(i,1);save();renderSAV();}}
 function openSAVDetail(idx){curSAVIdx=idx;var t=DB.savTickets[idx];if(!t)return;g('mSAVDetailT').textContent='Ticket #'+t.id+' — '+t.title;var sc={Ouvert:'savStatOpen','En cours':'savStatProgress',Résolu:'savStatResolved',Urgent:'savStatUrgent'}[t.statut]||'savStatOpen';var html='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"><span class="bdg '+sc+'">'+t.statut+'</span><span class="bdg bContact">'+t.categorie+'</span><span class="bdg bPause">'+t.priorite+'</span></div>'+'<div style="background:var(--bg);border-radius:8px;padding:12px;margin-bottom:14px"><div class="frow"><span>Client</span><span>'+(t.client||'—')+'</span></div><div class="frow"><span>Installation</span><span>'+(t.installation||'—')+'</span></div><div class="frow"><span>Assigné à</span><span>'+(t.assignedTo||'Non assigné')+'</span></div><div class="frow"><span>Créé le</span><span>'+t.createdAt+' par '+(t.createdBy||'—')+'</span></div></div>'+(t.description?'<div style="font-size:13px;background:var(--bg);border-radius:8px;padding:10px;margin-bottom:14px">'+t.description+'</div>':'')+'<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Historique ('+( t.comments||[]).length+')</div>';(t.comments||[]).forEach(function(c){html+='<div class="savComment"><div class="savCommentMeta">'+c.author+' &middot; '+c.date+'</div><div class="savCommentBody">'+c.text+'</div></div>';});g('mSAVDetailBody').innerHTML=html;g('savCommentInput').value='';g('mSAVDetail').classList.add('on');}
 function addSAVComment(){var txt=g('savCommentInput').value.trim();if(!txt)return;if(!DB.savTickets[curSAVIdx].comments)DB.savTickets[curSAVIdx].comments=[];DB.savTickets[curSAVIdx].comments.push({text:txt,author:curUserObj?curUserObj.name:'',date:new Date().toLocaleDateString('fr-FR')});save();openSAVDetail(curSAVIdx);toast('Commentaire ajouté !');}
