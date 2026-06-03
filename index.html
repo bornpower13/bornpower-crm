@@ -1345,6 +1345,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="fi"><label>📞 Date de rappel client</label><input id="mOrappel" type="date"></div>
       <div class="fi"><label>🔧 Visite tech. — qui</label><select id="mOvisiteQui"></select></div>
       <div class="fi"><label>🔧 Visite tech. — date</label><input id="mOvisiteDate" type="date"></div>
+      <div class="fi"><label>🔧 Visite tech. — heure</label><input id="mOvisiteHeure" type="time"></div>
       <div class="fi"><label>Source</label><select id="mOsource"><option>Bouche à oreille</option><option>Site web</option><option>Réseaux sociaux</option><option>Prospection téléphonique</option><option>Partenaire</option><option>Autre</option></select></div>
       <div class="fi full"><label>Notes</label><textarea id="mOnotes" placeholder="Notes..."></textarea></div>
     </div>
@@ -1630,6 +1631,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="fi"><label>Métrage de câble (m)</label><input type="number" id="mIcable" min="0" placeholder="0"></div>
       <div class="fi"><label>🔧 Visite tech. — qui</label><select id="mIvisiteQui"></select></div>
       <div class="fi"><label>🔧 Visite tech. — date</label><input type="date" id="mIvisiteDate"></div>
+      <div class="fi"><label>🔧 Visite tech. — heure</label><input type="time" id="mIvisiteHeure"></div>
       <div class="fi full" style="grid-column:1/-1"><label>📦 Matériel utilisé (déduit du stock à la fin du chantier)</label>
         <div style="display:flex;gap:6px;margin-bottom:8px"><select id="mImatSelect" style="flex:1;padding:7px;border:1px solid var(--border);border-radius:7px;font-family:inherit;font-size:13px"></select><input type="number" id="mImatQte" value="1" min="1" style="width:70px;padding:7px;border:1px solid var(--border);border-radius:7px;font-family:inherit;font-size:13px"><button type="button" class="btn bGhost" onclick="addMatUtilise()" style="font-size:12px">Ajouter</button></div>
         <div id="mImatList"></div>
@@ -1643,6 +1645,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
         <select id="mIstat"><option>Planifiée</option><option>En cours</option><option>Terminée</option><option>En pause</option><option>Annulée</option></select>
       </div>
       <div class="fi"><label>Date début</label><input type="date" id="mIdebut"></div>
+      <div class="fi"><label>Heure d'intervention</label><input type="time" id="mIheure"></div>
       <div class="fi"><label>Date fin</label><input type="date" id="mIfin"></div>
       <div class="fi"><label>Montant HT (€)</label><input type="number" id="mImontant" placeholder="0"></div>
       <div class="fi"><label>Acompte reçu (€)</label><input type="number" id="mIacompte" value="0"></div>
@@ -2239,6 +2242,7 @@ function openOppModal(idx){
   if(g('mOrappel'))g('mOrappel').value=r.dateRappel||'';
   fillVisiteQui('mOvisiteQui',r.visiteQui||'');
   if(g('mOvisiteDate'))g('mOvisiteDate').value=r.visiteDate||'';
+  if(g('mOvisiteHeure'))g('mOvisiteHeure').value=r.visiteHeure||'';
   g('mOsource').value=r.source||'Bouche à oreille';g('mOnotes').value=r.notes||'';
   // Afficher la date de création
   var ci=g('mOcreationInfo');
@@ -2249,7 +2253,7 @@ function openOppModal(idx){
 function closeOppModal(){g('mOpp').classList.remove('on');}
 function saveOpp(){
   var nom=g('mOnom').value.trim();if(!nom){alert('Nom requis');return;}
-  var row={id:eOpp>=0?DB.opportunites[eOpp].id:DB.nextId++,nom:nom,client:g('mOclient').value,societe:g('mOsociete').value,montant:parseFloat(g('mOmontant').value)||0,proba:parseInt(g('mOproba').value)||50,etape:g('mOetape').value,close:g('mOclose').value,dateRappel:g('mOrappel')?g('mOrappel').value:'',visiteQui:g('mOvisiteQui')?g('mOvisiteQui').value:'',visiteDate:g('mOvisiteDate')?g('mOvisiteDate').value:'',source:g('mOsource').value,notes:g('mOnotes').value,commercialId:eOpp>=0?DB.opportunites[eOpp].commercialId:curUserObj?curUserObj.id:'',echanges:eOpp>=0?DB.opportunites[eOpp].echanges||[]:[],dateCreation:eOpp>=0?DB.opportunites[eOpp].dateCreation:new Date().toLocaleDateString('fr-FR'),creePar:eOpp>=0&&DB.opportunites[eOpp].creePar?DB.opportunites[eOpp].creePar:(curUserObj?curUserObj.name:''),proprietaire:eOpp>=0&&DB.opportunites[eOpp].proprietaire?DB.opportunites[eOpp].proprietaire:(curUserObj?curUserObj.name:'')};
+  var row={id:eOpp>=0?DB.opportunites[eOpp].id:DB.nextId++,nom:nom,client:g('mOclient').value,societe:g('mOsociete').value,montant:parseFloat(g('mOmontant').value)||0,proba:parseInt(g('mOproba').value)||50,etape:g('mOetape').value,close:g('mOclose').value,dateRappel:g('mOrappel')?g('mOrappel').value:'',visiteQui:g('mOvisiteQui')?g('mOvisiteQui').value:'',visiteDate:g('mOvisiteDate')?g('mOvisiteDate').value:'',visiteHeure:g('mOvisiteHeure')?g('mOvisiteHeure').value:'',source:g('mOsource').value,notes:g('mOnotes').value,commercialId:eOpp>=0?DB.opportunites[eOpp].commercialId:curUserObj?curUserObj.id:'',echanges:eOpp>=0?DB.opportunites[eOpp].echanges||[]:[],dateCreation:eOpp>=0?DB.opportunites[eOpp].dateCreation:new Date().toLocaleDateString('fr-FR'),creePar:eOpp>=0&&DB.opportunites[eOpp].creePar?DB.opportunites[eOpp].creePar:(curUserObj?curUserObj.name:''),proprietaire:eOpp>=0&&DB.opportunites[eOpp].proprietaire?DB.opportunites[eOpp].proprietaire:(curUserObj?curUserObj.name:'')};
   if(eOpp>=0)DB.opportunites[eOpp]=row;else DB.opportunites.push(row);
   ensureContact({nom:row.client||row.nom,societe:row.societe,type:'Client',origine:'une opportunité'});
   addActivite('opp',(eOpp>=0?'Opportunité modifiée: ':'Nouvelle opportunité: ')+nom);
@@ -2700,12 +2704,14 @@ function openIM(idx){
   }
   poseurs.filter(function(v,idx){return poseurs.indexOf(v)===idx;}).forEach(function(nm){var o=document.createElement('option');o.value=nm;o.textContent=nm;if(nm===(r.installateur||''))o.selected=true;iSel.appendChild(o);});
   g('mIstat').value=r.statut||'Planifiée';g('mIdebut').value=r.dateDebut||'';g('mIfin').value=r.dateFin||'';
+  if(g('mIheure'))g('mIheure').value=r.heure||(idx<0?'08:00':'');
   g('mImontant').value=r.montant||'';g('mInotes').value=r.notes||'';
   g('mIacompte').value=r.acompte||0;g('mIpaiement').value=r.paiementStatut||'En attente';
   if(g('mIraccord'))g('mIraccord').value=r.raccordement||'';
   if(g('mIcable'))g('mIcable').value=r.cableM||'';
   fillVisiteQui('mIvisiteQui',r.visiteQui||'');
   if(g('mIvisiteDate'))g('mIvisiteDate').value=r.visiteDate||'';
+  if(g('mIvisiteHeure'))g('mIvisiteHeure').value=r.visiteHeure||'';
   matUtiliseTmp=(r.materiaux||[]).filter(function(m){return m&&m.matId;}).map(function(m){return {matId:m.matId,nom:m.nom,qte:m.qte};});
   fillMatSelect();renderMatUtilise();
   if(g('mIremunInst')){
@@ -2738,11 +2744,11 @@ function saveI(){
     type:g('mItype').value,typeBien:g('mIbien').value,
     raccordement:g('mIraccord')?g('mIraccord').value:'',
     cableM:g('mIcable')?parseInt(g('mIcable').value)||0:0,
-    visiteQui:g('mIvisiteQui')?g('mIvisiteQui').value:'',visiteDate:g('mIvisiteDate')?g('mIvisiteDate').value:'',
+    visiteQui:g('mIvisiteQui')?g('mIvisiteQui').value:'',visiteDate:g('mIvisiteDate')?g('mIvisiteDate').value:'',visiteHeure:g('mIvisiteHeure')?g('mIvisiteHeure').value:'',
     remunInstallateur:g('mIremunInst')&&g('mIremunInst').value!==''?parseFloat(g('mIremunInst').value)||0:'',
     nbBornes:parseInt(g('mInbbornes').value)||0,puissance:g('mIpuissance').value,
     installateur:g('mIinst').value,statut:g('mIstat').value,
-    dateDebut:dateDebut,dateFin:g('mIfin').value,
+    dateDebut:dateDebut,dateFin:g('mIfin').value,heure:g('mIheure')?g('mIheure').value:'',
     montant:parseFloat(g('mImontant').value)||0,
     materiaux:matUtiliseTmp.slice(),notes:g('mInotes').value,
     signature:existing.signature||'',
@@ -2848,7 +2854,7 @@ function exportFichePDF(idx){
       +(r.nbBornes?'<div class="field"><div class="label">Bornes</div><div class="value">'+r.nbBornes+(r.puissance?' x '+r.puissance:'')+'</div></div>':'')
       +'<div class="field"><div class="label">Installateur</div><div class="value">'+(r.installateur||'--')+'</div></div>'
       +'<div class="field"><div class="label">Statut</div><div class="value">'+r.statut+'</div></div>'
-      +'<div class="field"><div class="label">Date début</div><div class="value">'+(r.dateDebut?fmtD(r.dateDebut):'--')+'</div></div>'
+      +'<div class="field"><div class="label">Date début</div><div class="value">'+(r.dateDebut?fmtD(r.dateDebut)+(r.heure?' à '+r.heure:''):'--')+'</div></div>'
       +'<div class="field"><div class="label">Date fin</div><div class="value">'+(r.dateFin?fmtD(r.dateFin):'--')+'</div></div>'
       +(r.montant?'<div class="field"><div class="label">Montant</div><div class="value" style="color:#059669">'+fmtE(r.montant)+'</div></div>':'')
       +(r.paiementStatut?'<div class="field"><div class="label">Paiement</div><div class="value">'+r.paiementStatut+'</div></div>':'')
@@ -3094,7 +3100,7 @@ function exportInstallToCalendar(idx){
   var i=DB.installations[idx];if(!i){toast('Installation introuvable');return;}
   if(!i.dateDebut){alert('Ajoutez d\'abord une date de début à cette installation.');return;}
   var desc='Client: '+(i.client||'-')+'\nType: '+(i.type||'-')+'\nBornes: '+(i.nbBornes||0)+(i.puissance?' x '+i.puissance:'')+'\nInstallateur: '+(i.installateur||'-')+'\nTel: '+(i.tel||'-')+(i.raccordement?'\nRaccordement: '+i.raccordement:'')+(i.cableM?'\nCable: '+i.cableM+'m':'')+(i.notes?'\nNotes: '+i.notes:'');
-  var ev=buildICSEvent({uid:'bp-inst-'+i.id+'@bornpower.fr',title:'⚡ Installation: '+i.chantier,date:i.dateDebut,dateFin:i.dateFin,location:i.adresse||'',desc:desc,alarmMin:120});
+  var ev=buildICSEvent({uid:'bp-inst-'+i.id+'@bornpower.fr',title:'⚡ Installation: '+i.chantier,date:i.dateDebut,heure:i.heure,dateFin:i.dateFin,location:i.adresse||'',desc:desc,alarmMin:120});
   var cal='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//BornPower//CRM//FR\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n'+ev+'\r\nEND:VCALENDAR';
   downloadICS('installation-'+(i.chantier||'bornpower').replace(/[^a-z0-9]/gi,'_')+'.ics',cal);
   toast('📅 Ajouté au calendrier');
@@ -3112,8 +3118,8 @@ function getVisitesTechniques(){
   var visites=[];
   (DB.prospects||[]).forEach(function(p,i){if(p.visiteDate)visites.push({type:'prospect',idx:i,nom:p.nom,qui:p.visiteQui||'Non assigné',date:p.visiteDate,heure:p.visiteHeure||'',stat:p.visiteStat||'',tel:p.tel||'',adresse:[p.adresse,p.ville].filter(Boolean).join(', ')});});
   (DB.contacts||[]).forEach(function(c,i){if(c.visiteDate)visites.push({type:'contact',idx:i,nom:c.nom,qui:c.visiteQui||'Non assigné',date:c.visiteDate,heure:c.visiteHeure||'',stat:c.visiteStat||'',tel:c.tel||'',adresse:c.adresse||''});});
-  (DB.opportunites||[]).forEach(function(o,i){if(o.visiteDate)visites.push({type:'opp',idx:i,nom:o.nom||o.client,qui:o.visiteQui||'Non assigné',date:o.visiteDate,heure:'',stat:'',tel:'',adresse:''});});
-  (DB.installations||[]).forEach(function(ins,i){if(ins.visiteDate)visites.push({type:'inst',idx:i,nom:ins.chantier||ins.client,qui:ins.visiteQui||'Non assigné',date:ins.visiteDate,heure:'',stat:'',tel:ins.tel||'',adresse:ins.adresse||''});});
+  (DB.opportunites||[]).forEach(function(o,i){if(o.visiteDate)visites.push({type:'opp',idx:i,nom:o.nom||o.client,qui:o.visiteQui||'Non assigné',date:o.visiteDate,heure:o.visiteHeure||'',stat:'',tel:'',adresse:''});});
+  (DB.installations||[]).forEach(function(ins,i){if(ins.visiteDate)visites.push({type:'inst',idx:i,nom:ins.chantier||ins.client,qui:ins.visiteQui||'Non assigné',date:ins.visiteDate,heure:ins.visiteHeure||'',stat:'',tel:ins.tel||'',adresse:ins.adresse||''});});
   return visites;
 }
 
@@ -3182,7 +3188,7 @@ function renderMaJournee(){
   // Visits first
   myVisits.forEach(function(v){
     html+='<div style="background:var(--white);border-radius:14px;box-shadow:0 1px 5px rgba(0,0,0,.07);padding:16px;margin-bottom:12px;border-left:4px solid #0891b2">'+
-      '<div style="font-weight:700;font-size:15px;color:var(--navy);margin-bottom:4px">🛠️ Visite technique — '+v.nom+'</div>'+
+      '<div style="font-weight:700;font-size:15px;color:var(--navy);margin-bottom:4px">'+(v.heure?'<span style="color:#0891b2">'+v.heure+'</span> ':'')+'🛠️ Visite technique — '+v.nom+'</div>'+
       (v.adresse?'<div style="font-size:13px;color:var(--muted);margin-bottom:10px">📍 '+v.adresse+'</div>':'')+
       '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
       (v.tel?'<a href="tel:'+v.tel.replace(/\s/g,'')+'" class="btn bGhost" style="font-size:13px;text-decoration:none">📞 Appeler</a>':'')+
@@ -3197,7 +3203,7 @@ function renderMaJournee(){
     var mats=(i.materiaux||[]).map(function(m){return (m.nom||m)+(m.qte?' x'+m.qte:'');});
     html+='<div style="background:var(--white);border-radius:14px;box-shadow:0 1px 5px rgba(0,0,0,.07);padding:16px;margin-bottom:12px;border-left:4px solid '+col+'">'+
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">'+
-      '<div style="font-weight:700;font-size:16px;color:var(--navy)">⚡ '+i.chantier+'</div>'+
+      '<div style="font-weight:700;font-size:16px;color:var(--navy)">'+(i.heure?'<span style="color:#0891b2">'+i.heure+'</span> ':'')+'⚡ '+i.chantier+'</div>'+
       '<span class="badge" style="background:'+col+'22;color:'+col+'">'+i.statut+'</span></div>'+
       '<div style="font-size:13px;color:var(--muted);margin-bottom:4px">'+(i.client||'')+(i.type?' · '+i.type:'')+(i.nbBornes?' · '+i.nbBornes+' borne(s)':'')+'</div>'+
       (i.adresse?'<div style="font-size:13px;color:var(--muted);margin-bottom:10px">📍 '+i.adresse+'</div>':'')+
