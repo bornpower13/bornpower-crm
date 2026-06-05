@@ -4477,13 +4477,13 @@ function openSocialObjModal(idx){
 
 // ── PLANNING TOURNAGES ──
 function renderCMPlanning(){
-  var chantiers=DB.installations.filter(function(i){return i.statut==='En cours'||i.statut==='Planifiée';}).sort(function(a,b){return new Date(a.date||0)-new Date(b.date||0);});
+  var chantiers=DB.installations.filter(function(i){return i.statut==='En cours'||i.statut==='Planifiée';}).sort(function(a,b){return new Date(a.dateDebut||0)-new Date(b.dateDebut||0);});
   if(!chantiers.length){g('cmPlanningList').innerHTML='<p style="color:var(--muted);text-align:center;padding:40px;font-size:13px">Aucun chantier à venir.</p>';return;}
   g('cmPlanningList').innerHTML='<table class="tbl"><thead><tr><th>Date</th><th>Chantier</th><th>Lieu</th><th>Installateur</th><th>Contact</th><th>À filmer</th></tr></thead><tbody>'+
     chantiers.map(function(i){
       var inst=DB.installateurs.find(function(x){return instName(x.prenom,x.nom)===i.installateur;});
       var tel=inst&&inst.tel?inst.tel:'--';
-      return '<tr><td>'+fmtD(i.date)+'</td><td style="font-weight:600">'+(i.chantier||i.client||'')+'</td><td>'+(i.ville||i.adresse||'')+'</td>'+
+      return '<tr><td>'+(i.dateDebut?fmtD(i.dateDebut)+(i.heure?' à '+i.heure:''):'--')+'</td><td style="font-weight:600">'+(i.chantier||i.client||'')+'</td><td>'+(i.ville||i.adresse||'')+'</td>'+
         '<td>'+(i.installateur||'')+'</td><td>'+tel+'</td>'+
         '<td><input type="checkbox" '+(i.aFilmer?'checked':'')+' onchange="toggleAFilmer('+i.id+',this.checked)"></td></tr>';
     }).join('')+'</tbody></table>';
@@ -4503,7 +4503,7 @@ function renderCMInst(){
     var tel=inst&&inst.tel?inst.tel:'';
     return '<tr><td style="font-weight:600">'+(i.chantier||i.client||'')+'</td><td>'+(i.ville||i.adresse||'')+'</td>'+
       '<td>'+(i.installateur||'')+(tel?' <span style="color:var(--muted);font-size:11px">'+tel+'</span>':'')+'</td>'+
-      '<td>'+fmtD(i.date)+'</td><td><span class="badge" style="background:'+(SCOLS[i.statut]||'#888')+'22;color:'+(SCOLS[i.statut]||'#888')+'">'+i.statut+'</span></td>'+
+      '<td>'+(i.dateDebut?fmtD(i.dateDebut)+(i.heure?' à '+i.heure:''):'--')+'</td><td><span class="badge" style="background:'+(SCOLS[i.statut]||'#888')+'22;color:'+(SCOLS[i.statut]||'#888')+'">'+i.statut+'</span></td>'+
       '<td><button class="btn bGhost" style="padding:3px 9px;font-size:12px" onclick="planTournage('+i.id+')">📹 Filmer</button></td></tr>';
   }).join('');
 }
