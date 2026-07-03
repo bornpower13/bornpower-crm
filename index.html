@@ -1978,7 +1978,7 @@ function buildNav(){
     if(item.id==='pgUsers'&&pending>0)badge='<span class="navBadge">'+pending+'</span>';
     html+='<a id="nav_'+item.id+'" onclick="nav(\''+item.id+'\')"><span class="navIco">'+item.ico+'</span>'+item.lbl+badge+'</a>';
   });
-  g('navLinks').innerHTML=html;
+  g('navLinks').innerHTML=html;try{checkPaieAlerte();}catch(e){}
 }
 
 function nav(id){
@@ -3648,7 +3648,7 @@ function renderFinCalendrier(){
   var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'+
     '<button class="btn bGhost" onclick="finCalNav(-1)" style="padding:6px 14px;font-size:16px">&#8249;</button>'+
     '<div style="text-align:center"><div style="font-weight:700;font-size:15px">'+MO[mois]+' '+an+'</div><div style="font-size:12px;color:var(--blue);font-weight:600">'+fmtE(totApayer)+' à payer</div></div>'+
-    '<button class="btn bGhost" onclick="finCalNav(1)" style="padding:6px 14px;font-size:16px">&#8250;</button></div>';
+    '<button class="btn bGhost" onclick="finCalNav(1)" style="padding:6px 14px;font-size:16px">&#8250;</button></div>'+'<div style="display:flex;gap:8px;justify-content:center;margin-bottom:12px"><span style="font-size:11px;font-weight:600;background:var(--navy);color:#fff;padding:3px 10px;border-radius:999px">💶 Paie le 15</span><span style="font-size:11px;font-weight:600;background:var(--navy);color:#fff;padding:3px 10px;border-radius:999px">💶 Paie le '+Math.min(30,_daysInMonth(an,mois))+'</span></div>';
   if(_finCalOffset===0&&enRetard.length){
     html+='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:8px 10px;margin-bottom:12px"><div style="font-size:12px;font-weight:700;color:#dc2626;margin-bottom:4px">&#9888; En retard — '+fmtE(totRetard)+'</div>'+enRetard.map(_payRow).join('')+'</div>';
   }
@@ -3704,6 +3704,46 @@ function saveRappel(){
 }
 function toggleRappel(id){var t=(DB.taches||[]).find(function(x){return x.id===id;});if(!t)return;t.fait=!t.fait;t.faitLe=t.fait?new Date().toISOString():'';save();_refreshRappels();}
 function delRappel(id){if(!DB.taches)return;var i=DB.taches.findIndex(function(x){return x.id===id;});if(i>=0){DB.taches.splice(i,1);save();_refreshRappels();}}
+/* ── PAIES (15 & 30) + ALERTES ── */
+function checkPaieAlerte(){
+  if(!curUserObj)return;
+  var role=curUserObj.role;
+  if(role!=='commercial'&&role!=='installer')return;
+  if(joursAvantPaie()>3)return;
+  var uid=curUserObj.id,nom=curUserObj.name,nb=0,quoi;
+  if(role==='commercial'){quoi='vente';nb=DB.devis.filter(function(x){return (!x.commercialId||x.commercialId===uid)&&x.statut==='Accepté'&&!x.commValide;}).length;}
+  else{quoi='chantier';nb=DB.installations.filter(function(i){return i.installateur===nom&&i.statut!=='Terminée'&&i.statut!=='Annulée';}).length;}
+  if(nb<=0)return;
+  var d=prochainePaie();var key=nom+'_'+d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+  if(!DB.paieNotifLog)DB.paieNotifLog={};
+  if(DB.paieNotifLog[key])return;
+  DB.paieNotifLog[key]=true;
+  addNotif('pay','⏰ Paie le '+fmtD(d)+' — validez vos '+nb+' '+quoi+'(s) en attente pour être payé !','⏰',nom);
+  save();
+}
+function _daysInMonth(y,m){return new Date(y,m+1,0).getDate();}
+function _payDatesOf(y,m){return [new Date(y,m,15), new Date(y,m,Math.min(30,_daysInMonth(y,m)))];}
+function prochainePaie(){
+  var now=new Date();now.setHours(0,0,0,0);
+  var dates=_payDatesOf(now.getFullYear(),now.getMonth());
+  for(var i=0;i<dates.length;i++){if(dates[i].getTime()>=now.getTime())return dates[i];}
+  var nm=now.getMonth()+1,ny=now.getFullYear();if(nm>11){nm=0;ny++;}
+  return _payDatesOf(ny,nm)[0];
+}
+function joursAvantPaie(){var d=prochainePaie();var now=new Date();now.setHours(0,0,0,0);return Math.round((d-now)/86400000);}
+function paieAlerteHtml(role){
+  var d=prochainePaie();var j=joursAvantPaie();var uid=curUserObj?curUserObj.id:'';var nb=0;
+  if(role==='commercial'){nb=DB.devis.filter(function(x){return (!x.commercialId||x.commercialId===uid)&&x.statut==='Accepté'&&!x.commValide;}).length;}
+  else{var nom=curUserObj?curUserObj.name:'';nb=DB.installations.filter(function(i){return i.installateur===nom&&i.statut!=='Terminée'&&i.statut!=='Annulée';}).length;}
+  var urgent=j<=3;
+  var bg=urgent?'#fffbeb':'#eff6ff';var bd=urgent?'#fcd34d':'#bfdbfe';var col=urgent?'#b45309':'#1d4ed8';
+  var quoi=role==='commercial'?'vente':'chantier';
+  var titre=(urgent?'⏰ ':'💶 ')+'Prochaine paie le '+fmtD(d)+' (dans '+j+' jour'+(j>1?'s':'')+')';
+  var sub=(nb>0)
+    ?'<div style="font-size:12.5px;margin-top:4px;font-weight:600">Vous avez '+nb+' '+quoi+'(s) à valider — faites-le avant le '+fmtD(d)+' pour être payé !</div>'
+    :'<div style="font-size:12px;margin-top:4px">Tout est à jour ✅ Validez vos '+quoi+'s dès qu\'ils sont réalisés.</div>';
+  return '<div style="background:'+bg+';border:1px solid '+bd+';border-radius:12px;padding:12px 14px;margin-bottom:14px;color:'+col+'"><div style="font-size:13.5px;font-weight:700">'+titre+'</div>'+sub+'</div>';
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
@@ -3714,7 +3754,7 @@ function renderCommercialPay(uid,mois,an){
   }).sort(function(a,b){return new Date(b.date)-new Date(a.date);});
   function primeFor(d){var p=d.primeCommercial;return (p!==undefined&&p!=='')?(parseFloat(p)||0):prime;}
   var gagne=moisVentes.reduce(function(s,d){return s+primeFor(d);},0);
-  var html='<div class="myCACard" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)"><div class="myCATitle">Ma prime — '+MO[mois]+' '+an+'</div><div class="myCAVal">'+fmtE(gagne)+'</div><div class="myCASubVal">'+moisVentes.length+' vente(s) signée(s)</div></div>';
+  var html=paieAlerteHtml('commercial')+'<div class="myCACard" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)"><div class="myCATitle">Ma prime — '+MO[mois]+' '+an+'</div><div class="myCAVal">'+fmtE(gagne)+'</div><div class="myCASubVal">'+moisVentes.length+' vente(s) signée(s)</div></div>';
   if(!prime){html+='<div class="card" style="margin-bottom:16px"><div class="cardB" style="text-align:center;color:var(--muted);font-size:13px;padding:20px">💡 Votre prime par vente n\'est pas encore définie. Demandez à votre responsable de la configurer.</div></div>';return html;}
   html+='<div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📅 Mes primes — '+MO[mois]+'</h3></div><div class="cardB" style="padding:0">';
   if(!moisVentes.length){html+='<div style="text-align:center;color:var(--muted);font-size:13px;padding:30px">Aucune vente signée ce mois-ci</div>';}
@@ -3745,7 +3785,7 @@ function renderInstallerPay(nom,mois,an){
   var aVenir=moisInsts.filter(function(i){return i.statut!=='Terminée'&&i.statut!=='Annulée';});
   var gagne=terminees.reduce(function(s,i){return s+payFor(i);},0);
   var projete=aVenir.reduce(function(s,i){return s+payFor(i);},0);
-  var html='<div class="myCACard" style="background:linear-gradient(135deg,#059669,#047857)"><div class="myCATitle">Ma rémunération — '+MO[mois]+' '+an+'</div><div class="myCAVal">'+fmtE(gagne)+'</div><div class="myCASubVal">'+terminees.length+' installation(s) terminée(s)'+(projete>0?' &middot; +'+fmtE(projete)+' à venir':'')+'</div></div>';
+  var html=paieAlerteHtml('installateur')+'<div class="myCACard" style="background:linear-gradient(135deg,#059669,#047857)"><div class="myCATitle">Ma rémunération — '+MO[mois]+' '+an+'</div><div class="myCAVal">'+fmtE(gagne)+'</div><div class="myCASubVal">'+terminees.length+' installation(s) terminée(s)'+(projete>0?' &middot; +'+fmtE(projete)+' à venir':'')+'</div></div>';
   if(!taux){html+='<div class="card" style="margin-bottom:16px"><div class="cardB" style="text-align:center;color:var(--muted);font-size:13px;padding:20px">💡 Votre taux de rémunération par installation n\'est pas encore défini. Demandez à votre responsable de le configurer.</div></div>';return html;}
   html+='<div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📅 Calendrier de paiement — '+MO[mois]+'</h3></div><div class="cardB" style="padding:0">';
   if(!moisInsts.length){html+='<div style="text-align:center;color:var(--muted);font-size:13px;padding:30px">Aucune installation ce mois-ci</div>';}
