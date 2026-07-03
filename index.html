@@ -497,6 +497,47 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style id="bp-refonte">
+/* ===== BORNPOWER — REFONTE ESTHÉTIQUE (Phase 4) ===== */
+:root{
+  --bg:#eef1f8;--border:#e6e9f2;
+  --radius:12px;--radius-lg:16px;
+  --shadow-sm:0 1px 2px rgba(20,25,60,.05),0 1px 3px rgba(20,25,60,.04);
+  --shadow:0 2px 6px rgba(20,25,60,.06),0 10px 26px rgba(20,25,60,.06);
+  --shadow-lg:0 16px 44px rgba(20,25,60,.16);
+  --ring:0 0 0 3px rgba(199,151,50,.30);
+}
+body{background:linear-gradient(180deg,#f2f4fb 0%,#e8ecf6 100%) !important;background-attachment:fixed;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+.pgHead h1{letter-spacing:-.5px;}
+.card{border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow);transition:box-shadow .2s ease,transform .2s ease;}
+.cardH{padding:15px 18px;}
+.cardH h3{letter-spacing:-.2px;font-weight:700;}
+.kpi{border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow);transition:transform .2s ease,box-shadow .2s ease;}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.btn{border-radius:10px;font-weight:600;letter-spacing:.1px;transition:transform .15s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease;}
+.btn:active{transform:translateY(1px);}
+.btn:focus-visible{outline:none;box-shadow:var(--ring);}
+.bPrimary{box-shadow:0 2px 10px rgba(34,38,81,.22);}
+.bPrimary:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(34,38,81,.30);}
+.bGhost{background:var(--white);border:1px solid var(--border);color:var(--navy);}
+.bGhost:hover{background:#f4f6fc;border-color:#d6dbe9;}
+.bdg{border-radius:999px;padding:3px 10px;font-weight:600;letter-spacing:.2px;}
+input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{border-radius:10px !important;transition:border-color .15s ease,box-shadow .15s ease;}
+input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,select:focus,textarea:focus{outline:none !important;border-color:var(--navy3) !important;box-shadow:var(--ring) !important;}
+.finRow{transition:background .15s ease;}
+.finRow:hover{background:#f6f7fc;}
+#sidebar{background:linear-gradient(180deg,#242a56 0%,#171c3c 100%) !important;box-shadow:2px 0 22px rgba(15,18,45,.12);}
+#sidebar nav a{border-radius:0 9px 9px 0;margin-right:8px;transition:color .15s ease,background .15s ease,border-color .15s ease;}
+#sidebar nav a .navIco{font-size:16px;width:22px;text-align:center;}
+#sidebar nav a.on{color:var(--gold2);border-left-color:var(--gold);background:linear-gradient(90deg,rgba(199,151,50,.22),rgba(199,151,50,.05));font-weight:600;}
+.navBadge{background:var(--gold);color:var(--navy);font-weight:700;border-radius:999px;padding:1px 7px;font-size:10px;margin-left:auto;}
+.ov{background:rgba(15,18,45,.48);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
+.modal{border-radius:18px;box-shadow:var(--shadow-lg);}
+.tbl thead th{background:#f3f5fb;color:var(--navy);text-transform:uppercase;font-size:10.5px;letter-spacing:.06em;font-weight:700;}
+.tbl tbody tr{transition:background .12s ease;}
+.tbl tbody tr:hover{background:#f7f8fc;}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;}}
+</style>
 </head>
 <body>
 
@@ -715,6 +756,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
     <div class="pg" id="pgDash">
       <div class="pgHead"><div><h1>Tableau de bord</h1><p class="sub">Vue d'ensemble</p></div><button class="btn bPrimary" onclick="openIM(-1)">+ Installation</button></div>
       <div class="kpis" id="dashKpis"></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🔔 Mes rappels</h3></div><div class="cardB" id="rappelsDash" style="padding:8px 0"></div></div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px;">
         <div class="card"><div class="cardH"><h3>CA mensuel</h3></div><div class="cardB"><div class="chartWrap"><canvas id="dashChart"></canvas></div></div></div>
         <div class="card"><div class="cardH"><h3>Activité récente</h3></div><div class="cardB" id="dashActivites" style="max-height:220px;overflow-y:auto;"></div></div>
@@ -730,6 +772,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
       <div class="pgHead"><div><h1>Mon tableau de bord</h1><p class="sub">Mes performances</p></div><div style="display:flex;gap:8px"><button class="btn bGhost" onclick="showTemplates()" style="color:var(--blue)">✉️ Modèles</button><button class="btn bGhost" onclick="simADVENIR()" style="color:var(--gold)">🧮 Simulateur aides</button><button class="btn bPrimary" onclick="openOppModal(-1)">+ Opportunité</button></div></div>
       <div class="kpis" id="dashCommKpis"></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>✅ Mes tâches du jour</h3></div><div class="cardB" id="commTasks" style="padding:0"></div></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🔔 Mes rappels</h3></div><div class="cardB" id="rappelsComm" style="padding:8px 0"></div></div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;">
         <div class="card"><div class="cardH"><h3>Mes opportunités actives</h3></div><div class="cardB" id="commMyOpps"></div></div>
         <div class="card"><div class="cardH"><h3>Mes devis récents</h3></div><div class="cardB" id="commMyDevis"></div></div>
@@ -929,6 +972,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
         <button class="btn bGhost" onclick="journeeToday()">Aujourd'hui</button>
         <button class="btn bGhost" onclick="changeJourneeDay(1)">Lendemain &#8250;</button>
       </div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🔔 Mes rappels</h3></div><div class="cardB" id="rappelsJournee" style="padding:8px 0"></div></div>
       <div id="maJourneeList"></div>
     </div>
 
@@ -1020,6 +1064,10 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
     <div class="pg" id="pgFinance">
       <div class="pgHead"><div><h1>Finance</h1><p class="sub">Suivi des paiements et relances</p></div></div>
       <div class="kpis" id="finKpis"></div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cardH"><h3>📅 Calendrier de paiement</h3></div>
+        <div class="cardB" id="finCalendrier"></div>
+      </div>
       <div class="card" style="margin-bottom:16px">
         <div class="cardH"><h3>📈 CA mensuel (12 mois)</h3></div>
         <div class="cardB"><canvas id="finChart" height="80"></canvas></div>
@@ -1939,8 +1987,8 @@ function nav(id){
   var pg=g(id);if(pg)pg.classList.add('on');
   var navEl=g('nav_'+id);if(navEl)navEl.classList.add('on');
   if(isMobile()){closeMobileMenu();}
-  if(id==='pgDash')renderDash();
-  if(id==='pgDashComm')renderDashComm();
+  if(id==='pgDash'){renderDash();renderRappels('rappelsDash');}
+  if(id==='pgDashComm'){renderDashComm();renderRappels('rappelsComm');}
   if(id==='pgDashDT')renderDashDT();
   if(id==='pgPipeline')renderPipeline();
   if(id==='pgContacts')renderContacts();
@@ -1948,7 +1996,7 @@ function nav(id){
   if(id==='pgInst')renderT();
   if(id==='pgStock')renderS();
   if(id==='pgVisites')renderVisites();
-  if(id==='pgMaJournee')renderMaJournee();
+  if(id==='pgMaJournee'){renderMaJournee();renderRappels('rappelsJournee');}
   if(id==='pgCatalogue')renderCatalogue();
   if(id==='pgProfils'){if(fbReady&&db){loadFromFirebase(function(){renderProfils();});}else{renderProfils();}}
   if(id==='pgProspects')renderProspects();
@@ -3530,6 +3578,132 @@ function renderChatMessages(){if(!curChatChannel)return;var msgs=(DB.chatMessage
 function sendChatMsg(){var txt=g('chatInputMsg').value.trim();if(!txt||!curChatChannel)return;if(!DB.chatMessages)DB.chatMessages=[];var u=curUserObj||{name:'?',id:'?',avatar:'?',color:'#888'};var now=new Date();var time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');DB.chatMessages.push({id:DB.nextId++,channel:curChatChannel,text:txt,authorId:u.id,author:u.name,authorAvatar:u.avatar,authorColor:u.color,time:time,date:now.toLocaleDateString('fr-FR'),readBy:[u.id]});g('chatInputMsg').value='';save();renderChatMessages();renderChat();}
 
 // ── MON CA ──
+/* ── PHASE 1 : Cycle de paiement (validation autonome) ── */
+function payStatutComm(d){
+  if(d.primePayee)return {key:'paye',label:'Payé',col:'var(--green)',bg:'var(--green-bg)',ic:'✅'};
+  if(d.commValide)return {key:'apayer',label:'À payer',col:'var(--blue)',bg:'var(--blue-bg)',ic:'⏳'};
+  return {key:'avalider',label:'À valider',col:'var(--orange)',bg:'var(--orange-bg)',ic:'📝'};
+}
+function payStatutInst(i){
+  if(i.remunPayee)return {key:'paye',label:'Payé',col:'var(--green)',bg:'var(--green-bg)',ic:'✅'};
+  if(i.statut==='Terminée')return {key:'apayer',label:'À payer',col:'var(--blue)',bg:'var(--blue-bg)',ic:'⏳'};
+  return {key:'avalider',label:'À valider',col:'var(--orange)',bg:'var(--orange-bg)',ic:'📝'};
+}
+function _refreshPayViews(){if(g('monCAContent')&&typeof renderMonCA==='function')renderMonCA();if(g('finPayroll')&&typeof renderFinance==='function')renderFinance();}
+function validerVenteComm(id){
+  var d=DB.devis.find(function(x){return x.id===id;});if(!d)return;
+  d.commValide=true;d.commValideLe=new Date().toISOString();save();
+  addNotif('pay','💶 Prime à payer : '+(d.client||('devis n°'+d.numero))+' (validé par le commercial)','💶','@admin',{kind:'devis',id:d.id});
+  toast('Vente validée ✅ — prime à payer');_refreshPayViews();
+}
+function annulerValidVenteComm(id){var d=DB.devis.find(function(x){return x.id===id;});if(!d)return;d.commValide=false;d.commValideLe='';save();toast('Validation annulée');_refreshPayViews();}
+function marquerPrimePayee(id,payee){
+  var d=DB.devis.find(function(x){return x.id===id;});if(!d)return;
+  d.primePayee=!!payee;d.primePayeeLe=payee?new Date().toISOString():'';
+  if(payee&&!d.commValide){d.commValide=true;d.commValideLe=new Date().toISOString();}
+  save();toast(payee?'Prime marquée payée 💶':'Paiement annulé');_refreshPayViews();
+}
+function marquerRemunPayee(instId,payee){
+  var i=DB.installations.find(function(x){return x.id===instId;});if(!i)return;
+  i.remunPayee=!!payee;i.remunPayeeLe=payee?new Date().toISOString():'';
+  save();toast(payee?'Rémunération marquée payée 💶':'Paiement annulé');_refreshPayViews();
+}
+/* ── PHASE 2 : Calendrier de paiement ── */
+var _finCalOffset=0;
+function finCalNav(delta){_finCalOffset+=delta;renderFinCalendrier();}
+function _payItemsAll(){
+  var items=[];
+  loadAccounts().filter(function(a){return a.status==='active'&&a.role==='commercial';}).forEach(function(u){
+    var prime=(DB.commercialPrimes&&DB.commercialPrimes[u.id])||0;
+    DB.devis.filter(function(d){if(d.commercialId&&d.commercialId!==u.id)return false;return d.statut==='Accepté';}).forEach(function(d){
+      var mt=(d.primeCommercial!==undefined&&d.primeCommercial!=='')?(parseFloat(d.primeCommercial)||0):prime;if(!mt)return;
+      items.push({who:u.name,label:(d.client||('Devis n°'+d.numero)),montant:mt,date:(d.commValideLe||d.date),st:payStatutComm(d),fn:'marquerPrimePayee',id:d.id});
+    });
+  });
+  (DB.installateurs||[]).forEach(function(inst){
+    var nom=instName(inst.prenom,inst.nom);var taux=inst.remunInstall||0;
+    DB.installations.filter(function(i){return i.installateur===nom&&i.statut==='Terminée';}).forEach(function(i){
+      var mt=(i.remunInstallateur!==undefined&&i.remunInstallateur!=='')?(parseFloat(i.remunInstallateur)||0):taux;if(!mt)return;
+      items.push({who:nom,label:i.chantier,montant:mt,date:(i.dateFin||i.dateDebut),st:payStatutInst(i),fn:'marquerRemunPayee',id:i.id});
+    });
+  });
+  return items;
+}
+function _payRow(p){
+  var paye=p.st.key==='paye';
+  var btn=paye?'<button class="act" style="font-size:10px" onclick="'+p.fn+'('+p.id+',false)">annuler</button>':(p.st.key==='apayer'?'<button class="btn bSuccess" style="font-size:11px;padding:5px 10px" onclick="'+p.fn+'('+p.id+',true)">💶 Payé</button>':'<span style="font-size:10px;color:var(--muted)">à valider</span>');
+  return '<div class="finRow" style="padding:10px 14px"><div style="flex:1"><div style="font-size:13px;font-weight:500">'+p.who+' — '+p.label+'</div><div style="font-size:11px;color:var(--muted)">'+(p.date?fmtD(p.date):'--')+' &middot; '+fmtE(p.montant)+'</div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;font-weight:600;color:'+p.st.col+';background:'+p.st.bg+';padding:2px 8px;border-radius:10px">'+p.st.ic+' '+p.st.label+'</span>'+btn+'</div></div>';
+}
+function renderFinCalendrier(){
+  var el=g('finCalendrier');if(!el)return;
+  var base=new Date();base.setDate(1);base.setMonth(base.getMonth()+_finCalOffset);
+  var mois=base.getMonth(),an=base.getFullYear();
+  var items=_payItemsAll();
+  var monthItems=items.filter(function(p){if(!p.date)return false;var d=new Date(p.date);return d.getMonth()===mois&&d.getFullYear()===an;});
+  monthItems.sort(function(a,b){return new Date(a.date)-new Date(b.date);});
+  var now=new Date();var firstOfThisMonth=new Date(now.getFullYear(),now.getMonth(),1);
+  var enRetard=items.filter(function(p){return p.st.key==='apayer'&&p.date&&new Date(p.date)<firstOfThisMonth;});
+  var totApayer=monthItems.filter(function(p){return p.st.key==='apayer';}).reduce(function(s2,p){return s2+p.montant;},0);
+  var totRetard=enRetard.reduce(function(s2,p){return s2+p.montant;},0);
+  var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'+
+    '<button class="btn bGhost" onclick="finCalNav(-1)" style="padding:6px 14px;font-size:16px">&#8249;</button>'+
+    '<div style="text-align:center"><div style="font-weight:700;font-size:15px">'+MO[mois]+' '+an+'</div><div style="font-size:12px;color:var(--blue);font-weight:600">'+fmtE(totApayer)+' à payer</div></div>'+
+    '<button class="btn bGhost" onclick="finCalNav(1)" style="padding:6px 14px;font-size:16px">&#8250;</button></div>';
+  if(_finCalOffset===0&&enRetard.length){
+    html+='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:8px 10px;margin-bottom:12px"><div style="font-size:12px;font-weight:700;color:#dc2626;margin-bottom:4px">&#9888; En retard — '+fmtE(totRetard)+'</div>'+enRetard.map(_payRow).join('')+'</div>';
+  }
+  if(!monthItems.length){html+='<div style="text-align:center;color:var(--muted);font-size:13px;padding:24px">Aucun paiement ce mois-ci</div>';}
+  else{html+=monthItems.map(_payRow).join('');}
+  el.innerHTML=html;
+}
+/* ── PHASE 3 : Rappels / tâches à faire ── */
+function _escR(x){return (''+x).replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];});}
+function _myRappels(){var uid=curUserObj?curUserObj.id:'';return (DB.taches||[]).filter(function(t){return t.userId===uid;});}
+function nbRappelsDus(){var today=new Date();today.setHours(0,0,0,0);return _myRappels().filter(function(t){if(t.fait)return false;if(!t.date)return false;var d=new Date(t.date);d.setHours(0,0,0,0);return d<=today;}).length;}
+function renderRappels(cid){
+  var el=g(cid);if(!el)return;
+  var today=new Date();today.setHours(0,0,0,0);
+  var list=_myRappels().slice().sort(function(a,b){
+    if(a.fait!==b.fait)return a.fait?1:-1;
+    var da=a.date?new Date(a.date).getTime():99999999999999;
+    var db2=b.date?new Date(b.date).getTime():99999999999999;
+    return da-db2;
+  });
+  var html='<div style="display:flex;justify-content:flex-end;margin-bottom:8px;padding:0 8px"><button class="btn bPrimary" style="font-size:12px;padding:6px 12px" onclick="openRappelModal()">+ Ajouter un rappel</button></div>';
+  if(!list.length){html+='<div style="text-align:center;color:var(--muted);font-size:13px;padding:18px">Aucun rappel 🎉</div>';el.innerHTML=html;return;}
+  html+=list.map(function(t){
+    var d=t.date?new Date(t.date):null;if(d)d.setHours(0,0,0,0);
+    var retard=d&&!t.fait&&d<today;var auj=d&&!t.fait&&d.getTime()===today.getTime();
+    var col=t.fait?'var(--muted)':(retard?'#dc2626':(auj?'var(--orange)':'var(--navy)'));
+    var lbl=t.fait?'Fait':(d?(retard?'En retard — '+fmtD(t.date):(auj?"Aujourd'hui":fmtD(t.date))):'Sans date');
+    var priDot=(!t.fait&&t.priorite==='haute')?'<span style="color:#dc2626">● </span>':'';
+    return '<div class="finRow" style="padding:10px 14px;opacity:'+(t.fait?'.55':'1')+'">'+
+      '<label style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;margin:0">'+
+      '<input type="checkbox" '+(t.fait?'checked':'')+' onchange="toggleRappel('+t.id+')" style="width:18px;height:18px;accent-color:var(--green);flex-shrink:0">'+
+      '<div><div style="font-size:13px;font-weight:600;color:'+col+';'+(t.fait?'text-decoration:line-through':'')+'">'+priDot+_escR(t.titre)+'</div><div style="font-size:11px;color:'+(retard?'#dc2626':'var(--muted)')+'">'+lbl+'</div></div></label>'+
+      '<button class="act dl" onclick="delRappel('+t.id+')" style="font-size:13px">🗑</button></div>';
+  }).join('');
+  el.innerHTML=html;
+}
+function _refreshRappels(){['rappelsDash','rappelsComm','rappelsJournee','rappelsDT'].forEach(function(id){if(g(id))renderRappels(id);});}
+function openRappelModal(){
+  var userSel='';
+  if(isAdmin()){
+    var opts=loadAccounts().filter(function(a){return a.status==='active';}).map(function(a){return '<option value="'+a.id+'"'+(curUserObj&&a.id===curUserObj.id?' selected':'')+'>'+a.name+'</option>';}).join('');
+    userSel='<div class="fi full"><label>Pour qui</label><select id="rapUser">'+opts+'</select></div>';
+  }
+  var html='<div class="ov on" id="mRapTemp" onclick="if(event.target===this)this.remove()"><div class="modal sm"><div class="mh"><h2>🔔 Nouveau rappel</h2><button class="mcl" onclick="g(\'mRapTemp\').remove()">&#10005;</button></div><div class="fgrid"><div class="fi full"><label>Intitulé</label><input id="rapTitre" placeholder="Ex: Rappeler M. Dupont"></div><div class="fi"><label>Échéance</label><input type="date" id="rapDate"></div><div class="fi"><label>Priorité</label><select id="rapPri"><option value="normale">Normale</option><option value="haute">Haute</option></select></div>'+userSel+'</div><div class="mf"><button class="btn bGhost" onclick="g(\'mRapTemp\').remove()">Annuler</button><button class="btn bPrimary" onclick="saveRappel()">Enregistrer</button></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+function saveRappel(){
+  var titre=(g('rapTitre').value||'').trim();if(!titre){toast('Indiquez un intitulé');return;}
+  if(!DB.taches)DB.taches=[];
+  var uid=(g('rapUser')&&g('rapUser').value)||(curUserObj?curUserObj.id:'');
+  DB.taches.push({id:DB.nextId++,userId:uid,titre:titre,date:g('rapDate').value||'',priorite:g('rapPri').value||'normale',fait:false,createdBy:(curUserObj?curUserObj.id:''),createdAt:new Date().toISOString()});
+  save();var el=g('mRapTemp');if(el)el.remove();_refreshRappels();toast('Rappel ajouté 🔔');
+}
+function toggleRappel(id){var t=(DB.taches||[]).find(function(x){return x.id===id;});if(!t)return;t.fait=!t.fait;t.faitLe=t.fait?new Date().toISOString():'';save();_refreshRappels();}
+function delRappel(id){if(!DB.taches)return;var i=DB.taches.findIndex(function(x){return x.id===id;});if(i>=0){DB.taches.splice(i,1);save();_refreshRappels();}}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
@@ -3549,8 +3723,8 @@ function renderCommercialPay(uid,mois,an){
       var montant=d.lignes.reduce(function(s,l){return s+l.qte*l.pu;},0);
       return '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border)">'+
         '<div style="width:40px;height:40px;border-radius:10px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center;font-size:18px">💶</div>'+
-        '<div style="flex:1"><div style="font-weight:600;font-size:13px">'+(d.client||d.numero||'Vente')+'</div><div style="font-size:11px;color:var(--muted)">'+fmtD(d.date)+' &middot; CA: '+fmtE(montant)+'</div></div>'+
-        '<div style="text-align:right"><div style="font-weight:700;color:var(--green)">'+fmtE(primeFor(d))+'</div><div style="font-size:10px;color:var(--muted)">Acquis</div></div></div>';
+        '<div style="flex:1"><div style="font-weight:600;font-size:13px">'+(d.client||('Devis n°'+d.numero))+'</div><div style="font-size:11px;color:var(--muted)">'+fmtD(d.date)+' &middot; CA: '+fmtE(montant)+'</div>'+(payStatutComm(d).key==='avalider'?'<button class="btn bSuccess" style="font-size:11px;padding:4px 10px;margin-top:5px" onclick="validerVenteComm('+d.id+')">✓ Valider l\'encaissement</button>':(payStatutComm(d).key==='apayer'?'<button class="act" style="font-size:10px" onclick="annulerValidVenteComm('+d.id+')">annuler</button>':''))+'</div>'+
+        '<div style="text-align:right"><div style="font-weight:700;color:'+payStatutComm(d).col+'">'+fmtE(primeFor(d))+'</div><span style="font-size:10px;font-weight:600;color:'+payStatutComm(d).col+';background:'+payStatutComm(d).bg+';padding:2px 8px;border-radius:10px">'+payStatutComm(d).label+'</span></div></div>';
     }).join('');
     html+='<div style="display:flex;justify-content:space-between;padding:14px 16px;background:var(--bg);font-weight:700"><span>Total prime '+MO[mois]+'</span><span style="color:var(--green)">'+fmtE(gagne)+'</span></div>';
   }
@@ -3582,7 +3756,7 @@ function renderInstallerPay(nom,mois,an){
       return '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border)">'+
         '<div style="width:40px;height:40px;border-radius:10px;background:'+(paid?'var(--green-bg)':'var(--bg)')+';display:flex;align-items:center;justify-content:center;font-size:18px">'+(paid?'✅':'🗓️')+'</div>'+
         '<div style="flex:1"><div style="font-weight:600;font-size:13px">'+i.chantier+'</div><div style="font-size:11px;color:var(--muted)">'+(dRef?fmtD(dRef):'--')+' &middot; '+i.statut+'</div></div>'+
-        '<div style="text-align:right"><div style="font-weight:700;color:'+(paid?'var(--green)':'var(--muted)')+'">'+fmtE(payFor(i))+'</div><div style="font-size:10px;color:var(--muted)">'+(paid?'Acquis':'Prévu')+'</div></div></div>';
+        '<div style="text-align:right"><div style="font-weight:700;color:'+payStatutInst(i).col+'">'+fmtE(payFor(i))+'</div><span style="font-size:10px;font-weight:600;color:'+payStatutInst(i).col+';background:'+payStatutInst(i).bg+';padding:2px 8px;border-radius:10px">'+payStatutInst(i).label+'</span></div></div>';
     }).join('');
     html+='<div style="display:flex;justify-content:space-between;padding:14px 16px;background:var(--bg);font-weight:700"><span>Total prévu '+MO[mois]+'</span><span style="color:var(--green)">'+fmtE(gagne+projete)+'</span></div>';
   }
@@ -3614,7 +3788,7 @@ function delCert(i){DB.certifications.splice(i,1);save();renderRH();}
 
 // ── FINANCE ──
 function renderFinance(){var paiements=DB.installations.filter(function(i){return i.montant>0;}).map(function(i){var acompte=i.acompte||0;return {chantier:i.chantier,client:i.client,montant:i.montant,acompte:acompte,solde:(i.montant||0)-acompte,statut:i.paiementStatut||'En attente'};});var totCA=paiements.reduce(function(s,p){return s+p.montant;},0);var totAcompte=paiements.reduce(function(s,p){return s+p.acompte;},0);var totSolde=paiements.reduce(function(s,p){return s+p.solde;},0);var enRetard=paiements.filter(function(p){return p.statut==='En retard';}).length;g('finKpis').innerHTML=kpi('💰','CA total',fmtE(totCA),'green')+kpi('✅','Acomptes reçus',fmtE(totAcompte),'blue')+kpi('⏳','Soldes restants',fmtE(totSolde),'orange')+kpi('⚠️','En retard',enRetard,'red');setTimeout(function(){var ctx=g('finChart');if(!ctx)return;var now=new Date();var labels=[],data=[];for(var i=11;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);labels.push(MO[d.getMonth()].slice(0,3)+' '+d.getFullYear().toString().slice(2));var m=d.getMonth(),y=d.getFullYear();data.push(DB.installations.filter(function(inst){if(!inst.dateFin||inst.statut!=='Terminée')return false;var df=new Date(inst.dateFin);return df.getMonth()===m&&df.getFullYear()===y;}).reduce(function(s,inst){return s+(inst.montant||0);},0));}if(window._finChart)window._finChart.destroy();window._finChart=new Chart(ctx,{type:'bar',data:{labels:labels,datasets:[{label:'CA (€)',data:data,backgroundColor:'rgba(34,38,81,.7)',borderColor:'#222651',borderWidth:1,borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:function(v){return v>999?(v/1000).toFixed(0)+'k€':v+'€';}}}}}});},100);g('finPaiements').innerHTML=paiements.length?paiements.map(function(p){var cls=p.statut==='Payé'?'payPaid':p.statut==='En retard'?'payLate':'payPending';var pct=p.montant>0?Math.round(p.acompte/p.montant*100):0;return '<div class="payCard"><div class="payCardH"><div><div style="font-size:13px;font-weight:600;color:var(--navy)">'+p.chantier+'</div><div style="font-size:11px;color:var(--muted)">'+p.client+'</div></div><span class="payBadge '+cls+'">'+p.statut+'</span></div><div class="payBar"><div class="payBarF" style="width:'+pct+'%"></div></div><div style="display:flex;justify-content:space-between;font-size:12px"><span>Acompte: <strong>'+fmtE(p.acompte)+'</strong></span><span>Solde: <strong style="color:'+(p.solde>0?'var(--orange)':'var(--green)')+'">'+fmtE(p.solde)+'</strong></span><span><strong>'+fmtE(p.montant)+'</strong></span></div></div>';}).join(''):'<p style="color:var(--muted);font-size:13px">Aucun paiement</p>';var relances=paiements.filter(function(p){return p.statut!=='Payé'&&p.solde>0;}).slice(0,5);g('finRelances').innerHTML=relances.length?relances.map(function(p){return '<div class="finRow"><div><div style="font-size:13px;font-weight:500">'+p.chantier+'</div><div style="font-size:11px;color:var(--muted)">Solde: '+fmtE(p.solde)+'</div></div><button class="act" onclick="toast(\'Relance pour '+p.client+'\')" style="font-size:12px">Relancer</button></div>';}).join(''):'<p style="color:var(--muted);font-size:13px;padding:10px 0">Aucune relance ✓</p>';
-  renderFinancePayroll();}
+  renderFinancePayroll();renderFinCalendrier();}
 function renderFinancePayroll(){
   var el=g('finPayroll');if(!el)return;
   var now=new Date(),mois=now.getMonth(),an=now.getFullYear();
@@ -3640,7 +3814,34 @@ function renderFinancePayroll(){
   if(!allRows.length){el.innerHTML='<p style="color:var(--muted);font-size:13px;padding:10px 0">Aucune rémunération ce mois-ci</p>';return;}
   var totalDu=allRows.reduce(function(s,r){return s+r.du;},0);
   var totalProj=allRows.reduce(function(s,r){return s+r.projete;},0);
-  el.innerHTML='<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Nom</th><th>Rôle</th><th>Taux/prime</th><th>Réalisées</th><th>À venir</th><th>À payer</th><th>Total prévu</th></tr></thead><tbody>'+
+  var payItems=[];
+  loadAccounts().filter(function(a){return a.status==='active'&&a.role==='commercial';}).forEach(function(u){
+    var prime=(DB.commercialPrimes&&DB.commercialPrimes[u.id])||0;
+    DB.devis.filter(function(d){if(d.commercialId&&d.commercialId!==u.id)return false;if(d.statut!=='Accepté')return false;var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;}).forEach(function(d){
+      var mt=(d.primeCommercial!==undefined&&d.primeCommercial!=='')?(parseFloat(d.primeCommercial)||0):prime;if(!mt)return;
+      payItems.push({who:u.name,label:(d.client||('Devis n°'+d.numero)),montant:mt,st:payStatutComm(d),fn:'marquerPrimePayee',id:d.id});
+    });
+  });
+  (DB.installateurs||[]).forEach(function(inst){
+    var nom=instName(inst.prenom,inst.nom);var taux=inst.remunInstall||0;
+    DB.installations.filter(function(i){if(i.installateur!==nom)return false;if(i.statut!=='Terminée')return false;var dRef=i.dateFin||i.dateDebut;if(!dRef)return false;var d=new Date(dRef);return d.getMonth()===mois&&d.getFullYear()===an;}).forEach(function(i){
+      var mt=(i.remunInstallateur!==undefined&&i.remunInstallateur!=='')?(parseFloat(i.remunInstallateur)||0):taux;if(!mt)return;
+      payItems.push({who:nom,label:i.chantier,montant:mt,st:payStatutInst(i),fn:'marquerRemunPayee',id:i.id});
+    });
+  });
+  payItems.sort(function(a,b){var o={apayer:0,avalider:1,paye:2};return (o[a.st.key]-o[b.st.key]);});
+  var aRegler=payItems.filter(function(p){return p.st.key==='apayer';}).reduce(function(s2,p){return s2+p.montant;},0);
+  var reglerHtml='';
+  if(payItems.length){
+    reglerHtml='<div class="card" style="margin-bottom:16px"><div class="cardH"><h3>💶 Détail à régler — '+MO[mois]+'</h3><span style="font-weight:700;color:var(--blue)">'+fmtE(aRegler)+' à payer</span></div><div class="cardB" style="padding:0">'+
+      payItems.map(function(p){
+        var paye=p.st.key==='paye';
+        var btn=paye?'<button class="act" style="font-size:10px" onclick="'+p.fn+'('+p.id+',false)">annuler</button>':(p.st.key==='apayer'?'<button class="btn bSuccess" style="font-size:11px;padding:5px 10px" onclick="'+p.fn+'('+p.id+',true)">💶 Marquer payé</button>':'<span style="font-size:10px;color:var(--muted)">en attente de validation</span>');
+        return '<div class="finRow" style="padding:10px 14px"><div><div style="font-size:13px;font-weight:500">'+p.who+' — '+p.label+'</div><div style="font-size:11px;color:var(--muted)">'+fmtE(p.montant)+'</div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;font-weight:600;color:'+p.st.col+';background:'+p.st.bg+';padding:2px 8px;border-radius:10px">'+p.st.ic+' '+p.st.label+'</span>'+btn+'</div></div>';
+      }).join('')+'</div></div>';
+  }
+  
+  el.innerHTML=reglerHtml+'<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Nom</th><th>Rôle</th><th>Taux/prime</th><th>Réalisées</th><th>À venir</th><th>À payer</th><th>Total prévu</th></tr></thead><tbody>'+
     allRows.map(function(r){return '<tr><td style="font-weight:600">'+r.nom+'</td><td><span style="font-size:11px;color:var(--muted)">'+r.role+'</span></td><td>'+fmtE(r.taux)+'</td><td>'+r.term+'</td><td>'+r.prev+'</td><td style="font-weight:600;color:var(--green)">'+fmtE(r.du)+'</td><td>'+fmtE(r.projete)+'</td></tr>';}).join('')+
     '<tr style="background:var(--bg);font-weight:700"><td colspan="5">TOTAL À PAYER</td><td style="color:var(--green)">'+fmtE(totalDu)+'</td><td>'+fmtE(totalProj)+'</td></tr>'+
     '</tbody></table></div>';
