@@ -906,6 +906,14 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,select:focu
     <!-- PROSPECTS -->
     <div class="pg" id="pgProspectIA">
       <div class="pgHead"><div><h1>🤖 Prospection IA</h1><p class="sub">L'IA prépare vos campagnes et qualifie vos prospects</p></div></div>
+      <div class="card" style="margin-bottom:16px;border:1px solid var(--gold)">
+        <div class="cardH"><h3>🗣️ Donnez un ordre à l'IA</h3></div>
+        <div class="cardB">
+          <textarea id="pia_ordre" rows="2" placeholder="Ex: Trouve des copropriétés à Aix · Rédige un email de prospection pour les hôtels de Marseille · Rappelle-moi de relancer M. Durand demain" style="width:100%;margin-bottom:10px"></textarea>
+          <button class="btn bPrimary" onclick="executerOrdre()">⚡ Exécuter</button>
+          <div id="pia_ordre_res" style="margin-top:14px"></div>
+        </div>
+      </div>
       <div class="card" style="margin-bottom:16px">
         <div class="cardH"><h3>🎯 Générer une campagne ciblée</h3></div>
         <div class="cardB">
@@ -936,7 +944,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,select:focu
     </div>
     <div class="pg" id="pgProspects">
       <div class="pgHead">
-        <div><h1>Prospects</h1><p class="sub">Recherche et import via base INSEE Sirene</p></div>
+        <div><h1>Prospects</h1><p class="sub">Recherche et import via base INSEE Sirene</p></div><button class="btn bGhost" onclick="exportProspectsCSV()" style="margin-left:auto">⬇️ Exporter (CSV)</button>
       </div>
       <!-- Recherche Sirene -->
       <div class="card" style="margin-bottom:16px">
@@ -1012,6 +1020,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,select:focu
         <button class="btn bGhost" onclick="changeJourneeDay(1)">Lendemain &#8250;</button>
       </div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🔔 Mes rappels</h3></div><div class="cardB" id="rappelsJournee" style="padding:8px 0"></div></div>
+      <div style="margin-bottom:16px"><button class="btn bPrimary" onclick="nouvelleInstallInstallateur()">+ Créer une installation</button></div>
       <div id="maJourneeList"></div>
     </div>
 
@@ -3796,7 +3805,7 @@ function askClaudeProspect(system,prompt,cb){
     var txt=data.content&&data.content[0]?data.content[0].text:'';cb(txt||'Réponse vide.',null);
   }).catch(function(e){cb(null,'Serveur IA injoignable (vérifiez le worker Jarvis).');});
 }
-var PIA_SYS='Tu es un assistant commercial expert en prospection B2B pour BORN POWER, entreprise certifiée IRVE spécialisée dans l\'installation de bornes de recharge pour véhicules électriques à Marseille et en région PACA (particuliers, entreprises, copropriétés). Tu écris en français, ton professionnel, chaleureux et concret. Tu respectes le RGPD (prospection B2B, pas de promesses mensongères, toujours une possibilité de désinscription). Mets en avant les vrais atouts : aides ADVENIR, service clé en main, certification IRVE, valorisation du bien, 131 avis Google à 4,9/5. Sois précis et directement utilisable.';
+var BORNPOWER_INFO='BORN POWER est un installateur certifie IRVE de bornes de recharge pour vehicules electriques, base a Marseille (137 rue Breteuil, 13006) et intervenant dans toute la region PACA dans un rayon de 80 km environ. Contact : 09 55 770 770, contact@bornpower.fr, site bornpower.fr. Clientele : particuliers (maison, appartement), entreprises et flottes, coproprietes, hotels, campings, collectivites. Marques posees : V2C Trydan, Raedian NEO, Ohme, Legrand Green Up, Schneider, Wallbox. Atouts : certification IRVE, garantie decennale, label ADVENIR, service cle en main (etude, pose, mise en service, maintenance), 131 avis Google a 4,9/5. Aides : ADVENIR jusqu a 1000 euros pour un particulier et 12500 euros en copropriete, TVA reduite ; installation a partir de 990 euros apres aides. Valeurs : rigueur, transparence, qualite et accompagnement.';var PIA_SYS=BORNPOWER_INFO+' Tu es un assistant commercial expert en prospection B2B pour BORN POWER, entreprise certifiée IRVE spécialisée dans l\'installation de bornes de recharge pour véhicules électriques à Marseille et en région PACA (particuliers, entreprises, copropriétés). Tu écris en français, ton professionnel, chaleureux et concret. Tu respectes le RGPD (prospection B2B, pas de promesses mensongères, toujours une possibilité de désinscription). Mets en avant les vrais atouts : aides ADVENIR, service clé en main, certification IRVE, valorisation du bien, 131 avis Google à 4,9/5. Sois précis et directement utilisable.';
 function genererCampagne(){
   var cible=g('pia_cible').value,ville=(g('pia_ville').value||'').trim(),nom=(g('pia_nom').value||'').trim(),canal=g('pia_canal').value;
   var res=g('pia_camp_res');res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:10px">\u23F3 L\'IA prépare votre campagne...</div>';
@@ -3804,7 +3813,7 @@ function genererCampagne(){
   var prompt='Prépare une campagne de prospection pour la cible : '+cible+(ville?', zone : '+ville:'')+(nom?', prospect : '+nom:'')+'.\n\nDonne, avec des titres clairs :\n1. ARGUMENTAIRE : 3 à 4 arguments clés adaptés à cette cible.\n2. '+canalLbl+' : prêt à l\'emploi et personnalisé.\n3. OBJECTIONS : 3 objections fréquentes de cette cible avec la réponse à donner.';
   askClaudeProspect(PIA_SYS,prompt,function(txt,err){
     if(err){res.innerHTML='<div style="background:var(--red-bg);border:1px solid #fecaca;color:#dc2626;border-radius:10px;padding:12px;font-size:13px">\u26A0\uFE0F '+err+'</div>';return;}
-    _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;line-height:1.6;white-space:pre-wrap">'+_escR(txt)+'</div><button class="btn bGhost" style="margin-top:10px" onclick="_copyPia(\'camp\')">\U0001F4CB Copier</button>';
+    _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;line-height:1.6;white-space:pre-wrap">'+_escR(txt)+'</div><button class="btn bGhost" style="margin-top:10px" onclick="_copyPia(\'camp\')">📋 Copier</button> <button class="btn bGhost" style="margin-top:10px" onclick="_openMailto()">✉️ Ouvrir dans ma messagerie</button>';
   });
 }
 function qualifierProspect(){
@@ -3814,7 +3823,7 @@ function qualifierProspect(){
   var prompt='Voici un prospect potentiel pour BORN POWER :\n"""'+info+'"""\n\nAnalyse-le et donne, avec des titres :\n1. NOTE DE POTENTIEL sur 10 (+ justification en une phrase).\n2. POURQUOI c\'est un bon (ou mauvais) prospect pour des bornes de recharge.\n3. LE MEILLEUR ANGLE d\'approche.\n4. UN MESSAGE personnalisé prêt à envoyer (email court).\nSois honnête : si le potentiel est faible, dis-le.';
   askClaudeProspect(PIA_SYS,prompt,function(txt,err){
     if(err){res.innerHTML='<div style="background:var(--red-bg);border:1px solid #fecaca;color:#dc2626;border-radius:10px;padding:12px;font-size:13px">\u26A0\uFE0F '+err+'</div>';return;}
-    _piaQual=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;line-height:1.6;white-space:pre-wrap">'+_escR(txt)+'</div><button class="btn bGhost" style="margin-top:10px" onclick="_copyPia(\'qual\')">\U0001F4CB Copier</button>';
+    _piaQual=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;line-height:1.6;white-space:pre-wrap">'+_escR(txt)+'</div><button class="btn bGhost" style="margin-top:10px" onclick="_copyPia(\'qual\')">📋 Copier</button>';
   });
 }
 function _copyPia(w){var t=w==='camp'?_piaCamp:_piaQual;if(navigator.clipboard&&t)navigator.clipboard.writeText(t);toast('Copié \u2705');}
@@ -3829,7 +3838,7 @@ function searchSirene(nafOverride){
   var url='https://recherche-entreprises.api.gouv.fr/search?per_page=15&etat_administratif=A';
   if(terms)url+='&q='+encodeURIComponent(terms);
   if(naf){var nc=(naf.indexOf('.')<0&&naf.length>=3)?(naf.slice(0,2)+'.'+naf.slice(2)):naf;url+='&activite_principale='+encodeURIComponent(nc);}
-  var box=g('sireneResults');box.innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px">\U0001F50D Recherche en cours...</p>';
+  var box=g('sireneResults');box.innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px">🔍 Recherche en cours...</p>';
   fetch(url).then(function(r){return r.json();}).then(function(data){
     _sireneRes=data.results||[];
     if(!_sireneRes.length){box.innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px">Aucun résultat. Essayez d\'autres termes ou une autre cible.</p>';return;}
@@ -3840,7 +3849,7 @@ function _sireneCard(e,i){
   var nom=e.nom_complet||e.nom_raison_sociale||'Entreprise';
   var siren=e.siren||'';var siege=e.siege||{};
   var cp=siege.code_postal||'';var ville=siege.libelle_commune||'';var act=e.activite_principale||'';
-  return '<div class="sireneCard"><div class="sireneCardInfo"><div class="sireneCardNom">'+_escR(nom)+'</div><div class="sireneCardSub">SIREN '+siren+(ville?' \u00b7 '+_escR(cp+' '+ville):'')+(act?' \u00b7 NAF '+_escR(act):'')+'</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button class="btn bGhost" style="font-size:11px;padding:5px 9px" onclick="sireneQualif('+i+',this)">\U0001F916 Qualifier</button><button class="btn bPrimary" style="font-size:11px;padding:5px 9px" onclick="sireneAdd('+i+')">\uFF0B Prospect</button></div></div>';
+  return '<div class="sireneCard"><div class="sireneCardInfo"><div class="sireneCardNom">'+_escR(nom)+'</div><div class="sireneCardSub">SIREN '+siren+(ville?' \u00b7 '+_escR(cp+' '+ville):'')+(act?' \u00b7 NAF '+_escR(act):'')+'</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button class="btn bGhost" style="font-size:11px;padding:5px 9px" onclick="sireneQualif('+i+',this)">🤖 Qualifier</button><button class="btn bPrimary" style="font-size:11px;padding:5px 9px" onclick="sireneAdd('+i+')">\uFF0B Prospect</button></div></div>';
 }
 function sireneAdd(i){
   var e=_sireneRes[i];if(!e)return;var siege=e.siege||{};
@@ -3857,14 +3866,81 @@ function sireneQualif(i,btn){
   var info=nom+', activité NAF '+(e.activite_principale||'?')+', '+(siege.code_postal||'')+' '+(siege.libelle_commune||'')+', effectif '+(e.tranche_effectif_salarie||'inconnu')+'.';
   if(btn){btn._t=btn.innerHTML;btn.innerHTML='\u23F3';btn.disabled=true;}
   askClaudeProspect(PIA_SYS,'Prospect trouvé via INSEE pour BORN POWER : '+info+'\n\nEn 4 points courts : 1) Note de potentiel sur 10 pour l\'installation de bornes de recharge (+ raison en 1 phrase). 2) Le meilleur angle d\'approche. 3) Une phrase d\'accroche prête à dire. Sois bref et concret.',function(txt,err){
-    if(btn){btn.innerHTML=btn._t||'\U0001F916 Qualifier';btn.disabled=false;}
+    if(btn){btn.innerHTML=btn._t||'🤖 Qualifier';btn.disabled=false;}
     _piaModal(nom,err?('\u26A0\uFE0F '+err):txt);
   });
 }
 function sireneCible(naf,terme){if(g('sireneQ'))g('sireneQ').value=terme||'';searchSirene(naf);}
 function _piaModal(titre,txt){
-  var h='<div class="ov on" id="mPiaTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>\U0001F916 '+_escR(titre)+'</h2><button class="mcl" onclick="g(\'mPiaTemp\').remove()">\u2715</button></div><div style="padding:16px;font-size:13.5px;line-height:1.65;white-space:pre-wrap;max-height:60vh;overflow:auto">'+_escR(txt)+'</div></div></div>';
+  var h='<div class="ov on" id="mPiaTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>🤖 '+_escR(titre)+'</h2><button class="mcl" onclick="g(\'mPiaTemp\').remove()">\u2715</button></div><div style="padding:16px;font-size:13.5px;line-height:1.65;white-space:pre-wrap;max-height:60vh;overflow:auto">'+_escR(txt)+'</div></div></div>';
   document.body.insertAdjacentHTML('beforeend',h);
+}
+function executerOrdre(){
+  var ordre=((g('pia_ordre')&&g('pia_ordre').value)||'').trim();var out=g('pia_ordre_res');
+  if(!ordre){out.innerHTML='<div style="color:var(--muted);font-size:13px">Écrivez un ordre. Ex : "Trouve des copropriétés à Aix", "Rédige un email de prospection pour les hôtels de Marseille", "Rappelle-moi de relancer M. Durand demain".</div>';return;}
+  out.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">\u23F3 L\'assistant analyse votre ordre...</div>';
+  var sys='Tu es l\'agent du CRM BORN POWER (installateur de bornes de recharge IRVE a Marseille et en PACA). A partir de l\'ordre de l\'utilisateur, reponds UNIQUEMENT par un objet JSON strict, sans texte ni balise autour, de forme {"action":"campagne|chercher|email|rappel|aucune","params":{...},"reponse":"phrase courte pour l\'utilisateur"}. Params selon action: campagne={cible,ville,canal(email|appel|linkedin)}; chercher={segment(copropriete|hotel|camping|concession|garage|promoteur|autre),ville,q}; email={objet,contexte}; rappel={titre,date(AAAA-MM-JJ)}. Choisis l\'action la plus utile. Si aucune action ne convient, action="aucune" et mets ta reponse dans "reponse".';
+  askClaudeProspect(sys,ordre,function(txt,err){
+    if(err){out.innerHTML='<div style="background:var(--red-bg);border:1px solid #fecaca;color:#dc2626;border-radius:10px;padding:12px;font-size:13px">\u26A0\uFE0F '+err+'</div>';return;}
+    var cmd=null;try{cmd=JSON.parse((txt||'').replace(/```json|```/g,'').trim());}catch(e){}
+    if(!cmd||!cmd.action){out.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;white-space:pre-wrap">'+_escR(txt||'')+'</div>';return;}
+    _executerAction(cmd,out);
+  });
+}
+function _executerAction(cmd,out){
+  var p=cmd.params||{};
+  if(cmd.action==='campagne'){
+    if(g('pia_ville'))g('pia_ville').value=p.ville||'';
+    if(p.canal&&g('pia_canal'))g('pia_canal').value=(['email','appel','linkedin'].indexOf(p.canal)>=0?p.canal:'email');
+    if(p.cible&&g('pia_cible')){var opts=g('pia_cible').options,cb=(p.cible||'').toLowerCase();for(var k=0;k<opts.length;k++){if(opts[k].value.toLowerCase().indexOf(cb.split(' ')[0])>=0||cb.indexOf(opts[k].value.toLowerCase().split(' ')[0])>=0){g('pia_cible').selectedIndex=k;break;}}}
+    out.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">'+_escR(cmd.reponse||'Je prépare la campagne...')+'</div>';
+    genererCampagne();
+    setTimeout(function(){try{g('pia_camp_res').scrollIntoView({behavior:'smooth',block:'nearest'});}catch(e){}},300);
+  } else if(cmd.action==='chercher'){
+    var map={copropriete:'6832A',hotel:'5510Z',camping:'5530Z',concession:'4511Z',garage:'4520A',promoteur:'4110A'};
+    var naf=map[(p.segment||'').toLowerCase()]||'';
+    nav('pgProspects');
+    if(g('sireneVille'))g('sireneVille').value=p.ville||'';
+    if(g('sireneQ'))g('sireneQ').value=(naf?'':(p.q||p.segment||''));
+    searchSirene(naf);toast(cmd.reponse||'Recherche lancée');
+  } else if(cmd.action==='email'){
+    out.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">\u23F3 Rédaction de l\'email...</div>';
+    askClaudeProspect(PIA_SYS,'Rédige un email professionnel pour BORN POWER. Objet : '+(p.objet||'Prospection')+'. Contexte : '+(p.contexte||cmd.reponse||'')+'. Donne un OBJET puis un CORPS prêt à envoyer, conforme RGPD (possibilité de désinscription).',function(t2,e2){
+      if(e2){out.innerHTML='<div style="color:#dc2626;font-size:13px">\u26A0\uFE0F '+e2+'</div>';return;}
+      _piaCamp=t2;out.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;line-height:1.6;white-space:pre-wrap">'+_escR(t2)+'</div><button class="btn bGhost" style="margin-top:10px" onclick="_copyPia(\'camp\')">📋 Copier</button> <button class="btn bGhost" style="margin-top:10px" onclick="_openMailto()">✉️ Ouvrir dans ma messagerie</button>';
+    });
+  } else if(cmd.action==='rappel'){
+    if(!DB.taches)DB.taches=[];
+    DB.taches.push({id:DB.nextId++,userId:(curUserObj?curUserObj.id:''),titre:p.titre||cmd.reponse||'Rappel',date:p.date||'',priorite:'normale',fait:false,createdBy:(curUserObj?curUserObj.id:''),createdAt:new Date().toISOString()});
+    save();out.innerHTML='<div style="background:var(--green-bg);border:1px solid #a7f3d0;color:var(--green);border-radius:10px;padding:12px;font-size:13.5px;font-weight:600">🔔 Rappel créé : '+_escR(p.titre||'')+(p.date?(' (\u00E9chéance '+_escR(p.date)+')'):'')+'</div>';
+  } else {
+    out.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;white-space:pre-wrap">'+_escR(cmd.reponse||'Je n\'ai pas bien compris l\'ordre. Reformulez ?')+'</div>';
+  }
+}
+function nouvelleInstallInstallateur(){
+  openIM(-1);
+  var sel=g('mIinst');
+  if(sel&&curUserObj){
+    var found=false;for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===curUserObj.name){found=true;break;}}
+    if(!found){var o=document.createElement('option');o.value=curUserObj.name;o.textContent=curUserObj.name;sel.appendChild(o);}
+    sel.value=curUserObj.name;
+  }
+}
+function _openMailto(){
+  var t=_piaCamp||'';var subject='BORN POWER';var body=t;
+  var m=t.match(/^\s*(objet|sujet)\s*:\s*(.+)$/im);
+  if(m){subject=m[2].trim();body=t.replace(m[0],'').trim();}
+  window.location.href='mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+}
+function exportProspectsCSV(){
+  var rows=DB.prospects||[];
+  if(!rows.length){toast('Aucun prospect à exporter');return;}
+  var cols=['Nom','Email','Telephone','Adresse','CodePostal','Ville','SIREN','NAF','Statut','Source','Notes'];
+  var q=function(v){v=(v==null?'':''+v).replace(/"/g,'""');return '"'+v+'"';};
+  var csv=cols.join(';')+'\r\n'+rows.map(function(p){return [p.nom||p.societe||'',p.email||'',p.tel||'',p.adresse||'',p.cp||'',p.ville||'',p.siret||'',p.naf||'',p.statut||'',p.source||'',(p.notes||'').replace(/[\r\n]+/g,' ')].map(q).join(';');}).join('\r\n');
+  var blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='prospects_bornpower.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast('\u2705 Export CSV téléchargé ('+rows.length+' prospects)');
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
@@ -5002,6 +5078,7 @@ function buildJarvisContext() {
 
   var ctx = '';
   ctx += 'Tu es JARVIS, exactement comme dans Iron Man version francaise. ';
+  ctx += (typeof BORNPOWER_INFO!=='undefined'?('Voici qui nous sommes : '+BORNPOWER_INFO+' '):'');
   ctx += 'Tu es assistant IA personnel de Monsieur Florian Camps, dirigeant de BornPower. ';
   ctx += 'BornPower installe des bornes de recharge pour vehicules electriques (IRVE) a Marseille et en region PACA. ';
   ctx += 'REGLES ABSOLUES: ';
