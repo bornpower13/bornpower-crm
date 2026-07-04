@@ -3454,9 +3454,11 @@ function renderMaJournee(){
 }
 function quickStatut(idx){
   var i=DB.installations[idx];if(!i)return;
-  if(i.statut==='En cours'){i.statut='Terminée';i.dateFinReelle=new Date().toISOString();deduireStock(i);toast('Chantier terminé ✅ (stock mis à jour)');}
+  var _finiAvis=false;
+  if(i.statut==='En cours'){i.statut='Terminée';i.dateFinReelle=new Date().toISOString();deduireStock(i);toast('Chantier terminé ✅ (stock mis à jour)');_finiAvis=true;}
   else{i.statut='En cours';i.dateDebutReelle=new Date().toISOString();toast('Chantier démarré ▶️');}
   save();renderMaJournee();
+  if(_finiAvis)demanderAvis(idx);
 }
 var TYPE_LABELS={prospect:'Prospect',contact:'Client',opp:'Opportunité',inst:'Installation'};
 var TYPE_COLORS={prospect:'#d97706',contact:'#059669',opp:'#7c3aed',inst:'#2563eb'};
@@ -3917,6 +3919,26 @@ function _executerAction(cmd,out){
     out.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;white-space:pre-wrap">'+_escR(cmd.reponse||'Je n\'ai pas bien compris l\'ordre. Reformulez ?')+'</div>';
   }
 }
+var _avisIdx=-1;
+function _avisLink(){return (DB.avisLink||'').trim();}
+function demanderAvis(idx){
+  var i=DB.installations[idx];if(!i)return;_avisIdx=idx;
+  var client=i.client||'';var tel=(i.tel||'').replace(/[^0-9+]/g,'');var lien=_avisLink();
+  var msg='Bonjour'+(client?' '+client:'')+',\n\nMerci de votre confiance ! Votre borne de recharge est désormais installée. Votre satisfaction compte beaucoup pour nous : un petit avis Google nous aiderait énormément 🙏\n'+(lien||'[votre lien Google]')+'\n\nMerci et à bientôt,\nL\'équipe BORN POWER';
+  var smsBtn=tel?'<button class="btn bPrimary" onclick="avisSMS()">📱 Envoyer par SMS</button>':'<span style="font-size:11px;color:var(--muted);align-self:center">(pas de téléphone client)</span>';
+  var h='<div class="ov on" id="mAvisTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>⭐ Demander un avis Google</h2><button class="mcl" onclick="g(\'mAvisTemp\').remove()">✕</button></div><div style="padding:16px">'+
+    (lien?'':'<div style="background:#fffbeb;border:1px solid #fcd34d;color:#b45309;border-radius:10px;padding:10px;font-size:12.5px;margin-bottom:12px">⚠️ Renseignez votre lien d\'avis Google ci-dessous (une seule fois, il sera mémorisé).</div>')+
+    '<label style="font-size:12px;font-weight:600;color:var(--muted)">Lien d\'avis Google</label><div style="display:flex;gap:8px;margin:4px 0 14px"><input id="avisLinkInput" value="'+_escR(lien)+'" placeholder="https://g.page/r/xxxx/review" style="flex:1"><button class="btn bGhost" onclick="saveAvisLink()">Enregistrer</button></div>'+
+    '<label style="font-size:12px;font-weight:600;color:var(--muted)">Message pour '+_escR(client||'le client')+(tel?(' · '+_escR(tel)):'')+'</label><textarea id="avisMsg" rows="7" style="width:100%;margin:4px 0 14px">'+_escR(msg)+'</textarea>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">'+smsBtn+'<button class="btn bGhost" onclick="avisEmail()">✉️ Par email</button><button class="btn bGhost" onclick="_copyAvis()">📋 Copier</button></div>'+
+    '<div style="font-size:11px;color:var(--muted);margin-top:12px">💡 Pour trouver votre lien : fiche Google Business → « Demander des avis » → copiez le lien court.</div>'+
+    '</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function saveAvisLink(){DB.avisLink=((g('avisLinkInput')&&g('avisLinkInput').value)||'').trim();save();toast('Lien enregistré ✅');}
+function avisSMS(){var i=DB.installations[_avisIdx]||{};var tel=(i.tel||'').replace(/[^0-9+]/g,'');var t=(g('avisMsg')&&g('avisMsg').value)||'';window.location.href='sms:'+tel+'?&body='+encodeURIComponent(t);}
+function avisEmail(){var i=DB.installations[_avisIdx]||{};var t=(g('avisMsg')&&g('avisMsg').value)||'';window.location.href='mailto:'+(i.email||'')+'?subject='+encodeURIComponent('Votre avis compte pour BORN POWER')+'&body='+encodeURIComponent(t);}
+function _copyAvis(){var t=(g('avisMsg')&&g('avisMsg').value)||'';if(navigator.clipboard)navigator.clipboard.writeText(t);toast('Copié ✅');}
 function nouvelleInstallInstallateur(){
   openIM(-1);
   var sel=g('mIinst');
