@@ -536,6 +536,14 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,select:focu
 .tbl thead th{background:#f3f5fb;color:var(--navy);text-transform:uppercase;font-size:10.5px;letter-spacing:.06em;font-weight:700;}
 .tbl tbody tr{transition:background .12s ease;}
 .tbl tbody tr:hover{background:#f7f8fc;}
+.conqCard{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;box-shadow:var(--shadow);transition:transform .2s ease,box-shadow .2s ease}
+.conqCard:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.conqIco{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:10px}
+.conqT{font-weight:700;font-size:14px;color:var(--navy);letter-spacing:-.2px}
+.conqD{font-size:11.5px;color:var(--muted);margin-top:2px}
+.conqKpi{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:var(--shadow);text-align:center}
+.conqKpi .v{font-size:22px;font-weight:800;color:var(--navy)}
+.conqKpi .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-top:2px}
 @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;}}
 </style>
 </head>
@@ -904,6 +912,80 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,select:focu
     </div>
 
     <!-- PROSPECTS -->
+    <div class="pg" id="pgConquete">
+      <div style="background:linear-gradient(135deg,#242a56,#171c3c);border-radius:20px;padding:24px;color:#fff;margin-bottom:18px;box-shadow:var(--shadow-lg)">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:#ffe576;text-transform:uppercase;margin-bottom:6px">Conquête client · IA</div>
+        <h1 style="font-size:23px;font-weight:800;letter-spacing:-.5px;margin:0 0 4px;color:#fff">Trouvez vos prochains clients</h1>
+        <p style="font-size:13.5px;color:rgba(255,255,255,.72);margin:0 0 16px">Donnez un ordre à votre IA commerciale, elle s'occupe du reste.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><input id="conqOrdre" placeholder="Ex: Trouve des copropriétés à Aix · Rédige un email pour les hôtels" style="flex:1;min-width:200px;border:none;border-radius:12px;padding:12px 14px;font-size:14px"><button class="btn" style="background:var(--gold);color:var(--navy);font-weight:700;border-radius:12px;padding:12px 18px" onclick="executerOrdre('conqOrdre','conqOrdreRes')">⚡ Exécuter</button></div>
+        <div id="conqOrdreRes" style="margin-top:12px"></div>
+      </div>
+      <div id="conqKpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px"></div>
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Vos outils de conquête</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px">
+        <div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--purple-bg)">🎯</div><div class="conqT">Où prospecter</div><div class="conqD">L'IA propose des secteurs</div></div>
+        <div class="conqCard" onclick="nav('pgProspects')"><div class="conqIco" style="background:var(--blue-bg)">🔍</div><div class="conqT">Trouver des entreprises</div><div class="conqD">Base INSEE + contact</div></div>
+        <div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--green-bg)">✍️</div><div class="conqT">Rédiger une campagne</div><div class="conqD">Email · appel · LinkedIn</div></div>
+        <div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--orange-bg)">🤝</div><div class="conqT">Parrainage</div><div class="conqD">Bouche-à-oreille</div></div>
+        <div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--gold3)">🔄</div><div class="conqT">Prospects dormants</div><div class="conqD">Réactiver avec l'IA</div></div>
+        <div class="conqCard" onclick="nav('pgPipeline')"><div class="conqIco" style="background:var(--red-bg)">📈</div><div class="conqT">Prioriser le pipeline</div><div class="conqD">L'IA classe vos deals</div></div>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 10px">🧠 Assistant commercial IA</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px">
+        <div class="conqCard" onclick="briefConqueteModal()"><div class="conqIco" style="background:var(--blue-bg)">📋</div><div class="conqT">Brief de conquête</div><div class="conqD">Avant d'appeler un prospect</div></div>
+        <div class="conqCard" onclick="logAppelModal()"><div class="conqIco" style="background:var(--green-bg)">📞</div><div class="conqT">Log d'appel</div><div class="conqD">Notes → suivi structuré</div></div>
+        <div class="conqCard" onclick="battlecardModal()"><div class="conqIco" style="background:var(--red-bg)">⚔️</div><div class="conqT">Battlecard</div><div class="conqD">Répondre à la concurrence</div></div>
+        <div class="conqCard" onclick="rapportHebdo()"><div class="conqIco" style="background:var(--gold3)">📊</div><div class="conqT">Rapport hebdo</div><div class="conqD">Vert / orange / rouge</div></div>
+    </div>
+    <div class="pg" id="pgAcquisition">
+      <div class="pgHead"><div><h1>🌱 Acquisition</h1><p class="sub">Générer de nouveaux clients</p></div></div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cardH"><h3>🤝 Parrainage</h3></div>
+        <div class="cardB">
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Génère un message à envoyer à un client satisfait pour qu'il te recommande.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><input id="parrClient" placeholder="Nom du client" style="flex:1;min-width:160px"><button class="btn bPrimary" onclick="genererParrainage()">✨ Générer le message</button></div>
+          <div id="parrMsg"></div>
+          <div style="border-top:1px solid var(--border);margin-top:14px;padding-top:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="font-size:13px">Parrainages suivis</b><button class="btn bGhost" style="font-size:12px;padding:5px 10px" onclick="addParrainage()">+ Ajouter</button></div><div id="parrList"></div></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cardH"><h3>🔄 Réveil des prospects dormants</h3></div>
+        <div class="cardB">
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Repère les prospects sans contact depuis 30+ jours et réactive-les avec l'IA.</div>
+          <button class="btn bPrimary" onclick="analyserDormants()">🔄 Analyser mes prospects dormants</button>
+          <div id="dormantsRes" style="margin-top:12px"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cardH"><h3>📱 QR codes</h3></div>
+        <div class="cardB">
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Un QR pour tes camionnettes, flyers, chantiers → le client scanne et te contacte.</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"><button class="btn bGhost" style="font-size:12px" onclick="qrPreset('devis')">Demande de devis</button><button class="btn bGhost" style="font-size:12px" onclick="qrPreset('avis')">Avis Google</button><button class="btn bGhost" style="font-size:12px" onclick="qrPreset('site')">Site web</button></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><input id="qrUrl" placeholder="https://..." style="flex:1;min-width:180px"><button class="btn bPrimary" onclick="genererQR()">Générer le QR</button></div>
+          <div id="qrRes" style="text-align:center"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cardH"><h3>📧 Campagne emailing</h3></div>
+        <div class="cardB">
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Prépare une campagne vers tes prospects qui ont un email. L'IA rédige, tu envoies (petite liste) ou tu exportes vers Brevo (grande liste).</div>
+          <input id="campCible" placeholder="Cible (ex: hôtels à Marseille)" style="width:100%;margin-bottom:8px">
+          <button class="btn bGhost" style="font-size:12px;margin-bottom:10px" onclick="campagneGenererIA()">✨ Rédiger avec l'IA</button>
+          <input id="campSubj" placeholder="Objet de l'email" style="width:100%;margin-bottom:8px">
+          <textarea id="campBody" rows="6" placeholder="Corps de l'email..." style="width:100%;margin-bottom:10px"></textarea>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn bPrimary" onclick="campagneMailto()">✉️ Envoyer via ma messagerie</button><button class="btn bGhost" onclick="campagneExportCSV()">⬇️ Exporter pour Brevo</button></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:10px">⚠️ Petites listes (jusqu'à 40) : envoi direct. Grandes listes : export CSV puis Brevo (gratuit, RGPD, anti-spam).</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cardH"><h3>🤝 Apporteurs d'affaires</h3></div>
+        <div class="cardB">
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Tes partenaires qui t'envoient des clients (électriciens, syndics, concessions...).</div>
+          <button class="btn bGhost" style="font-size:12px;padding:5px 10px" onclick="addApporteur()">+ Ajouter un apporteur</button>
+          <div id="apporteursList" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </div>
     <div class="pg" id="pgProspectIA">
       <div class="pgHead"><div><h1>🤖 Prospection IA</h1><p class="sub">L'IA prépare vos campagnes et qualifie vos prospects</p></div></div>
       <div class="card" style="margin-bottom:16px;border:1px solid var(--gold)">
@@ -912,6 +994,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,select:focu
           <textarea id="pia_ordre" rows="2" placeholder="Ex: Trouve des copropriétés à Aix · Rédige un email de prospection pour les hôtels de Marseille · Rappelle-moi de relancer M. Durand demain" style="width:100%;margin-bottom:10px"></textarea>
           <button class="btn bPrimary" onclick="executerOrdre()">⚡ Exécuter</button>
           <div id="pia_ordre_res" style="margin-top:14px"></div>
+          <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px"><input id="pia_secteur_ville" placeholder="Ville (optionnel)" style="flex:1;min-width:140px"><button class="btn bGhost" onclick="suggererSecteurs()">🎯 Quels secteurs prospecter ?</button></div><div id="pia_secteur_res"></div></div>
         </div>
       </div>
       <div class="card" style="margin-bottom:16px">
@@ -1709,7 +1792,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,select:focu
     <div class="mf">
       <button class="btn bGhost" onclick="closeDM()">Annuler</button>
       <button class="btn bGhost" onclick="previewDevis()" style="color:var(--blue)">👁 Aperçu PDF</button>
-      <button class="btn bGhost" onclick="relanceDevis()">📩 Relance IA</button> <button class="btn bPrimary" onclick="saveD()">Enregistrer</button>
+      <button class="btn bGhost" onclick="sequenceRelance()">🔁 Séquence</button> <button class="btn bGhost" onclick="relanceDevis()">📩 Relance IA</button> <button class="btn bPrimary" onclick="saveD()">Enregistrer</button>
     </div>
   </div>
 </div>>
@@ -1957,6 +2040,7 @@ function addNotif(type,txt,ico,forUser,link){
   if(DB.notifications.length>50)DB.notifications=DB.notifications.slice(0,50);
   updateNotifBadge();
   sendPushForNotif(forUser||'',txt);
+  try{var _me=curUserObj?curUserObj.name:'';var _fu=forUser||'';if(!_fu||_fu===_me||(_fu==='@admin'&&typeof isAdmin==='function'&&isAdmin()))showBanner(txt,ico||'🔔',link||null);}catch(e){}
 }
 
 function fmtNotifTime(ts){
@@ -1972,7 +2056,7 @@ function fmtNotifTime(ts){
 var NAV_MAP={
   admin:[
     {s:'Commercial'},{id:'pgDash',ico:'📊',lbl:'Tableau de bord'},{id:'pgPipeline',ico:'🎯',lbl:'Pipeline'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
-    {id:'pgProspects',ico:'🔍',lbl:'Prospects'},{id:'pgProspectIA',ico:'🤖',lbl:'Prospection IA'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},
+    {id:'pgConquete',ico:'🚀',lbl:'Conquête'},{id:'pgProspects',ico:'🔍',lbl:'Prospects'},{id:'pgProspectIA',ico:'🤖',lbl:'Prospection IA'},{id:'pgAcquisition',ico:'🌱',lbl:'Acquisition'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},
     {id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgObjectifs',ico:'🎯',lbl:'Objectifs CA'},
     {id:'pgRapports',ico:'📈',lbl:'Rapports'},{id:'pgCommerciaux',ico:'💼',lbl:'Commerciaux'},
     {s:'Installateurs'},{id:'pgInst',ico:'⚡',lbl:'Installations'},{id:'pgSAV',ico:'🔧',lbl:'SAV'},
@@ -1993,7 +2077,7 @@ var NAV_MAP={
   ],
   commercial:[
     {s:'Mon espace'},{id:'pgDashComm',ico:'📊',lbl:'Tableau de bord'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
-    {id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgProspects',ico:'🔍',lbl:'Prospects'},{id:'pgProspectIA',ico:'🤖',lbl:'Prospection IA'},
+    {id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgConquete',ico:'🚀',lbl:'Conquête'},{id:'pgProspects',ico:'🔍',lbl:'Prospects'},{id:'pgProspectIA',ico:'🤖',lbl:'Prospection IA'},{id:'pgAcquisition',ico:'🌱',lbl:'Acquisition'},
     {id:'pgContacts',ico:'👥',lbl:'Mes contacts'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
     {id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
@@ -2047,7 +2131,7 @@ function nav(id){
   if(id==='pgMaJournee'){renderMaJournee();renderRappels('rappelsJournee');}
   if(id==='pgCatalogue')renderCatalogue();
   if(id==='pgProfils'){if(fbReady&&db){loadFromFirebase(function(){renderProfils();});}else{renderProfils();}}
-  if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();
+  if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();
   if(id==='pgSAV')renderSAV();
   if(id==='pgChat')renderChat();
   if(id==='pgMonCA')renderMonCA();
@@ -2730,7 +2814,7 @@ function renderProspects(){
       +'<td>'+(p.source||'')+'</td>'
       +'<td><span class="bdg '+sc+'">'+p.statut+'</span></td>'
       +'<td class="acts">'
-        +'<button class="act" onclick="openProspectModal('+idx+')">✏️</button>'
+        +'<button class="act" onclick="genererBrief('+idx+')">📋</button><button class="act" onclick="trouverContactProspect('+idx+')">🔍</button>'+'<button class="act" onclick="openProspectModal('+idx+')">✏️</button>'
         +(isAdmin()?'<button class="act dl" onclick="delProspect('+idx+')">🗑</button>':'')
       +'</td></tr>';
   }).join('');
@@ -3851,7 +3935,7 @@ function _sireneCard(e,i){
   var nom=e.nom_complet||e.nom_raison_sociale||'Entreprise';
   var siren=e.siren||'';var siege=e.siege||{};
   var cp=siege.code_postal||'';var ville=siege.libelle_commune||'';var act=e.activite_principale||'';
-  return '<div class="sireneCard"><div class="sireneCardInfo"><div class="sireneCardNom">'+_escR(nom)+'</div><div class="sireneCardSub">SIREN '+siren+(ville?' \u00b7 '+_escR(cp+' '+ville):'')+(act?' \u00b7 NAF '+_escR(act):'')+'</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button class="btn bGhost" style="font-size:11px;padding:5px 9px" onclick="sireneQualif('+i+',this)">🤖 Qualifier</button><button class="btn bPrimary" style="font-size:11px;padding:5px 9px" onclick="sireneAdd('+i+')">\uFF0B Prospect</button></div></div>';
+  return '<div class="sireneCard"><div class="sireneCardInfo"><div class="sireneCardNom">'+_escR(nom)+'</div><div class="sireneCardSub">SIREN '+siren+(ville?' \u00b7 '+_escR(cp+' '+ville):'')+(act?' \u00b7 NAF '+_escR(act):'')+'</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button class="btn bGhost" style="font-size:11px;padding:5px 9px" onclick="trouverContact('+i+')">🔍 Contact</button><button class="btn bGhost" style="font-size:11px;padding:5px 9px" onclick="sireneQualif('+i+',this)">🤖 Qualifier</button><button class="btn bPrimary" style="font-size:11px;padding:5px 9px" onclick="sireneAdd('+i+')">\uFF0B Prospect</button></div></div>';
 }
 function sireneAdd(i){
   var e=_sireneRes[i];if(!e)return;var siege=e.siege||{};
@@ -3877,8 +3961,8 @@ function _piaModal(titre,txt){
   var h='<div class="ov on" id="mPiaTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>'+_escR(titre)+'</h2><button class="mcl" onclick="g(\'mPiaTemp\').remove()">\u2715</button></div><div style="padding:16px;font-size:13.5px;line-height:1.65;white-space:pre-wrap;max-height:60vh;overflow:auto" id="mPiaBody">'+_escR(txt)+'</div></div></div>';
   document.body.insertAdjacentHTML('beforeend',h);
 }
-function executerOrdre(){
-  var ordre=((g('pia_ordre')&&g('pia_ordre').value)||'').trim();var out=g('pia_ordre_res');
+function executerOrdre(inId,resId){
+  var ordre=((g(inId||'pia_ordre')&&g(inId||'pia_ordre').value)||'').trim();var out=g(resId||'pia_ordre_res');
   if(!ordre){out.innerHTML='<div style="color:var(--muted);font-size:13px">Écrivez un ordre. Ex : "Trouve des copropriétés à Aix", "Rédige un email de prospection pour les hôtels de Marseille", "Rappelle-moi de relancer M. Durand demain".</div>';return;}
   out.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">\u23F3 L\'assistant analyse votre ordre...</div>';
   var sys='Tu es l\'agent du CRM BORN POWER (installateur de bornes de recharge IRVE a Marseille et en PACA). A partir de l\'ordre de l\'utilisateur, reponds UNIQUEMENT par un objet JSON strict, sans texte ni balise autour, de forme {"action":"campagne|chercher|email|rappel|aucune","params":{...},"reponse":"phrase courte pour l\'utilisateur"}. Params selon action: campagne={cible,ville,canal(email|appel|linkedin)}; chercher={segment(copropriete|hotel|camping|concession|garage|promoteur|autre),ville,q}; email={objet,contexte}; rappel={titre,date(AAAA-MM-JJ)}. Choisis l\'action la plus utile. Si aucune action ne convient, action="aucune" et mets ta reponse dans "reponse".';
@@ -3891,7 +3975,7 @@ function executerOrdre(){
 }
 function _executerAction(cmd,out){
   var p=cmd.params||{};
-  if(cmd.action==='campagne'){
+  if(cmd.action==='campagne'){if(typeof nav==='function')nav('pgProspectIA');
     if(g('pia_ville'))g('pia_ville').value=p.ville||'';
     if(p.canal&&g('pia_canal'))g('pia_canal').value=(['email','appel','linkedin'].indexOf(p.canal)>=0?p.canal:'email');
     if(p.cible&&g('pia_cible')){var opts=g('pia_cible').options,cb=(p.cible||'').toLowerCase();for(var k=0;k<opts.length;k++){if(opts[k].value.toLowerCase().indexOf(cb.split(' ')[0])>=0||cb.indexOf(opts[k].value.toLowerCase().split(' ')[0])>=0){g('pia_cible').selectedIndex=k;break;}}}
@@ -3989,6 +4073,210 @@ function prioriserPipeline(){
   var liste=opps.slice(0,25).map(function(o){return '- '+(o.client||'?')+' | '+(o.montant||'?')+' EUR | etape '+(o.etape||'?');}).join('\n');
   _piaModal('📈 Priorisation du pipeline','⏳ Analyse du pipeline...');
   askClaudeProspect(VENTE_SYS, 'Voici mes opportunites ouvertes :\n'+liste+'\n\nPriorise-les : donne le TOP 3 a traiter en premier (les plus chaudes, rentables ou urgentes) avec pour chacune POURQUOI et la PROCHAINE ACTION concrete. Puis liste rapidement les suivantes. Sois concret.', function(txt,err){_piaSetModal(err?('⚠️ '+err):txt);});
+}
+var _secteurs=[],_secteurVille='';
+function suggererSecteurs(){
+  var ville=((g('pia_secteur_ville')&&g('pia_secteur_ville').value)||'').trim();_secteurVille=ville;
+  var out=g('pia_secteur_res');out.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ L\'IA analyse le marché...</div>';
+  var prompt='Propose les 5 meilleurs secteurs d\'activité à prospecter '+(ville?('autour de '+ville):'en région PACA')+' pour BORN POWER (vente et installation de bornes de recharge pour véhicules électriques). Pour chacun donne le code NAF principal au format 0000A. Reponds UNIQUEMENT en JSON strict, sans aucun texte autour : [{"secteur":"...","naf":"0000A","pourquoi":"une phrase","angle":"une phrase"}]. Choisis des secteurs a fort potentiel (parkings, flottes de vehicules, clientele en vehicule electrique, obligations legales d equipement) et accessibles via la base INSEE.';
+  askClaudeProspect(VENTE_SYS, prompt, function(txt,err){
+    if(err){out.innerHTML='<div style="background:var(--red-bg);border:1px solid #fecaca;color:#dc2626;border-radius:10px;padding:10px;font-size:13px">⚠️ '+err+'</div>';return;}
+    var arr=null;try{arr=JSON.parse((txt||'').replace(/```json|```/g,'').trim());}catch(e){}
+    if(!Array.isArray(arr)||!arr.length){out.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13.5px;white-space:pre-wrap">'+_escR(txt||'')+'</div>';return;}
+    _secteurs=arr;
+    out.innerHTML='<div style="font-size:12px;color:var(--muted);margin:6px 0 4px">Secteurs conseillés'+(ville?(' autour de '+_escR(ville)):'')+' :</div>'+arr.map(function(x,i){var naf=(x.naf||'').replace(/[^0-9A-Za-z]/g,'');return '<div class="finRow" style="padding:12px 14px;align-items:flex-start;gap:10px"><div style="flex:1"><div style="font-weight:700;font-size:13.5px;color:var(--navy)">'+_escR(x.secteur||'')+(naf?' <span style="font-size:11px;color:var(--muted);font-weight:500">NAF '+_escR(naf)+'</span>':'')+'</div><div style="font-size:12.5px;color:var(--muted);margin:3px 0">'+_escR(x.pourquoi||'')+'</div>'+(x.angle?'<div style="font-size:12px"><b>Angle :</b> '+_escR(x.angle)+'</div>':'')+'</div><button class="btn bPrimary" style="font-size:11.5px;padding:6px 11px;flex-shrink:0" onclick="prospecterSecteurIdx('+i+')">🔍 Prospecter</button></div>';}).join('');
+  });
+}
+function prospecterSecteurIdx(i){var x=_secteurs[i];if(!x)return;var naf=(x.naf||'').replace(/[^0-9A-Za-z]/g,'');prospecterSecteur(naf,_secteurVille,x.secteur||'');}
+function prospecterSecteur(naf,ville,label){nav('pgProspects');if(g('sireneVille'))g('sireneVille').value=ville||'';if(g('sireneQ'))g('sireneQ').value=(naf?'':(label||''));searchSirene(naf||'');}
+function trouverContact(i){
+  var e=_sireneRes[i];if(!e)return;var siege=e.siege||{};
+  var nom=e.nom_complet||e.nom_raison_sociale||'';var ville=siege.libelle_commune||'';var cp=siege.code_postal||'';
+  var q=encodeURIComponent(nom+' '+ville);
+  var gGoogle='https://www.google.com/search?q='+encodeURIComponent('"'+nom+'" '+ville+' email telephone contact');
+  var gMaps='https://www.google.com/maps/search/'+q;
+  var gPJ='https://www.pagesjaunes.fr/recherche/'+encodeURIComponent(ville||'france')+'/'+encodeURIComponent(nom);
+  var gSite='https://www.google.com/search?q='+encodeURIComponent(nom+' '+ville+' site officiel contact');
+  var h='<div class="ov on" id="mContactTemp" onclick="if(event.target===this)this.remove()"><div class="modal sm"><div class="mh"><h2>🔍 Trouver le contact</h2><button class="mcl" onclick="g(\'mContactTemp\').remove()">✕</button></div><div style="padding:16px"><div style="font-weight:700;margin-bottom:2px">'+_escR(nom)+'</div><div style="font-size:12px;color:var(--muted);margin-bottom:14px">'+_escR((cp+' '+ville).trim())+'</div><div style="display:flex;flex-direction:column;gap:8px"><a class="btn bPrimary" style="text-decoration:none;text-align:center" href="'+gGoogle+'" target="_blank" rel="noopener">🔎 Google — email + téléphone</a><a class="btn bGhost" style="text-decoration:none;text-align:center" href="'+gMaps+'" target="_blank" rel="noopener">📍 Google Maps — souvent le téléphone</a><a class="btn bGhost" style="text-decoration:none;text-align:center" href="'+gPJ+'" target="_blank" rel="noopener">📞 Pages Jaunes</a><a class="btn bGhost" style="text-decoration:none;text-align:center" href="'+gSite+'" target="_blank" rel="noopener">🌐 Trouver le site officiel</a></div><div style="font-size:11px;color:var(--muted);margin-top:12px">💡 Astuce : beaucoup d\'entreprises utilisent contact@nomdelentreprise.fr</div></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function trouverContactProspect(idx){
+  var p=DB.prospects[idx];if(!p)return;
+  var nom=p.nom||p.societe||'';var ville=p.ville||'';var cp=p.cp||'';
+  var q=encodeURIComponent(nom+' '+ville);
+  var gGoogle='https://www.google.com/search?q='+encodeURIComponent('"'+nom+'" '+ville+' email telephone contact');
+  var gMaps='https://www.google.com/maps/search/'+q;
+  var gPJ='https://www.pagesjaunes.fr/recherche/'+encodeURIComponent(ville||'france')+'/'+encodeURIComponent(nom);
+  var gSite='https://www.google.com/search?q='+encodeURIComponent(nom+' '+ville+' site officiel contact');
+  var ex=g('mContactTemp');if(ex)ex.remove();
+  var h='<div class="ov on" id="mContactTemp" onclick="if(event.target===this)this.remove()"><div class="modal sm"><div class="mh"><h2>🔍 Trouver le contact</h2><button class="mcl" onclick="g(\'mContactTemp\').remove()">✕</button></div><div style="padding:16px"><div style="font-weight:700;margin-bottom:2px">'+_escR(nom)+'</div><div style="font-size:12px;color:var(--muted);margin-bottom:14px">'+_escR((cp+' '+ville).trim())+'</div><div style="display:flex;flex-direction:column;gap:8px"><a class="btn bPrimary" style="text-decoration:none;text-align:center" href="'+gGoogle+'" target="_blank" rel="noopener">🔎 Google — email + téléphone</a><a class="btn bGhost" style="text-decoration:none;text-align:center" href="'+gMaps+'" target="_blank" rel="noopener">📍 Google Maps</a><a class="btn bGhost" style="text-decoration:none;text-align:center" href="'+gPJ+'" target="_blank" rel="noopener">📞 Pages Jaunes</a><a class="btn bGhost" style="text-decoration:none;text-align:center" href="'+gSite+'" target="_blank" rel="noopener">🌐 Site officiel</a></div><div style="font-size:11px;color:var(--muted);margin-top:12px">💡 Astuce : souvent contact@nomdelentreprise.fr</div></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function showBanner(txt,ico,link){
+  try{
+    var ex=document.getElementById('bpBanner');if(ex)ex.remove();
+    var b=document.createElement('div');b.id='bpBanner';
+    b.style.cssText='position:fixed;top:calc(env(safe-area-inset-top, 0px) + 8px);left:12px;right:12px;margin:0 auto;max-width:440px;z-index:99999;background:linear-gradient(135deg,#242a56,#171c3c);color:#fff;border-radius:14px;box-shadow:0 12px 34px rgba(15,18,45,.38);padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transform:translateY(-160%);transition:transform .35s cubic-bezier(.2,.8,.2,1)';
+    b.innerHTML='<div style="font-size:20px;flex-shrink:0">'+(ico||'🔔')+'</div><div style="flex:1;font-size:13.5px;font-weight:600;line-height:1.35">'+_escR(txt)+'</div>'+(link?'<div style="font-size:11px;color:#ffe576;flex-shrink:0">Voir ›</div>':'<div onclick="event.stopPropagation();var x=document.getElementById(\'bpBanner\');if(x)x.remove();" style="font-size:16px;color:#9aa;flex-shrink:0;padding:0 4px">✕</div>');
+    b.onclick=function(){b.remove();if(link&&typeof openFromNotif==='function')openFromNotif(link);};
+    document.body.appendChild(b);
+    requestAnimationFrame(function(){b.style.transform='translateY(0)';});
+    setTimeout(function(){if(b&&b.parentNode){b.style.transform='translateY(-160%)';setTimeout(function(){if(b&&b.parentNode)b.remove();},420);}},5000);
+  }catch(e){}
+}
+var _dormants=[];
+function renderAcquisition(){renderParrainageList();renderApporteurs();}
+function genererParrainage(){
+  var c=((g('parrClient')&&g('parrClient').value)||'').trim();var out=g('parrMsg');
+  out.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ Génération...</div>';
+  askClaudeProspect(VENTE_SYS,'Redige un message court et chaleureux (SMS ou email) pour demander a '+(c||'un client satisfait')+' de recommander BORN POWER a son entourage (voisins, famille, collegues) qui envisagent une borne de recharge. Ton amical, valorise sa satisfaction, propose un petit geste de remerciement (parrainage). Pret a envoyer.',function(txt,err){
+    if(err){out.innerHTML='<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>';return;}
+    _piaCamp=txt;out.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:12px;font-size:13.5px;white-space:pre-wrap">'+_escR(txt)+'</div><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn bGhost" style="font-size:12px" onclick="_copyPia(\'camp\')">📋 Copier</button><button class="btn bGhost" style="font-size:12px" onclick="_openMailto()">✉️ Email</button></div>';
+  });
+}
+function addParrainage(){
+  var parrain=prompt('Nom du parrain (client qui recommande) :');if(!parrain)return;
+  var filleul=prompt('Nom du filleul (nouveau contact) :')||'';
+  if(!DB.parrainages)DB.parrainages=[];
+  DB.parrainages.push({id:DB.nextId++,parrain:parrain,filleul:filleul,statut:'En cours',date:new Date().toISOString()});
+  save();renderParrainageList();toast('Parrainage ajouté 🤝');
+}
+function toggleParrainage(id){var p=(DB.parrainages||[]).find(function(x){return x.id===id;});if(!p)return;p.statut=p.statut==='Converti'?'En cours':'Converti';save();renderParrainageList();}
+function delParrainage(id){if(!DB.parrainages)return;var i=DB.parrainages.findIndex(function(x){return x.id===id;});if(i>=0){DB.parrainages.splice(i,1);save();renderParrainageList();}}
+function renderParrainageList(){
+  var el=g('parrList');if(!el)return;var list=DB.parrainages||[];
+  if(!list.length){el.innerHTML='<div style="color:var(--muted);font-size:12.5px;padding:6px">Aucun parrainage pour l\'instant.</div>';return;}
+  el.innerHTML=list.map(function(p){var conv=p.statut==='Converti';return '<div class="finRow" style="padding:9px 4px"><div style="flex:1"><div style="font-size:13px;font-weight:600">'+_escR(p.parrain)+(p.filleul?' → '+_escR(p.filleul):'')+'</div><div style="font-size:11px;color:var(--muted)">'+fmtD(p.date)+'</div></div><div style="display:flex;gap:6px;align-items:center"><button class="act" onclick="toggleParrainage('+p.id+')"><span style="font-size:10px;font-weight:600;color:'+(conv?'var(--green)':'var(--orange)')+';background:'+(conv?'var(--green-bg)':'var(--orange-bg)')+';padding:2px 8px;border-radius:10px">'+p.statut+'</span></button><button class="act dl" onclick="delParrainage('+p.id+')">🗑</button></div></div>';}).join('');
+}
+function analyserDormants(){
+  var out=g('dormantsRes');var now=Date.now();var seuil=30*86400000;
+  var dormants=(DB.prospects||[]).filter(function(p){if(p.statut==='Qualifié'||p.statut==='Non qualifié')return false;var lc=p.lastContact?new Date(p.lastContact).getTime():0;return (now-lc)>seuil;});
+  if(!dormants.length){out.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">Aucun prospect dormant 🎉</div>';return;}
+  _dormants=dormants;
+  out.innerHTML='<div style="font-size:12px;color:var(--muted);margin-bottom:6px">'+dormants.length+' prospect(s) dormant(s) :</div>'+dormants.map(function(p,i){return '<div class="finRow" style="padding:9px 4px"><div style="flex:1"><div style="font-size:13px;font-weight:600">'+_escR(p.nom||p.societe||'?')+'</div><div style="font-size:11px;color:var(--muted)">'+_escR(p.ville||'')+' · dernier contact '+(p.lastContact?fmtD(p.lastContact):'—')+'</div></div><button class="btn bPrimary" style="font-size:11px;padding:5px 9px" onclick="reactiverDormant('+i+')">🤖 Réactiver</button></div>';}).join('');
+}
+function reactiverDormant(i){
+  var p=_dormants[i];if(!p)return;
+  _piaModal('🔄 Message de réactivation','⏳ Rédaction...');
+  askClaudeProspect(VENTE_SYS,'Ce prospect est dormant (aucun contact depuis longtemps) : '+(p.nom||p.societe||'')+(p.ville?(', '+p.ville):'')+(p.naf?(', activite '+p.naf):'')+'. Redige un message de reactivation court, chaleureux et non-insistant pour relancer l\'interet sur une borne de recharge (nouveaute, aide ADVENIR, offre). Donne un OBJET puis un CORPS prets a envoyer.',function(txt,err){_piaCamp=txt||'';_piaSetModal(err?('⚠️ '+err):txt,!err);});
+}
+function qrPreset(t){var u='https://www.bornpower.fr/';if(t==='avis')u=(DB.avisLink||'https://www.bornpower.fr/');if(g('qrUrl'))g('qrUrl').value=u;genererQR();}
+function genererQR(){
+  var u=((g('qrUrl')&&g('qrUrl').value)||'').trim();if(!u){toast('Entrez une adresse (URL)');return;}
+  var src='https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&data='+encodeURIComponent(u);
+  g('qrRes').innerHTML='<img src="'+src+'" alt="QR" style="width:200px;height:200px;background:#fff;border-radius:12px;border:1px solid var(--border);padding:8px"><div style="margin-top:8px"><a class="btn bGhost" style="text-decoration:none;font-size:12px" href="'+src+'&download=1" target="_blank" rel="noopener">⬇️ Télécharger</a></div><div style="font-size:11px;color:var(--muted);margin-top:6px;word-break:break-all">'+_escR(u)+'</div>';
+}
+function addApporteur(){
+  var nom=prompt('Nom de l\'apporteur (partenaire) :');if(!nom)return;
+  var type=prompt('Type (electricien, syndic, concession, agence...) :')||'';
+  var contact=prompt('Contact (tel / email) :')||'';
+  if(!DB.apporteurs)DB.apporteurs=[];
+  DB.apporteurs.push({id:DB.nextId++,nom:nom,type:type,contact:contact,leads:0,date:new Date().toISOString()});
+  save();renderApporteurs();toast('Apporteur ajouté 🤝');
+}
+function apporteurLead(id,delta){var a=(DB.apporteurs||[]).find(function(x){return x.id===id;});if(!a)return;a.leads=Math.max(0,(a.leads||0)+delta);save();renderApporteurs();}
+function delApporteur(id){if(!DB.apporteurs)return;var i=DB.apporteurs.findIndex(function(x){return x.id===id;});if(i>=0){DB.apporteurs.splice(i,1);save();renderApporteurs();}}
+function renderApporteurs(){
+  var el=g('apporteursList');if(!el)return;var list=DB.apporteurs||[];
+  if(!list.length){el.innerHTML='<div style="color:var(--muted);font-size:12.5px;padding:6px">Aucun apporteur enregistré.</div>';return;}
+  el.innerHTML=list.map(function(a){return '<div class="finRow" style="padding:9px 4px"><div style="flex:1"><div style="font-size:13px;font-weight:600">'+_escR(a.nom)+(a.type?' <span style="font-size:11px;color:var(--muted)">'+_escR(a.type)+'</span>':'')+'</div><div style="font-size:11px;color:var(--muted)">'+_escR(a.contact||'')+' · '+(a.leads||0)+' lead(s)</div></div><div style="display:flex;gap:4px;align-items:center"><button class="act" onclick="apporteurLead('+a.id+',1)" title="Ajouter un lead">＋</button><button class="act" onclick="apporteurLead('+a.id+',-1)">－</button><button class="act dl" onclick="delApporteur('+a.id+')">🗑</button></div></div>';}).join('');
+}
+function campagneRecipients(){return (DB.prospects||[]).filter(function(p){return p.email&&(''+p.email).indexOf('@')>0;});}
+function campagneGenererIA(){
+  var cible=((g('campCible')&&g('campCible').value)||'').trim();
+  toast('Rédaction en cours...');
+  askClaudeProspect(PIA_SYS,'Redige une campagne emailing de prospection B2B pour BORN POWER'+(cible?(' ciblant : '+cible):'')+'. Donne un OBJET accrocheur puis un CORPS court et personnalisable, conforme RGPD (mention de desinscription). Format exact : "Objet: ...\n\n[corps]".',function(txt,err){
+    if(err){toast(err);return;}
+    var subj='';var body=txt||'';var m=(txt||'').match(/^\s*(objet|sujet)\s*:\s*(.+)$/im);
+    if(m){subj=m[2].trim();body=(txt||'').replace(m[0],'').trim();}
+    if(subj&&g('campSubj'))g('campSubj').value=subj;
+    if(g('campBody'))g('campBody').value=body;
+    toast('Campagne rédigée ✅');
+  });
+}
+function campagneMailto(){
+  var subj=((g('campSubj')&&g('campSubj').value)||'').trim();var body=((g('campBody')&&g('campBody').value)||'').trim();
+  var rec=campagneRecipients();
+  if(!rec.length){toast('Aucun prospect avec email. Ajoute des emails via le bouton Contact.');return;}
+  if(rec.length>40){toast('Trop de destinataires ('+rec.length+'). Utilise l\'export CSV + Brevo.');return;}
+  var bcc=rec.map(function(p){return p.email;}).join(',');
+  window.location.href='mailto:?bcc='+encodeURIComponent(bcc)+'&subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
+}
+function campagneExportCSV(){
+  var rec=campagneRecipients();if(!rec.length){toast('Aucun prospect avec email');return;}
+  var q=function(v){v=(v==null?'':''+v).replace(/"/g,'""');return '"'+v+'"';};
+  var csv='Email;Nom;Ville\r\n'+rec.map(function(p){return [p.email,p.nom||p.societe||'',p.ville||''].map(q).join(';');}).join('\r\n');
+  var blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='campagne_bornpower.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast('Liste exportée ('+rec.length+' emails) ✅');
+}
+function renderConquete(){
+  var el=g('conqKpis');if(!el)return;
+  var nProsp=(DB.prospects||[]).length;
+  var nRelance=(DB.devis||[]).filter(function(d){return d.statut==='Envoyé';}).length;
+  var now=Date.now();var nDorm=(DB.prospects||[]).filter(function(p){if(p.statut==='Qualifié'||p.statut==='Non qualifié')return false;var lc=p.lastContact?new Date(p.lastContact).getTime():0;return (now-lc)>30*86400000;}).length;
+  el.innerHTML='<div class="conqKpi"><div class="v">'+nProsp+'</div><div class="l">Prospects</div></div><div class="conqKpi"><div class="v">'+nRelance+'</div><div class="l">Devis à relancer</div></div><div class="conqKpi"><div class="v">'+nDorm+'</div><div class="l">Dormants</div></div>';
+}
+function briefConqueteModal(){
+  var h='<div class="ov on" id="mBriefTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>📋 Brief de conquête</h2><button class="mcl" onclick="g(\'mBriefTemp\').remove()">✕</button></div><div style="padding:16px"><label style="font-size:12px;font-weight:600;color:var(--muted)">Infos du prospect (nom, activité, ville, contexte...)</label><textarea id="briefIn" rows="3" style="width:100%;margin:6px 0 12px" placeholder="Ex: Copropriété 40 lots Marseille 8e, syndic Foncia, parking souterrain"></textarea><button class="btn bPrimary" onclick="genererBrief()">Générer le brief</button><div id="briefRes" style="margin-top:12px"></div></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function genererBrief(idx){
+  var info;
+  if(typeof idx==='number'){var p=DB.prospects[idx];if(!p)return;info=(p.nom||p.societe||'')+', '+(p.ville||'')+', activité '+(p.naf||'?')+(p.notes?(', '+p.notes):'');}
+  else{info=((g('briefIn')&&g('briefIn').value)||'').trim();}
+  if(!info){toast('Renseignez le prospect');return;}
+  var res=g('briefRes');
+  if(res)res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ Préparation du brief...</div>';else _piaModal('📋 Brief de conquête','⏳ Préparation...');
+  askClaudeProspect(VENTE_SYS,'Prépare un BRIEF de conquête pour ce prospect BORN POWER : '+info+'.\n\nDonne, concis et actionnable : 1) CONTEXTE (qui ils sont, leur besoin probable de bornes). 2) ANGLE d\'approche. 3) ARGUMENTS cles (obligations LOM et aides ADVENIR si pertinent). 4) 3 OBJECTIONS probables avec reponses. 5) 3 QUESTIONS de decouverte. 6) Une phrase d\'accroche pour demarrer.',function(txt,err){
+    if(res){res.innerHTML=err?('<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>'):('<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;white-space:pre-wrap">'+_escR(txt)+'</div>');}
+    else{_piaCamp=txt||'';_piaSetModal(err?('⚠️ '+err):txt);}
+  });
+}
+function sequenceRelance(idx){
+  var i=(idx===undefined?eDevis:idx);var d=DB.devis[i];if(!d){toast('Ouvrez un devis');return;}
+  var montant=(d.lignes||[]).reduce(function(s2,l){return s2+((l.qte||0)*(l.pu||0));},0);
+  _piaModal('📩 Séquence de relance','⏳ Création de la séquence...');
+  askClaudeProspect(VENTE_SYS,'Devis '+(d.numero||'')+' pour '+(d.client||'?')+', '+montant+' EUR, en attente. Redige une SEQUENCE de 3 relances email pretes a envoyer : RELANCE 1 (J+3, douce), RELANCE 2 (J+7, valeur et aides), RELANCE 3 (J+14, email de rupture courtois). Chaque relance avec objet + corps courts.',function(txt,err){
+    if(err){_piaSetModal('⚠️ '+err);return;}
+    _piaCamp=txt;var b=g('mPiaBody');if(b)b.innerHTML=_escR(txt)+'<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn bGhost" onclick="_copyPia(\'camp\')">📋 Copier</button><button class="btn bPrimary" onclick="creerRappelsSequence('+i+')">🔔 Créer les 3 rappels</button></div>';
+  });
+}
+function creerRappelsSequence(i){
+  var d=DB.devis[i];if(!d)return;if(!DB.taches)DB.taches=[];
+  var cl=d.client||('devis '+(d.numero||''));var now=new Date();var seq=[[3,'Relance 1'],[7,'Relance 2'],[14,'Relance 3 (rupture)']];
+  seq.forEach(function(r){var dt=new Date(now.getTime()+r[0]*86400000);DB.taches.push({id:DB.nextId++,userId:(curUserObj?curUserObj.id:''),titre:r[1]+' — '+cl,date:dt.toISOString().slice(0,10),priorite:'normale',fait:false,createdBy:(curUserObj?curUserObj.id:''),createdAt:new Date().toISOString()});});
+  save();toast('3 rappels créés 🔔');if(typeof _refreshRappels==='function')_refreshRappels();
+}
+function logAppelModal(){
+  var h='<div class="ov on" id="mLogTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>📞 Log d\'appel IA</h2><button class="mcl" onclick="g(\'mLogTemp\').remove()">✕</button></div><div style="padding:16px"><label style="font-size:12px;font-weight:600;color:var(--muted)">Vos notes d\'appel (en vrac)</label><textarea id="logIn" rows="4" style="width:100%;margin:6px 0 12px" placeholder="Ex: Appelé M. Durand, syndic. Intéressé résidence Le Parc, 30 places. Budget à valider en AG septembre."></textarea><button class="btn bPrimary" onclick="genererLog()">Analyser</button><div id="logRes" style="margin-top:12px"></div></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function genererLog(){
+  var notes=((g('logIn')&&g('logIn').value)||'').trim();if(!notes){toast('Collez vos notes');return;}
+  var res=g('logRes');res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ Analyse...</div>';
+  askClaudeProspect(VENTE_SYS,'Voici mes notes d\'appel commercial (en vrac) : "'+notes+'".\n\nStructure-les : 1) RESUME (2-3 points). 2) SIGNAUX D\'ACHAT et niveau d\'interet. 3) OBJECTIONS relevees. 4) PROCHAINE ACTION avec echeance suggeree. 5) EMAIL DE SUIVI pret a envoyer.',function(txt,err){
+    if(err){res.innerHTML='<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>';return;}
+    _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;white-space:pre-wrap">'+_escR(txt)+'</div><div style="margin-top:8px"><button class="btn bGhost" onclick="_copyPia(\'camp\')">📋 Copier</button></div>';
+  });
+}
+function battlecardModal(){
+  var h='<div class="ov on" id="mBattleTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>⚔️ Battlecard</h2><button class="mcl" onclick="g(\'mBattleTemp\').remove()">✕</button></div><div style="padding:16px"><label style="font-size:12px;font-weight:600;color:var(--muted)">Concurrent / situation (optionnel)</label><input id="battleIn" style="width:100%;margin:6px 0 12px" placeholder="Ex: le client compare avec Beev / un devis moins cher"><button class="btn bPrimary" onclick="genererBattlecard()">Générer</button><div id="battleRes" style="margin-top:12px"></div></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function genererBattlecard(){
+  var conc=((g('battleIn')&&g('battleIn').value)||'').trim();var res=g('battleRes');
+  res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ ...</div>';
+  askClaudeProspect(VENTE_SYS,'Prepare une BATTLECARD pour un commercial BORN POWER face a '+(conc||'la concurrence et les agregateurs (Beev, Pro-Borne, devis en ligne moins chers)')+'. Pour chaque point : ce que le client pense ou dit, pourquoi ca compte, et QUOI REPONDRE (nos vrais atouts : certification IRVE, garantie decennale, service local cle en main, 131 avis 4,9/5, accompagnement des aides). Donne 4 a 5 situations.',function(txt,err){
+    if(err){res.innerHTML='<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>';return;}
+    _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;white-space:pre-wrap">'+_escR(txt)+'</div><div style="margin-top:8px"><button class="btn bGhost" onclick="_copyPia(\'camp\')">📋 Copier</button></div>';
+  });
+}
+function rapportHebdo(){
+  var opps=(DB.opportunites||[]).filter(function(o){return o.etape!=='Gagné'&&o.etape!=='Gagne'&&o.etape!=='Perdu';});
+  var dev=(DB.devis||[]).filter(function(d){return d.statut==='Envoyé';});
+  var liste=opps.slice(0,20).map(function(o){return '- Opportunite: '+(o.client||'?')+' | '+(o.montant||'?')+' EUR | etape '+(o.etape||'?');}).join('\n')+'\n'+dev.slice(0,20).map(function(d){return '- Devis envoye: '+(d.client||'?')+' n'+(d.numero||'');}).join('\n');
+  _piaModal('📊 Rapport hebdo du pipeline','⏳ Analyse du pipeline...');
+  askClaudeProspect(VENTE_SYS,'Voici mon pipeline actuel :\n'+(liste.trim()||'(vide)')+'\n\nFais un RAPPORT HEBDO commercial : classe chaque affaire en VERT (chaude, a closer), ORANGE (a relancer), ROUGE (a risque). Pour chaque couleur, donne les actions prioritaires de la semaine. Termine par les 3 PRIORITES ABSOLUES. Concis.',function(txt,err){_piaSetModal(err?('⚠️ '+err):txt);});
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
@@ -4282,7 +4570,7 @@ document.addEventListener('DOMContentLoaded',function(){
       DB.nextId=data.nextId||DB.nextId;
       try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}
       var ap=document.querySelector('.pg.on');
-      if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgMaJournee')renderMaJournee();}
+      if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgMaJournee')renderMaJournee();}
     });
     fbListen(FIREBASE_ACCOUNTS_COLLECTION,function(data){
       if(data&&data.accounts){
@@ -5055,9 +5343,20 @@ function jarvisSpeakText(text, callback) {
     };
   })
   .catch(function(e){
-    jarvisSpeaking = false;
     console.log('Jarvis TTS error:', e);
-    updateJarvisUI('error', 'Erreur voix: ' + e.message);
+    // Voix de secours : synthese vocale integree au navigateur (marche sur iPhone)
+    try{
+      if(window.speechSynthesis){
+        var u=new SpeechSynthesisUtterance(text);u.lang='fr-FR';u.rate=1;
+        var vs=window.speechSynthesis.getVoices();for(var vi=0;vi<vs.length;vi++){if(vs[vi].lang&&vs[vi].lang.indexOf('fr')===0){u.voice=vs[vi];break;}}
+        jarvisSpeaking=true;updateJarvisUI('speaking', text);
+        u.onend=function(){jarvisSpeaking=false;updateJarvisUI(jarvisListening?'listening':'idle','');if(callback)callback();};
+        u.onerror=function(){jarvisSpeaking=false;if(callback)callback();};
+        window.speechSynthesis.cancel();window.speechSynthesis.speak(u);
+        return;
+      }
+    }catch(err2){console.log('Fallback TTS error:',err2);}
+    jarvisSpeaking=false;updateJarvisUI('speaking', text);
     if (callback) callback();
   });
 }
