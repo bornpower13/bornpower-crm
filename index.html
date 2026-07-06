@@ -4292,7 +4292,8 @@ function campagneEnvoyerBrevo(){
   fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({recipients:rec.map(function(p){return {email:p.email,name:p.nom||p.societe||''};}),subject:subj,body:body,senderName:'BORN POWER',senderEmail:'contact@bornpower.fr'})})
   .then(function(r){return r.json();}).then(function(d){
     if(d&&d.error){toast('Erreur : '+d.error);return;}
-    toast('✅ '+((d&&d.sent)||0)+' email(s) envoyé(s)'+((d&&d.failed)?(' · '+d.failed+' échec(s)'):''));
+    if(d&&d.brevoStatus!==undefined&&d.brevoStatus!==201){alert('Réponse Brevo (statut '+d.brevoStatus+') :\n\n'+(d.brevoResponse||'(vide)'));return;}
+    toast('✅ '+((d&&d.sent)||1)+' email(s) envoyé(s) — vérifiez vos spams');
   }).catch(function(){toast('Worker injoignable — vérifier le déploiement / l\'URL');});
 }
 function renderCommercialPay(uid,mois,an){
