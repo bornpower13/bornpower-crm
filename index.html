@@ -791,6 +791,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important}
     <div class="pg" id="pgDashComm">
       <div class="pgHead"><div><h1>Mon tableau de bord</h1><p class="sub">Mes performances</p></div><div style="display:flex;gap:8px"><button class="btn bGhost" onclick="showTemplates()" style="color:var(--blue)">✉️ Modèles</button><button class="btn bGhost" onclick="simADVENIR()" style="color:var(--gold)">🧮 Simulateur aides</button><button class="btn bPrimary" onclick="openOppModal(-1)">+ Opportunité</button></div></div>
       <div class="kpis" id="dashCommKpis"></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🎯 À faire maintenant</h3></div><div class="cardB" id="commPriorites" style="padding:0"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>✅ Mes tâches du jour</h3></div><div class="cardB" id="commTasks" style="padding:0"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🔔 Mes rappels</h3></div><div class="cardB" id="rappelsComm" style="padding:8px 0"></div></div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;">
@@ -2164,7 +2165,7 @@ function nav(id){
   var navEl=g('nav_'+id);if(navEl)navEl.classList.add('on');
   if(isMobile()){closeMobileMenu();}
   if(id==='pgDash'){renderDash();renderRappels('rappelsDash');}
-  if(id==='pgDashComm'){renderDashComm();renderRappels('rappelsComm');}
+  if(id==='pgDashComm'){renderDashComm();renderRappels('rappelsComm');if(typeof renderPriorites==='function')renderPriorites();}
   if(id==='pgDashDT')renderDashDT();
   if(id==='pgPipeline')renderPipeline();
   if(id==='pgContacts')renderContacts();
@@ -4412,6 +4413,22 @@ function chercherLinkedIn(){
   var q=((g('liSearchIn')&&g('liSearchIn').value)||'').trim();
   if(!q){toast('Que cherches-tu ? (ex: gérant copropriété Marseille)');return;}
   window.open('https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(q),'_blank','noopener');
+}
+function renderPriorites(){
+  var el=g('commPriorites');if(!el)return;
+  var uid=curUserObj?curUserObj.id:'';var today=new Date();today.setHours(0,0,0,0);
+  var rappelsDus=(DB.taches||[]).filter(function(t){return t.userId===uid&&!t.fait&&t.date&&new Date(t.date)<=today;}).length;
+  var devisRelance=(DB.devis||[]).filter(function(d){return (!d.commercialId||d.commercialId===uid)&&d.statut==='Envoyé';}).length;
+  var oppChaudes=(DB.opportunites||[]).filter(function(o){return (!o.commercialId||o.commercialId===uid)&&(o.etape==='Négociation'||o.etape==='Proposition'||o.etape==='Devis envoyé');}).length;
+  var prospNouv=(DB.prospects||[]).filter(function(p){return p.statut==='Nouveau';}).length;
+  var items=[];
+  if(rappelsDus>0)items.push({ic:'🔔',txt:rappelsDus+' rappel(s) à traiter aujourd\'hui',act:'nav(\'pgDashComm\')',col:'#dc2626'});
+  if(devisRelance>0)items.push({ic:'📩',txt:devisRelance+' devis en attente à relancer',act:'nav(\'pgDevis\')',col:'#d97706'});
+  if(oppChaudes>0)items.push({ic:'🔥',txt:oppChaudes+' opportunité(s) chaude(s) à closer',act:'nav(\'pgPipeline\')',col:'#059669'});
+  if(prospNouv>0)items.push({ic:'📞',txt:prospNouv+' nouveau(x) prospect(s) à contacter',act:'nav(\'pgProspects\')',col:'#2563eb'});
+  items.push({ic:'💡',txt:'Demander à l\'IA mon plan du jour',act:'propositionsDuJour()',col:'#c79732'});
+  items.push({ic:'🚀',txt:'Trouver de nouveaux clients',act:'nav(\'pgConquete\')',col:'#222651'});
+  el.innerHTML=items.map(function(it){return '<div onclick="'+it.act+'" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s" onmouseover="this.style.background=\'#f6f7fc\'" onmouseout="this.style.background=\'\'"><div style="width:38px;height:38px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+it.ic+'</div><div style="flex:1;font-size:13.5px;font-weight:600;color:'+it.col+'">'+it.txt+'</div><div style="color:var(--muted);font-size:18px">›</div></div>';}).join('');
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
