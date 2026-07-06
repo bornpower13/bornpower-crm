@@ -917,6 +917,30 @@ h1,h2,h3,.pgHead h1,.cardH h3,.conqT,.kpi .v{font-family:'Plus Jakarta Sans','DM
     </div>
 
     <!-- PROSPECTS -->
+    <div class="pg" id="pgLinkedIn">
+      <div class="pgHead"><div><h1>💼 LinkedIn — Lead Hunter</h1><p class="sub">Importe tes leads LinkedIn et fais-les travailler par l'IA</p></div></div>
+      <div class="card" style="margin-bottom:16px;background:#eff6ff;border:1px solid #bfdbfe">
+        <div class="cardB" style="font-size:12.5px;color:#1e40af">ℹ️ <b>Méthode conforme (sans risque de ban) :</b> lance des <b>Lead Gen Forms</b> dans LinkedIn Ads → dans Campaign Manager, exporte tes leads en <b>CSV</b> → importe-les ici. L'API LinkedIn n'autorise ni le scraping de profils ni la messagerie automatique.</div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cardH"><h3>📥 Importer mes leads LinkedIn (CSV)</h3></div>
+        <div class="cardB">
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Exporte tes leads depuis LinkedIn Campaign Manager (bouton "Télécharger les leads") puis charge le fichier ici. Les colonnes (nom, email, entreprise, poste...) sont détectées automatiquement.</div>
+          <input type="file" id="liCsvFile" accept=".csv,.txt" style="margin-bottom:10px;font-size:13px">
+          <div><button class="btn bPrimary" onclick="importLinkedInCSV()">Importer les leads</button></div>
+          <div id="liList" style="margin-top:12px"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cardH"><h3>✍️ Message LinkedIn (IA)</h3></div>
+        <div class="cardB">
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Colle les infos d'un contact → l'IA rédige un message LinkedIn personnalisé. Tu l'envoies toi-même depuis LinkedIn (conforme aux règles).</div>
+          <textarea id="liMsgIn" rows="3" placeholder="Ex: Jean Dupont, Directeur d'une copropriété de 60 lots à Marseille" style="width:100%;margin-bottom:10px"></textarea>
+          <button class="btn bPrimary" onclick="linkedinMessageIA()">Générer le message</button>
+          <div id="liMsgRes" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </div>
     <div class="pg" id="pgConquete">
       <div style="background:linear-gradient(135deg,#242a56,#171c3c);border-radius:20px;padding:24px;color:#fff;margin-bottom:18px;box-shadow:var(--shadow-lg)">
         <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:#ffe576;text-transform:uppercase;margin-bottom:6px">Conquête client · IA</div>
@@ -2062,7 +2086,7 @@ function fmtNotifTime(ts){
 var NAV_MAP={
   admin:[
     {s:'Commercial'},{id:'pgDash',ico:'📊',lbl:'Tableau de bord'},{id:'pgPipeline',ico:'🎯',lbl:'Pipeline'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
-    {id:'pgConquete',ico:'🚀',lbl:'Conquête'},{id:'pgProspects',ico:'🔍',lbl:'Prospects'},{id:'pgProspectIA',ico:'🤖',lbl:'Prospection IA'},{id:'pgAcquisition',ico:'🌱',lbl:'Acquisition'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},
+    {id:'pgConquete',ico:'🚀',lbl:'Conquête'},{id:'pgLinkedIn',ico:'💼',lbl:'LinkedIn'},{id:'pgProspects',ico:'🔍',lbl:'Prospects'},{id:'pgProspectIA',ico:'🤖',lbl:'Prospection IA'},{id:'pgAcquisition',ico:'🌱',lbl:'Acquisition'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},
     {id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgObjectifs',ico:'🎯',lbl:'Objectifs CA'},
     {id:'pgRapports',ico:'📈',lbl:'Rapports'},{id:'pgCommerciaux',ico:'💼',lbl:'Commerciaux'},
     {s:'Installateurs'},{id:'pgInst',ico:'⚡',lbl:'Installations'},{id:'pgSAV',ico:'🔧',lbl:'SAV'},
@@ -2083,7 +2107,7 @@ var NAV_MAP={
   ],
   commercial:[
     {s:'Mon espace'},{id:'pgDashComm',ico:'📊',lbl:'Tableau de bord'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
-    {id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgConquete',ico:'🚀',lbl:'Conquête'},{id:'pgProspects',ico:'🔍',lbl:'Prospects'},{id:'pgProspectIA',ico:'🤖',lbl:'Prospection IA'},{id:'pgAcquisition',ico:'🌱',lbl:'Acquisition'},
+    {id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgConquete',ico:'🚀',lbl:'Conquête'},{id:'pgLinkedIn',ico:'💼',lbl:'LinkedIn'},{id:'pgProspects',ico:'🔍',lbl:'Prospects'},{id:'pgProspectIA',ico:'🤖',lbl:'Prospection IA'},{id:'pgAcquisition',ico:'🌱',lbl:'Acquisition'},
     {id:'pgContacts',ico:'👥',lbl:'Mes contacts'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
     {id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
@@ -2137,7 +2161,7 @@ function nav(id){
   if(id==='pgMaJournee'){renderMaJournee();renderRappels('rappelsJournee');}
   if(id==='pgCatalogue')renderCatalogue();
   if(id==='pgProfils'){if(fbReady&&db){loadFromFirebase(function(){renderProfils();});}else{renderProfils();}}
-  if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();
+  if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgLinkedIn')renderLinkedIn();
   if(id==='pgSAV')renderSAV();
   if(id==='pgChat')renderChat();
   if(id==='pgMonCA')renderMonCA();
@@ -4315,6 +4339,57 @@ function propositionsDuJour(){
   _piaModal('💡 Propositions du jour','⏳ L\'IA analyse tout votre CRM...');
   askClaudeProspect(VENTE_SYS, snap+'\n\nEn directeur commercial, analyse cette situation et propose un PLAN D\'ACTION pour aujourd\'hui : les 3 a 5 actions PRIORITAIRES (les plus rentables et urgentes), concretes, avec pour chacune POURQUOI et QUOI FAIRE. Sois direct et oriente resultat.',function(txt,err){_piaSetModal(err?('⚠️ '+err):txt);});
 }
+function _parseCSV(text){
+  var rows=[],row=[],cur='',q=false;
+  for(var i=0;i<text.length;i++){var c=text[i];
+    if(q){if(c==='"'){if(text[i+1]==='"'){cur+='"';i++;}else q=false;}else cur+=c;}
+    else{if(c==='"')q=true;else if(c===','||c===';'){row.push(cur);cur='';}else if(c==='\n'){row.push(cur);rows.push(row);row=[];cur='';}else if(c==='\r'){}else cur+=c;}
+  }
+  if(cur!==''||row.length){row.push(cur);rows.push(row);}
+  return rows;
+}
+function importLinkedInCSV(){
+  var inp=g('liCsvFile');if(!inp||!inp.files||!inp.files[0]){toast('Choisis d\'abord un fichier CSV');return;}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var rows=_parseCSV(e.target.result);if(rows.length<2){toast('CSV vide ou illisible');return;}
+      var head=rows[0].map(function(h){return (h||'').toLowerCase().trim();});
+      function col(names){for(var n=0;n<names.length;n++){var idx=head.indexOf(names[n]);if(idx>=0)return idx;}return -1;}
+      var iFn=col(['first name','prénom','prenom','firstname']);
+      var iLn=col(['last name','nom','lastname']);
+      var iEmail=col(['email','email address','adresse email','e-mail','work email']);
+      var iComp=col(['company','company name','entreprise','société','societe','organization']);
+      var iJob=col(['job title','title','poste','titre']);
+      var iLoc=col(['location','country','localisation','ville','city','région','region']);
+      if(!DB.prospects)DB.prospects=[];var added=0;
+      for(var r=1;r<rows.length;r++){var row=rows[r];if(!row||row.length<2)continue;
+        var fn=iFn>=0?(row[iFn]||''):'';var ln=iLn>=0?(row[iLn]||''):'';
+        var nom=((fn+' '+ln).trim())||(iComp>=0?(row[iComp]||''):'')||'Lead LinkedIn';
+        var email=iEmail>=0?(row[iEmail]||'').trim():'';
+        if(!nom.trim()&&!email)continue;
+        var poste=iJob>=0?(row[iJob]||''):'';
+        DB.prospects.push({id:DB.nextId++,nom:nom,societe:iComp>=0?(row[iComp]||''):'',poste:poste,email:email,tel:'',ville:iLoc>=0?(row[iLoc]||''):'',statut:'Nouveau',source:'LinkedIn',notes:'Lead LinkedIn'+(poste?(' — '+poste):''),lastContact:new Date().toISOString().slice(0,10)});
+        added++;
+      }
+      save();toast('✅ '+added+' lead(s) LinkedIn importé(s)');if(typeof renderProspects==='function')renderProspects();renderLinkedIn();
+    }catch(err){toast('Erreur de lecture du CSV');}
+  };
+  reader.readAsText(inp.files[0]);
+}
+function linkedinMessageIA(){
+  var info=((g('liMsgIn')&&g('liMsgIn').value)||'').trim();if(!info){toast('Colle les infos du lead (nom, poste, entreprise...)');return;}
+  var res=g('liMsgRes');res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ Rédaction...</div>';
+  askClaudeProspect(VENTE_SYS,'Rédige un message LinkedIn court, personnalisé et non agressif pour ce contact : "'+info+'". Objectif : engager la conversation sur les bornes de recharge (obligations LOM, aides ADVENIR selon le profil). Ton pro et humain, 4-5 lignes max, avec une question ouverte a la fin. Message pret a copier-coller dans LinkedIn.',function(txt,err){
+    if(err){res.innerHTML='<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>';return;}
+    _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;white-space:pre-wrap">'+_escR(txt)+'</div><button class="btn bGhost" style="margin-top:8px" onclick="_copyPia(\'camp\')">📋 Copier</button>';
+  });
+}
+function renderLinkedIn(){
+  var el=g('liList');if(!el)return;
+  var leads=(DB.prospects||[]).filter(function(p){return p.source==='LinkedIn';});
+  el.innerHTML=leads.length?('<div style="font-size:12.5px;color:var(--green);font-weight:600;padding:4px">✅ '+leads.length+' lead(s) LinkedIn dans ton CRM (visibles dans Prospects)</div>'):'<div style="color:var(--muted);font-size:12.5px;padding:4px">Aucun lead LinkedIn importé pour l\'instant.</div>';
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
@@ -4607,7 +4682,7 @@ document.addEventListener('DOMContentLoaded',function(){
       DB.nextId=data.nextId||DB.nextId;
       try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}
       var ap=document.querySelector('.pg.on');
-      if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgMaJournee')renderMaJournee();}
+      if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgLinkedIn')renderLinkedIn();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgMaJournee')renderMaJournee();}
     });
     fbListen(FIREBASE_ACCOUNTS_COLLECTION,function(data){
       if(data&&data.accounts){
