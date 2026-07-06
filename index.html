@@ -930,6 +930,13 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important}
         <div class="cardB" style="font-size:12.5px;color:#1e40af">ℹ️ <b>Méthode conforme (sans risque de ban) :</b> lance des <b>Lead Gen Forms</b> dans LinkedIn Ads → dans Campaign Manager, exporte tes leads en <b>CSV</b> → importe-les ici. L'API LinkedIn n'autorise ni le scraping de profils ni la messagerie automatique.</div>
       </div>
       <div class="card" style="margin-bottom:16px">
+        <div class="cardH"><h3>🔎 Chercher des contacts sur LinkedIn</h3></div>
+        <div class="cardB">
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Tape un poste + secteur + ville → ça ouvre la recherche LinkedIn dans un onglet. Tu prospectes ensuite manuellement (conforme aux règles LinkedIn).</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><input id="liSearchIn" placeholder="Ex: gérant copropriété Marseille" style="flex:1;min-width:200px"><button class="btn bPrimary" onclick="chercherLinkedIn()">🔎 Ouvrir sur LinkedIn</button></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
         <div class="cardH"><h3>📥 Importer mes leads LinkedIn (CSV)</h3></div>
         <div class="cardB">
           <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Exporte tes leads depuis LinkedIn Campaign Manager (bouton "Télécharger les leads") puis charge le fichier ici. Les colonnes (nom, email, entreprise, poste...) sont détectées automatiquement.</div>
@@ -1072,7 +1079,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important}
         <div class="cardB">
           <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
             <input id="sireneQ" placeholder="Nom entreprise, activité..." style="flex:2;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;outline:none;font-family:inherit;min-width:200px" onkeydown="if(event.key==='Enter')searchSirene()">
-            <input id="sireneVille" placeholder="Ville (optionnel)" style="flex:1;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;outline:none;font-family:inherit;min-width:140px">
+            <input id="sireneVille" placeholder="Ville (optionnel)" style="flex:1;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;outline:none;font-family:inherit;min-width:140px"><input id="sireneDept" placeholder="Dépt (ex: 13, 83, 06)" onkeydown="if(event.key==='Enter')searchSirene()" style="flex:1;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;outline:none;font-family:inherit;min-width:120px">
             <select id="sireneNaf" style="flex:1;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;outline:none;background:var(--white);font-family:inherit;min-width:160px">
               <option value="">Tous secteurs</option>
               <option value="4321A">Électricité bâtiment (4321A)</option>
@@ -3954,13 +3961,14 @@ function renderProspectIA(){}
 var _sireneRes=[];
 function searchSirene(nafOverride){
   var q=((g('sireneQ')&&g('sireneQ').value)||'').trim();
-  var ville=((g('sireneVille')&&g('sireneVille').value)||'').trim();
+  var ville=((g('sireneVille')&&g('sireneVille').value)||'').trim();var dept=((g('sireneDept')&&g('sireneDept').value)||'').trim();
   var naf=nafOverride||((g('sireneNaf')&&g('sireneNaf').value)||'');
   var terms=[q,ville].filter(Boolean).join(' ');
-  if(!terms&&!naf){toast('Saisissez une activité, un nom ou une ville');return;}
-  var url='https://recherche-entreprises.api.gouv.fr/search?per_page=15&etat_administratif=A';
+  if(!terms&&!naf&&!dept){toast('Saisis une activité, une ville, un département (ex: 13) ou une cible');return;}
+  var url='https://recherche-entreprises.api.gouv.fr/search?per_page=25&etat_administratif=A';
   if(terms)url+='&q='+encodeURIComponent(terms);
   if(naf){var nc=(naf.indexOf('.')<0&&naf.length>=3)?(naf.slice(0,2)+'.'+naf.slice(2)):naf;url+='&activite_principale='+encodeURIComponent(nc);}
+  if(dept)url+='&departement='+encodeURIComponent(dept);
   var box=g('sireneResults');box.innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px">🔍 Recherche en cours...</p>';
   fetch(url).then(function(r){return r.json();}).then(function(data){
     _sireneRes=data.results||[];if(_filtreRecent){var _lim=Date.now()-365*86400000;_sireneRes=_sireneRes.filter(function(e){return e.date_creation&&new Date(e.date_creation).getTime()>=_lim;});}
@@ -4400,6 +4408,11 @@ function renderLinkedIn(){
 var _filtreRecent=false;
 function toggleRecent(btn){_filtreRecent=!_filtreRecent;if(btn){btn.style.background=_filtreRecent?'var(--navy)':'';btn.style.color=_filtreRecent?'#fff':'';}searchSirene();}
 function linkedinMsgLead(idx){var p=DB.prospects[idx];if(!p)return;if(g('liMsgIn'))g('liMsgIn').value=(p.nom||'')+(p.poste?(', '+p.poste):'')+(p.societe?(', '+p.societe):'')+(p.ville?(', '+p.ville):'');linkedinMessageIA();try{g('liMsgRes').scrollIntoView({behavior:'smooth',block:'nearest'});}catch(e){}}
+function chercherLinkedIn(){
+  var q=((g('liSearchIn')&&g('liSearchIn').value)||'').trim();
+  if(!q){toast('Que cherches-tu ? (ex: gérant copropriété Marseille)');return;}
+  window.open('https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(q),'_blank','noopener');
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
