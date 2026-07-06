@@ -14,7 +14,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 :root{
   --navy:#222651;--navy2:#1a1f44;--navy3:#2d3270;
   --gold:#c79732;--gold2:#ffe576;--gold3:#fdf3cc;
@@ -536,6 +536,11 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,select:focu
 .tbl thead th{background:#f3f5fb;color:var(--navy);text-transform:uppercase;font-size:10.5px;letter-spacing:.06em;font-weight:700;}
 .tbl tbody tr{transition:background .12s ease;}
 .tbl tbody tr:hover{background:#f7f8fc;}
+body,button,input,select,textarea,.btn{font-family:'Plus Jakarta Sans','DM Sans',-apple-system,Segoe UI,Roboto,sans-serif !important}
+h1,h2,h3,.pgHead h1,.cardH h3,.conqT,.kpi .v{font-family:'Plus Jakarta Sans','DM Sans',sans-serif !important;letter-spacing:-.3px}
+.pgHead h1{font-weight:800}
+.cardH h3{font-weight:700}
+#mPiaBody{font-size:14px;line-height:1.7}
 .conqCard{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;box-shadow:var(--shadow);transition:transform .2s ease,box-shadow .2s ease}
 .conqCard:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
 .conqIco{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:10px}
@@ -932,7 +937,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,select:focu
       </div>
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 10px">🧠 Assistant commercial IA</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px">
-        <div class="conqCard" onclick="briefConqueteModal()"><div class="conqIco" style="background:var(--blue-bg)">📋</div><div class="conqT">Brief de conquête</div><div class="conqD">Avant d'appeler un prospect</div></div>
+        <div class="conqCard" onclick="propositionsDuJour()"><div class="conqIco" style="background:var(--gold3)">💡</div><div class="conqT">Propositions du jour</div><div class="conqD">L'IA analyse tout et propose</div></div><div class="conqCard" onclick="briefConqueteModal()"><div class="conqIco" style="background:var(--blue-bg)">📋</div><div class="conqT">Brief de conquête</div><div class="conqD">Avant d'appeler un prospect</div></div>
         <div class="conqCard" onclick="logAppelModal()"><div class="conqIco" style="background:var(--green-bg)">📞</div><div class="conqT">Log d'appel</div><div class="conqD">Notes → suivi structuré</div></div>
         <div class="conqCard" onclick="battlecardModal()"><div class="conqIco" style="background:var(--red-bg)">⚔️</div><div class="conqT">Battlecard</div><div class="conqD">Répondre à la concurrence</div></div>
         <div class="conqCard" onclick="rapportHebdo()"><div class="conqIco" style="background:var(--gold3)">📊</div><div class="conqT">Rapport hebdo</div><div class="conqD">Vert / orange / rouge</div></div>
@@ -4295,6 +4300,20 @@ function campagneEnvoyerBrevo(){
     if(d&&d.brevoStatus!==undefined&&d.brevoStatus!==201){alert('Réponse Brevo (statut '+d.brevoStatus+') :\n\n'+(d.brevoResponse||'(vide)'));return;}
     toast('✅ '+((d&&d.sent)||1)+' email(s) envoyé(s) — vérifiez vos spams');
   }).catch(function(){toast('Worker injoignable — vérifier le déploiement / l\'URL');});
+}
+function propositionsDuJour(){
+  var now=Date.now();
+  var nProsp=(DB.prospects||[]).length;
+  var dorm=(DB.prospects||[]).filter(function(p){if(p.statut==='Qualifié'||p.statut==='Non qualifié')return false;var lc=p.lastContact?new Date(p.lastContact).getTime():0;return (now-lc)>30*86400000;}).length;
+  var devEnv=(DB.devis||[]).filter(function(d){return d.statut==='Envoyé';}).length;
+  var opps=(DB.opportunites||[]).filter(function(o){return o.etape!=='Gagné'&&o.etape!=='Gagne'&&o.etape!=='Perdu';});
+  var oppTxt=opps.slice(0,15).map(function(o){return (o.client||'?')+' ('+(o.montant||'?')+' EUR, '+(o.etape||'?')+')';}).join(', ');
+  var taches=(DB.taches||[]).filter(function(t){return !t.fait;});
+  var tRetard=taches.filter(function(t){if(!t.date)return false;var d=new Date(t.date);d.setHours(0,0,0,0);var td=new Date();td.setHours(0,0,0,0);return d<td;}).length;
+  var instTerm=(DB.installations||[]).filter(function(i){return i.statut==='Terminée';}).length;
+  var snap='Etat du CRM BORN POWER : '+nProsp+' prospects (dont '+dorm+' dormants), '+devEnv+' devis envoyes en attente de reponse, '+opps.length+' opportunites ouvertes'+(oppTxt?(' ['+oppTxt+']'):'')+', '+taches.length+' taches a faire (dont '+tRetard+' en retard), '+instTerm+' chantiers termines.';
+  _piaModal('💡 Propositions du jour','⏳ L\'IA analyse tout votre CRM...');
+  askClaudeProspect(VENTE_SYS, snap+'\n\nEn directeur commercial, analyse cette situation et propose un PLAN D\'ACTION pour aujourd\'hui : les 3 a 5 actions PRIORITAIRES (les plus rentables et urgentes), concretes, avec pour chacune POURQUOI et QUOI FAIRE. Sois direct et oriente resultat.',function(txt,err){_piaSetModal(err?('⚠️ '+err):txt);});
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
