@@ -936,6 +936,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,select:focu
         <div class="conqCard" onclick="logAppelModal()"><div class="conqIco" style="background:var(--green-bg)">📞</div><div class="conqT">Log d'appel</div><div class="conqD">Notes → suivi structuré</div></div>
         <div class="conqCard" onclick="battlecardModal()"><div class="conqIco" style="background:var(--red-bg)">⚔️</div><div class="conqT">Battlecard</div><div class="conqD">Répondre à la concurrence</div></div>
         <div class="conqCard" onclick="rapportHebdo()"><div class="conqIco" style="background:var(--gold3)">📊</div><div class="conqT">Rapport hebdo</div><div class="conqD">Vert / orange / rouge</div></div>
+      </div>
     </div>
     <div class="pg" id="pgAcquisition">
       <div class="pgHead"><div><h1>🌱 Acquisition</h1><p class="sub">Générer de nouveaux clients</p></div></div>
@@ -973,7 +974,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,select:focu
           <button class="btn bGhost" style="font-size:12px;margin-bottom:10px" onclick="campagneGenererIA()">✨ Rédiger avec l'IA</button>
           <input id="campSubj" placeholder="Objet de l'email" style="width:100%;margin-bottom:8px">
           <textarea id="campBody" rows="6" placeholder="Corps de l'email..." style="width:100%;margin-bottom:10px"></textarea>
-          <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn bPrimary" onclick="campagneMailto()">✉️ Envoyer via ma messagerie</button><button class="btn bGhost" onclick="campagneExportCSV()">⬇️ Exporter pour Brevo</button></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn bPrimary" onclick="campagneMailto()">✉️ Envoyer via ma messagerie</button><button class="btn bPrimary" onclick="campagneEnvoyerBrevo()">🚀 Envoyer via Brevo</button><button class="btn bGhost" onclick="campagneExportCSV()">⬇️ Exporter CSV</button></div>
           <div style="font-size:11px;color:var(--muted);margin-top:10px">⚠️ Petites listes (jusqu'à 40) : envoi direct. Grandes listes : export CSV puis Brevo (gratuit, RGPD, anti-spam).</div>
         </div>
       </div>
@@ -4277,6 +4278,22 @@ function rapportHebdo(){
   var liste=opps.slice(0,20).map(function(o){return '- Opportunite: '+(o.client||'?')+' | '+(o.montant||'?')+' EUR | etape '+(o.etape||'?');}).join('\n')+'\n'+dev.slice(0,20).map(function(d){return '- Devis envoye: '+(d.client||'?')+' n'+(d.numero||'');}).join('\n');
   _piaModal('📊 Rapport hebdo du pipeline','⏳ Analyse du pipeline...');
   askClaudeProspect(VENTE_SYS,'Voici mon pipeline actuel :\n'+(liste.trim()||'(vide)')+'\n\nFais un RAPPORT HEBDO commercial : classe chaque affaire en VERT (chaude, a closer), ORANGE (a relancer), ROUGE (a risque). Pour chaque couleur, donne les actions prioritaires de la semaine. Termine par les 3 PRIORITES ABSOLUES. Concis.',function(txt,err){_piaSetModal(err?('⚠️ '+err):txt);});
+}
+function campagneEnvoyerBrevo(){
+  var subj=((g('campSubj')&&g('campSubj').value)||'').trim();
+  var body=((g('campBody')&&g('campBody').value)||'').trim();
+  var rec=campagneRecipients();
+  if(!rec.length){toast('Aucun prospect avec email. Ajoute des emails via le bouton Contact.');return;}
+  if(!subj||!body){toast('Rédige d\'abord l\'objet et le message');return;}
+  var url=DB.brevoWorker||'';
+  if(!url){url=(prompt('Colle l\'URL de ton worker Brevo (fournie par Brice) :')||'').trim();if(!url)return;DB.brevoWorker=url;save();}
+  if(!confirm('Envoyer cette campagne à '+rec.length+' destinataire(s) via Brevo ?'))return;
+  toast('Envoi en cours...');
+  fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({recipients:rec.map(function(p){return {email:p.email,name:p.nom||p.societe||''};}),subject:subj,body:body,senderName:'BORN POWER',senderEmail:'contact@bornpower.fr'})})
+  .then(function(r){return r.json();}).then(function(d){
+    if(d&&d.error){toast('Erreur : '+d.error);return;}
+    toast('✅ '+((d&&d.sent)||0)+' email(s) envoyé(s)'+((d&&d.failed)?(' · '+d.failed+' échec(s)'):''));
+  }).catch(function(){toast('Worker injoignable — vérifier le déploiement / l\'URL');});
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
