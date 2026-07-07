@@ -556,6 +556,35 @@ h1,h2,h3,.pgHead h1,.cardH h3,.conqT,.kpi .v{font-family:'Plus Jakarta Sans','DM
 .cardH{border-bottom:1px solid #eef0f7}
 input:focus,select:focus,textarea:focus{border-color:var(--gold) !important}
 #sidebar nav a.on{box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+/* ===== PREMIUM LAYER ===== */
+body{background:radial-gradient(1100px 560px at 100% -10%,#eef2fc 0%,#e9edf8 45%,#e6eaf6 100%) fixed}
+#sidebar{background:linear-gradient(180deg,#1c2150,#141838)}
+#sidebar nav a{border-radius:10px;margin:1px 8px;padding:9px 12px;font-weight:500;color:rgba(255,255,255,.70);transition:background .15s,color .15s}
+#sidebar nav a:hover{background:rgba(255,255,255,.06);color:#fff}
+#sidebar nav a.on{background:linear-gradient(90deg,rgba(199,151,50,.22),rgba(199,151,50,.04));color:#fff;font-weight:700;position:relative}
+#sidebar nav a.on::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--gold)}
+.card{border:1px solid #e9ecf5;border-radius:18px;box-shadow:0 1px 2px rgba(20,25,60,.04),0 12px 30px rgba(20,25,60,.05)}
+.cardH{padding:14px 18px}
+.cardH h3{font-size:15px;font-weight:700;letter-spacing:-.2px}
+.cardB{padding:16px 18px}
+.kpi{border-radius:16px;border:1px solid #e9ecf5;box-shadow:0 1px 2px rgba(20,25,60,.04),0 10px 26px rgba(20,25,60,.05)}
+.kpi .v{font-weight:800;letter-spacing:-.5px}
+.btn{border-radius:11px;font-weight:600;transition:transform .12s ease,box-shadow .15s ease,filter .15s}
+.btn:active{transform:translateY(1px)}
+.btn.bPrimary{background:linear-gradient(135deg,#2b3168,#191e42);box-shadow:0 6px 16px rgba(25,30,66,.20)}
+.btn.bPrimary:hover{filter:brightness(1.09)}
+.btn.bGhost{background:#fff;border:1px solid #e3e7f1}
+.btn.bGhost:hover{border-color:var(--gold);color:var(--navy)}
+input,select,textarea{border-radius:10px !important;border:1px solid #e3e7f1;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-shadow:0 0 0 3px rgba(199,151,50,.15)}
+.pgHead h1{font-size:23px;font-weight:800;letter-spacing:-.6px}
+.pgHead .sub{color:#8990a8}
+.ov{backdrop-filter:blur(3px);background:rgba(18,22,52,.34)}
+.modal{border-radius:20px;box-shadow:0 30px 80px rgba(18,22,52,.35);border:1px solid #eef0f7}
+.mh{padding:16px 18px;border-bottom:1px solid #eef0f7}
+.finRow{border-bottom:1px solid #f0f2f8}
+.act{border-radius:8px;transition:background .15s}
+.act:hover{background:#f2f4fb}
 @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;}}
 </style>
 </head>
