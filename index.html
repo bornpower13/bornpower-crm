@@ -805,6 +805,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
     <div class="pg" id="pgDash">
       <div class="pgHead"><div><h1>Tableau de bord</h1><p class="sub">Vue d'ensemble</p></div><button class="btn bPrimary" onclick="openIM(-1)">+ Installation</button></div>
       <div class="kpis" id="dashKpis"></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📈 Analytics</h3></div><div class="cardB" id="analyticsBox"></div></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📢 Message à l'équipe</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Envoie un message qui apparaît en bandeau + notification chez tes commerciaux et installateurs.</div><button class="btn bPrimary" onclick="broadcastModal()">📢 Envoyer un message</button></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🔔 Mes rappels</h3></div><div class="cardB" id="rappelsDash" style="padding:8px 0"></div></div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px;">
         <div class="card"><div class="cardH"><h3>CA mensuel</h3></div><div class="cardB"><div class="chartWrap"><canvas id="dashChart"></canvas></div></div></div>
@@ -820,6 +822,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
     <div class="pg" id="pgDashComm">
       <div class="pgHead"><div><h1>Mon tableau de bord</h1><p class="sub">Mes performances</p></div><div style="display:flex;gap:8px"><button class="btn bGhost" onclick="showTemplates()" style="color:var(--blue)">✉️ Modèles</button><button class="btn bGhost" onclick="simADVENIR()" style="color:var(--gold)">🧮 Simulateur aides</button><button class="btn bPrimary" onclick="openOppModal(-1)">+ Opportunité</button></div></div>
       <div class="kpis" id="dashCommKpis"></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🎯 Objectif du mois</h3></div><div class="cardB" id="objectifBox"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🎯 À faire maintenant</h3></div><div class="cardB" id="commPriorites" style="padding:0"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>✅ Mes tâches du jour</h3></div><div class="cardB" id="commTasks" style="padding:0"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🔔 Mes rappels</h3></div><div class="cardB" id="rappelsComm" style="padding:8px 0"></div></div>
@@ -1336,6 +1339,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
     <!-- MON PROFIL -->
     <div class="pg" id="pgMonProfil">
       <div class="pgHead"><div><h1>Mon profil</h1><p class="sub">Informations et sécurité</p></div></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>💾 Sauvegarde des données</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Télécharge une sauvegarde de tout ton CRM (à faire régulièrement !). En cas de souci tu pourras tout restaurer.</div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn bPrimary" onclick="exporterDonnees()">💾 Télécharger une sauvegarde</button><input type="file" id="backupFile" accept=".json" style="font-size:12px"><button class="btn bGhost" onclick="importerDonnees()">♻️ Restaurer</button></div></div></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:800px;">
         <div class="card"><div class="cardH"><h3>Informations</h3></div><div class="cardB" id="profilInfos"></div></div>
         <div class="card"><div class="cardH"><h3>Mot de passe</h3></div><div class="cardB">
@@ -1915,6 +1919,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
         <select id="mIpaiement"><option>En attente</option><option>Acompte reçu</option><option>Payé</option><option>En retard</option></select>
       </div>
       <div class="fi full"><label>Notes</label><textarea id="mInotes" placeholder="Notes internes..."></textarea></div>
+      <div class="fi full"><label>📷 Photos / Ordre de mission</label><div id="mIphotos" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div><input type="file" accept="image/*" capture="environment" multiple onchange="addInstallPhoto(this)" style="font-size:12px"></div>
       <div class="fi full">
         <label>Devis Tiime (PDF, max 5MB)</label>
         <div id="mIdevisPreview"></div>
@@ -2193,8 +2198,8 @@ function nav(id){
   var pg=g(id);if(pg)pg.classList.add('on');
   var navEl=g('nav_'+id);if(navEl)navEl.classList.add('on');
   if(isMobile()){closeMobileMenu();}
-  if(id==='pgDash'){renderDash();renderRappels('rappelsDash');}
-  if(id==='pgDashComm'){renderDashComm();renderRappels('rappelsComm');if(typeof renderPriorites==='function')renderPriorites();if(typeof renderClassement==='function')renderClassement();}
+  if(id==='pgDash'){renderDash();renderRappels('rappelsDash');if(typeof renderAnalytics==='function')renderAnalytics();}
+  if(id==='pgDashComm'){renderDashComm();renderRappels('rappelsComm');if(typeof renderPriorites==='function')renderPriorites();if(typeof renderClassement==='function')renderClassement();if(typeof renderObjectif==='function')renderObjectif();}
   if(id==='pgDashDT')renderDashDT();
   if(id==='pgPipeline')renderPipeline();
   if(id==='pgContacts')renderContacts();
@@ -2589,11 +2594,11 @@ function renderPipeline(){
   board.innerHTML=ETAPES.map(function(etape){
     var cols=opps.filter(function(o){return o.etape===etape;});
     var total=cols.reduce(function(s,o){return s+o.montant;},0);
-    return '<div class="pipeCol"><div class="pipeColH"><span class="pipeColDot" style="background:'+ECOLS[etape]+'"></span><span>'+etape+'</span><span class="pipeColCnt">'+cols.length+'</span></div>'
+    return '<div class="pipeCol" ondragover="event.preventDefault();this.style.background=\'#eef2fc\'" ondragleave="this.style.background=\'\'" ondrop="_dropOpp(event,\''+etape+'\')"><div class="pipeColH"><span class="pipeColDot" style="background:'+ECOLS[etape]+'"></span><span>'+etape+'</span><span class="pipeColCnt">'+cols.length+'</span></div>'
       +'<div style="font-size:12px;color:var(--muted);margin-bottom:8px;padding-left:4px">'+fmtE(total)+'</div>'
       +cols.map(function(o){
         var idx=DB.opportunites.indexOf(o);
-        return '<div class="pCard">'
+        return '<div class="pCard" draggable="true" ondragstart="event.dataTransfer.setData(\'text\','+idx+')" style="cursor:grab">'
           +'<div class="pCardNm" onclick="openOppModal('+idx+')" style="cursor:pointer">'+o.nom+'</div>'
           +'<div class="pCardSub">'+o.client+'</div>'
           +'<div style="display:flex;justify-content:space-between;margin-top:5px;align-items:center">'
@@ -3071,7 +3076,7 @@ function deduireStock(inst){
   inst.stockDeduit=true;
 }
 function openIM(idx){
-  eInst=idx;var r=idx>=0?DB.installations[idx]:{};
+  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof renderInstallPhotos==="function")renderInstallPhotos();
   g('mInstT').textContent=idx>=0?'Modifier installation':'Nouvelle installation';
   g('mIchantier').value=r.chantier||'';g('mIclient').value=r.client||'';
   g('mIadresse').value=r.adresse||'';g('mItel').value=r.tel||'';
@@ -4471,6 +4476,151 @@ function renderClassement(){
   var medals=['🥇','🥈','🥉'];
   el.innerHTML=scores.map(function(sc,i){return '<div class="finRow" style="padding:10px 14px;'+(sc.me?'background:var(--gold3)':'')+'"><div style="width:28px;font-size:16px;text-align:center">'+(medals[i]||(i+1))+'</div><div style="flex:1;font-size:13.5px;font-weight:600">'+_escR(sc.name)+(sc.me?' <span style="font-size:10px;color:var(--gold)">(vous)</span>':'')+'</div><div style="font-weight:700;color:var(--navy)">'+fmtE(sc.ca)+'</div></div>';}).join('');
 }
+function exporterDonnees(){
+  try{var data=JSON.stringify(DB);var blob=new Blob([data],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='bornpower_sauvegarde_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);toast('Sauvegarde téléchargée 💾');}catch(e){toast('Erreur export');}
+}
+function importerDonnees(){
+  var inp=g('backupFile');if(!inp||!inp.files||!inp.files[0]){toast('Choisis un fichier de sauvegarde');return;}
+  if(!confirm('⚠️ Restaurer va REMPLACER toutes les données actuelles. Continuer ?'))return;
+  var reader=new FileReader();
+  reader.onload=function(e){try{var d=JSON.parse(e.target.result);if(!d||typeof d!=='object'){toast('Fichier invalide');return;}DB=d;save();toast('✅ Données restaurées');setTimeout(function(){location.reload();},800);}catch(err){toast('Fichier illisible');}};
+  reader.readAsText(inp.files[0]);
+}
+function openGlobalSearch(){
+  var ex=g('mSearchTemp');if(ex){var gi=g('gsInput');if(gi)gi.focus();return;}
+  var h='<div class="ov on" id="mSearchTemp" onclick="if(event.target===this)this.remove()"><div class="modal" style="max-width:560px"><div style="padding:14px 16px;border-bottom:1px solid #eef0f7"><input id="gsInput" placeholder="Rechercher un client, devis, prospect, opportunité..." oninput="globalSearch()" style="width:100%;border:none;font-size:15px;outline:none"></div><div id="gsRes" style="max-height:60vh;overflow:auto;padding:6px"><div style="padding:12px;color:var(--muted);font-size:13px">Tape au moins 2 lettres...</div></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);setTimeout(function(){var i=g('gsInput');if(i)i.focus();},60);
+}
+function globalSearch(){
+  var q=((g('gsInput')&&g('gsInput').value)||'').toLowerCase().trim();var res=g('gsRes');if(!res)return;
+  if(q.length<2){res.innerHTML='<div style="padding:12px;color:var(--muted);font-size:13px">Tape au moins 2 lettres...</div>';return;}
+  var out=[];
+  (DB.prospects||[]).forEach(function(p){if(((p.nom||'')+(p.societe||'')+(p.email||'')).toLowerCase().indexOf(q)>=0)out.push({t:'Prospect',n:p.nom||p.societe,s:p.ville||p.email||'',act:"nav('pgProspects')",ic:'🔍'});});
+  (DB.contacts||[]).forEach(function(p){if(((p.nom||'')+(p.entreprise||'')+(p.email||'')).toLowerCase().indexOf(q)>=0)out.push({t:'Contact',n:p.nom,s:p.entreprise||p.email||'',act:"nav('pgContacts')",ic:'👥'});});
+  (DB.devis||[]).forEach(function(d){if(((d.client||'')+(d.numero||'')).toLowerCase().indexOf(q)>=0)out.push({t:'Devis',n:(d.numero||'')+' — '+(d.client||''),s:d.statut||'',act:"nav('pgDevis')",ic:'📋'});});
+  (DB.opportunites||[]).forEach(function(o){if(((o.nom||'')+(o.client||'')).toLowerCase().indexOf(q)>=0)out.push({t:'Opportunité',n:o.nom||o.client,s:o.etape||'',act:"nav('pgPipeline')",ic:'🎯'});});
+  (DB.installations||[]).forEach(function(x){if(((x.client||'')+(x.adresse||'')).toLowerCase().indexOf(q)>=0)out.push({t:'Installation',n:x.client,s:x.statut||'',act:"nav('pgInst')",ic:'🔧'});});
+  if(!out.length){res.innerHTML='<div style="padding:12px;color:var(--muted);font-size:13px">Aucun résultat</div>';return;}
+  res.innerHTML=out.slice(0,30).map(function(r){return '<div onclick="g(\'mSearchTemp\').remove();'+r.act+'" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer" onmouseover="this.style.background=\'#f4f6fc\'" onmouseout="this.style.background=\'\'"><div style="font-size:16px">'+r.ic+'</div><div style="flex:1"><div style="font-size:13.5px;font-weight:600">'+_escR(r.n||'?')+'</div><div style="font-size:11px;color:var(--muted)">'+r.t+(r.s?(' · '+_escR(r.s)):'')+'</div></div></div>';}).join('');
+}
+function renderObjectif(){
+  var el=g('objectifBox');if(!el)return;var obj=DB.objectifCA||0;
+  var now=new Date();var m=now.getMonth(),y=now.getFullYear();
+  var ca=(DB.devis||[]).filter(function(d){if(d.statut!=='Accepté')return false;var dt=new Date(d.date);return dt.getMonth()===m&&dt.getFullYear()===y;}).reduce(function(sm,d){return sm+(d.lignes||[]).reduce(function(s2,l){return s2+(l.qte||0)*(l.pu||0);},0);},0);
+  var pct=obj>0?Math.min(100,Math.round(ca/obj*100)):0;
+  el.innerHTML='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><div style="font-size:22px;font-weight:800;color:var(--navy);letter-spacing:-.5px">'+fmtE(ca)+'</div><div style="font-size:12px;color:var(--muted)">objectif '+(obj>0?fmtE(obj):'à définir')+' <button class="act" style="font-size:11px" onclick="setObjectif()">✏️</button></div></div><div style="height:10px;background:var(--bg);border-radius:6px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#c79732,#ffe576);border-radius:6px;transition:width .5s"></div></div><div style="font-size:11px;color:var(--muted);margin-top:5px">'+pct+'% de l\'objectif du mois</div>';
+}
+function setObjectif(){var v=prompt('Objectif de CA du mois (€) :',DB.objectifCA||'');if(v===null)return;DB.objectifCA=parseFloat(v)||0;save();renderObjectif();}
+function renderAnalytics(){
+  var el=g('analyticsBox');if(!el)return;var devis=DB.devis||[];
+  var acc=devis.filter(function(d){return d.statut==='Accepté';});
+  var env=devis.filter(function(d){return d.statut==='Envoyé'||d.statut==='Accepté'||d.statut==='Refusé';});
+  var convDevis=env.length?Math.round(acc.length/env.length*100):0;
+  var opps=DB.opportunites||[];
+  var gagne=opps.filter(function(o){return o.etape==='Gagné';}).length;var perdu=opps.filter(function(o){return o.etape==='Perdu';}).length;
+  var winRate=(gagne+perdu)?Math.round(gagne/(gagne+perdu)*100):0;
+  var pipeOuvert=opps.filter(function(o){return o.etape!=='Gagné'&&o.etape!=='Perdu';}).reduce(function(sm,o){return sm+(o.montant||0);},0);
+  var caAcc=acc.reduce(function(sm,d){return sm+(d.lignes||[]).reduce(function(s2,l){return s2+(l.qte||0)*(l.pu||0);},0);},0);
+  var panier=acc.length?Math.round(caAcc/acc.length):0;
+  function box(lbl,val,col){return '<div style="background:linear-gradient(180deg,#fff,#fbfcff);border:1px solid #e9ecf5;border-radius:14px;padding:14px;text-align:center"><div style="font-size:22px;font-weight:800;color:'+col+';letter-spacing:-.5px">'+val+'</div><div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin-top:3px">'+lbl+'</div></div>';}
+  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px">'+box('Conversion devis',convDevis+'%','#059669')+box('Taux de closing',winRate+'%','#2563eb')+box('Pipeline ouvert',fmtE(pipeOuvert),'#c79732')+box('Panier moyen',fmtE(panier),'#7c3aed')+'</div>';
+}
+function _dropOpp(ev,etape){
+  ev.preventDefault();
+  try{var idx=parseInt(ev.dataTransfer.getData('text'),10);var o=DB.opportunites[idx];
+    if(o&&o.etape!==etape){o.etape=etape;if(etape==='Gagné')o.proba=100;if(etape==='Perdu')o.proba=0;save();renderPipeline();toast('Déplacé → '+etape);return;}
+  }catch(e){}
+  var cols=document.querySelectorAll('.pipeCol');for(var i=0;i<cols.length;i++)cols[i].style.background='';
+}
+try{document.addEventListener('keydown',function(e){if((e.metaKey||e.ctrlKey)&&(e.key==='k'||e.key==='K')){e.preventDefault();openGlobalSearch();}});}catch(e){}
+try{window.addEventListener('load',function(){if(!document.getElementById('gsFab')){var _fab=document.createElement('div');_fab.id='gsFab';_fab.innerHTML='🔍';_fab.title='Rechercher (Ctrl+K)';_fab.onclick=openGlobalSearch;_fab.style.cssText='position:fixed;right:16px;bottom:80px;width:46px;height:46px;border-radius:50%;background:#fff;box-shadow:0 6px 20px rgba(20,25,60,.18);display:flex;align-items:center;justify-content:center;font-size:19px;cursor:pointer;z-index:9990;border:1px solid #e6e9f2';document.body.appendChild(_fab);}});}catch(e){}
+function _seedProduitsBP(){
+  try{
+    if(typeof DB==='undefined'||!DB)return;
+    if(DB._catSeedBP)return;
+    if(!DB.catalogue)DB.catalogue=[];
+    var prods=[
+      {nom:'V2C Trydan 22 kW',cat:'Borne',desc:'Borne triphasée 22 kW intelligente et connectée (Wi-Fi, Bluetooth, compatible solaire). Pour habitation, entreprise et parking.',pu:0},
+      {nom:'Raedian NEO',cat:'Borne',desc:'Borne 7,4 à 22 kW mono/triphasée connectée (WiFi, Bluetooth, RFID, OCPP). Gestion intelligente et équilibrage de charge, pilotage via application.',pu:0},
+      {nom:'Ohme ePod S',cat:'Borne',desc:'Borne 7,4 à 22 kW mono/triphasée connectée 4G. Pilotage smartphone et optimisation automatique des coûts de recharge.',pu:0},
+      {nom:'Legrand Green\'Up Home M3',cat:'Borne',desc:'Borne 7,4 à 22 kW mono/triphasée Type 2 connectée. Technologie Green\'Up, gestion énergétique.',pu:0}
+    ];
+    var have=DB.catalogue.map(function(p){return (p.nom||'').toLowerCase();});
+    var added=0;
+    prods.forEach(function(p){if(have.indexOf(p.nom.toLowerCase())<0){p.id=(DB.nextId!==undefined?DB.nextId++:Date.now());DB.catalogue.push(p);added++;}});
+    DB._catSeedBP=1;
+    if(typeof save==='function')save();
+  }catch(e){}
+}
+try{window.addEventListener('load',function(){setTimeout(_seedProduitsBP,300);});}catch(e){}
+function addInstallPhoto(input){
+  if(typeof eInst==='undefined'||eInst<0){toast('Enregistre d\'abord l\'installation, puis ajoute des photos');input.value='';return;}
+  var inst=DB.installations[eInst];if(!inst){input.value='';return;}if(!inst.photos)inst.photos=[];
+  var files=input.files;if(!files||!files.length)return;
+  if(inst.photos.length+files.length>8){toast('Maximum 8 photos par installation');input.value='';return;}
+  var done=0,total=files.length;
+  Array.prototype.forEach.call(files,function(file){
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var img=new Image();
+      img.onload=function(){
+        var max=900,w=img.width,h=img.height;
+        if(w>max||h>max){if(w>h){h=Math.round(h*max/w);w=max;}else{w=Math.round(w*max/h);h=max;}}
+        var cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);
+        var data=cv.toDataURL('image/jpeg',0.5);
+        inst.photos.push({d:data,ts:Date.now(),by:(curUserObj?curUserObj.name:'')});
+        done++;if(done===total){save();renderInstallPhotos();toast(total+' photo(s) ajoutée(s) 📷');}
+      };
+      img.onerror=function(){done++;if(done===total){save();renderInstallPhotos();}};
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value='';
+}
+function delInstallPhoto(i){
+  if(typeof eInst==='undefined'||eInst<0)return;var inst=DB.installations[eInst];if(!inst||!inst.photos)return;
+  if(!confirm('Supprimer cette photo ?'))return;
+  inst.photos.splice(i,1);save();renderInstallPhotos();
+}
+function renderInstallPhotos(){
+  var el=g('mIphotos');if(!el)return;
+  var inst=(typeof eInst!=='undefined'&&eInst>=0)?DB.installations[eInst]:null;
+  var photos=(inst&&inst.photos)||[];
+  if(typeof eInst==='undefined'||eInst<0){el.innerHTML='<div style="font-size:12px;color:var(--muted)">Enregistrez l\'installation pour ajouter des photos.</div>';return;}
+  var thumbs=photos.map(function(p,i){return '<div style="position:relative;width:74px;height:74px;border-radius:8px;overflow:hidden;border:1px solid var(--border)"><img src="'+p.d+'" onclick="window.open(\''+p.d+'\')" style="width:100%;height:100%;object-fit:cover;cursor:pointer"><div onclick="delInstallPhoto('+i+')" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.6);color:#fff;width:18px;height:18px;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer">✕</div></div>';}).join('');
+  el.innerHTML=thumbs||'<div style="font-size:12px;color:var(--muted)">Aucune photo pour le moment.</div>';
+}
+function broadcastModal(){
+  if(typeof isAdmin==='function'&&!isAdmin()){toast('Réservé à l\'administrateur');return;}
+  var h='<div class="ov on" id="mBroadTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>📢 Message à l\'équipe</h2><button class="mcl" onclick="g(\'mBroadTemp\').remove()">✕</button></div><div style="padding:16px"><label style="font-size:12px;font-weight:600;color:var(--muted)">Destinataires</label><select id="broadCible" style="width:100%;margin:6px 0 12px"><option value="tous">Tout le monde</option><option value="commercial">Les commerciaux</option><option value="installer">Les installateurs</option></select><label style="font-size:12px;font-weight:600;color:var(--muted)">Message</label><textarea id="broadMsg" rows="3" placeholder="Ex: Réunion demain 9h, pensez à remonter vos devis." style="width:100%;margin:6px 0 12px"></textarea><button class="btn bPrimary" onclick="envoyerBroadcast()">📢 Envoyer</button></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function envoyerBroadcast(){
+  var cible=(g('broadCible')&&g('broadCible').value)||'tous';
+  var msg=((g('broadMsg')&&g('broadMsg').value)||'').trim();
+  if(!msg){toast('Écris un message');return;}
+  var n=0;
+  if(cible==='tous'){addNotif('message',msg,'📢','');n=1;}
+  else{var accts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.role===cible&&a.status==='active';});accts.forEach(function(a){addNotif('message',msg,'📢',a.name);n++;});}
+  var m=g('mBroadTemp');if(m)m.remove();
+  toast('✅ Message envoyé'+(cible==='tous'?' à toute l\'équipe':(' à '+n+' personne(s)')));
+}
+function _checkBanners(){
+  try{
+    if(typeof curUserObj==='undefined'||!curUserObj)return;
+    var nm=curUserObj.name;
+    var seen=parseInt(localStorage.getItem('bp_lastBanner')||'0',10);
+    var mine=(DB.notifications||[]).filter(function(nt){var fu=nt.forUser||'';var ok=(!fu||fu===nm||(fu==='@admin'&&typeof isAdmin==='function'&&isAdmin()));return ok&&(nt.id||0)>seen;});
+    if(!mine.length)return;
+    mine.sort(function(a,b){return (a.id||0)-(b.id||0);});
+    localStorage.setItem('bp_lastBanner',String(mine[mine.length-1].id||0));
+    var last=mine[mine.length-1];
+    if(typeof showBanner==='function')showBanner(last.txt,last.ico||'🔔',last.link||null);
+  }catch(e){}
+}
+try{window.addEventListener('load',function(){setTimeout(_checkBanners,1600);});}catch(e){}
+try{setInterval(_checkBanners,45000);}catch(e){}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
