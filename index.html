@@ -585,6 +585,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
 .finRow{border-bottom:1px solid #f0f2f8}
 .act{border-radius:8px;transition:background .15s}
 .act:hover{background:#f2f4fb}
+.aiP{font-size:13.5px;line-height:1.6;margin:0 0 9px;color:#2b3050}
+.aiH{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#c79732;margin:13px 0 7px}
+.aiList{margin:2px 0 9px}
+.aiLi{display:flex;gap:10px;align-items:flex-start;margin-bottom:7px;font-size:13.5px;line-height:1.5;color:#2b3050}
+.aiNum{flex-shrink:0;width:21px;height:21px;border-radius:6px;background:#242a56;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.aiBul{color:#c79732;font-weight:800;flex-shrink:0;font-size:16px;line-height:1.1}
+.aiLi strong,.aiP strong,.aiH strong{color:#222651;font-weight:700}
+#mPiaBody{white-space:normal !important}
 @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;}}
 </style>
 </head>
@@ -925,8 +933,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
       <div class="planControls">
         <div class="planViewBtns">
           <button class="planViewBtn" data-view="week" onclick="setPlanView('week')">📆 Semaine</button>
-          <button class="planViewBtn" data-view="list" onclick="setPlanView('list')">📋 Agenda</button>
-          <button class="planViewBtn on" data-view="gantt" onclick="setPlanView('gantt')">📊 Gantt</button>
+          <button class="planViewBtn on" data-view="list" onclick="setPlanView('list')">📋 Agenda</button>
+          <button class="planViewBtn" data-view="gantt" onclick="setPlanView('gantt')">📊 Gantt</button>
         </div>
         <button class="btn bGhost" onclick="changeMonth(-1)">&#8249;</button>
         <strong id="planMonthLbl" style="min-width:150px;text-align:center;font-size:15px;font-weight:700;color:var(--navy);"></strong>
@@ -1012,7 +1020,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
         <div class="conqCard" onclick="propositionsDuJour()"><div class="conqIco" style="background:var(--gold3)">💡</div><div class="conqT">Propositions du jour</div><div class="conqD">L'IA analyse tout et propose</div></div><div class="conqCard" onclick="briefConqueteModal()"><div class="conqIco" style="background:var(--blue-bg)">📋</div><div class="conqT">Brief de conquête</div><div class="conqD">Avant d'appeler un prospect</div></div>
         <div class="conqCard" onclick="logAppelModal()"><div class="conqIco" style="background:var(--green-bg)">📞</div><div class="conqT">Log d'appel</div><div class="conqD">Notes → suivi structuré</div></div>
         <div class="conqCard" onclick="battlecardModal()"><div class="conqIco" style="background:var(--red-bg)">⚔️</div><div class="conqT">Battlecard</div><div class="conqD">Répondre à la concurrence</div></div>
-        <div class="conqCard" onclick="rapportHebdo()"><div class="conqIco" style="background:var(--gold3)">📊</div><div class="conqT">Rapport hebdo</div><div class="conqD">Vert / orange / rouge</div></div>
+        <div class="conqCard" onclick="rapportHebdo()"><div class="conqIco" style="background:var(--gold3)">📊</div><div class="conqT">Rapport hebdo</div><div class="conqD">Vert / orange / rouge</div></div><div class="conqCard" onclick="objectionModal()"><div class="conqIco" style="background:#fee2e2">🛡️</div><div class="conqT">Objection killer</div><div class="conqD">Réponse en temps réel</div></div><div class="conqCard" onclick="commissionModal()"><div class="conqIco" style="background:var(--gold3)">💰</div><div class="conqT">Ma commission</div><div class="conqD">Ce que tu gagnes</div></div>
       </div>
     </div>
     <div class="pg" id="pgAcquisition">
@@ -3427,7 +3435,7 @@ function openSAVDetail(idx){curSAVIdx=idx;var t=DB.savTickets[idx];if(!t)return;
 function addSAVComment(){var txt=g('savCommentInput').value.trim();if(!txt)return;if(!DB.savTickets[curSAVIdx].comments)DB.savTickets[curSAVIdx].comments=[];DB.savTickets[curSAVIdx].comments.push({text:txt,author:curUserObj?curUserObj.name:'',date:new Date().toLocaleDateString('fr-FR')});save();openSAVDetail(curSAVIdx);toast('Commentaire ajouté !');}
 
 // ── PLANNING ──
-var planMonth=new Date();var planView='gantt';
+var planMonth=new Date();var planView='list';
 function changeMonth(d){planMonth.setMonth(planMonth.getMonth()+d);renderP();}
 function setPlanView(v){planView=v;document.querySelectorAll('.planViewBtn').forEach(function(b){b.classList.toggle('on',b.dataset.view===v);});renderP();}
 function renderPLegend(){var el=g('planLegend');if(!el)return;el.innerHTML=Object.entries(SCOLS).map(function(e){return '<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:3px;background:'+e[1]+'"></div>'+e[0]+'</div>';}).join('');}
@@ -3973,7 +3981,7 @@ function genererCampagne(){
   var prompt='Prépare une campagne de prospection pour la cible : '+cible+(ville?', zone : '+ville:'')+(nom?', prospect : '+nom:'')+'.\n\nDonne, avec des titres clairs :\n1. ARGUMENTAIRE : 3 à 4 arguments clés adaptés à cette cible.\n2. '+canalLbl+' : prêt à l\'emploi et personnalisé.\n3. OBJECTIONS : 3 objections fréquentes de cette cible avec la réponse à donner.';
   askClaudeProspect(PIA_SYS,prompt,function(txt,err){
     if(err){res.innerHTML='<div style="background:var(--red-bg);border:1px solid #fecaca;color:#dc2626;border-radius:10px;padding:12px;font-size:13px">\u26A0\uFE0F '+err+'</div>';return;}
-    _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;line-height:1.6;white-space:pre-wrap">'+_escR(txt)+'</div><button class="btn bGhost" style="margin-top:10px" onclick="_copyPia(\'camp\')">📋 Copier</button> <button class="btn bGhost" style="margin-top:10px" onclick="_openMailto()">✉️ Ouvrir dans ma messagerie</button>';
+    _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;line-height:1.6;">'+_fmtAI(txt)+'</div><button class="btn bGhost" style="margin-top:10px" onclick="_copyPia(\'camp\')">📋 Copier</button> <button class="btn bGhost" style="margin-top:10px" onclick="_openMailto()">✉️ Ouvrir dans ma messagerie</button>';
   });
 }
 function qualifierProspect(){
@@ -3983,12 +3991,13 @@ function qualifierProspect(){
   var prompt='Voici un prospect potentiel pour BORN POWER :\n"""'+info+'"""\n\nAnalyse-le et donne, avec des titres :\n1. NOTE DE POTENTIEL sur 10 (+ justification en une phrase).\n2. POURQUOI c\'est un bon (ou mauvais) prospect pour des bornes de recharge.\n3. LE MEILLEUR ANGLE d\'approche.\n4. UN MESSAGE personnalisé prêt à envoyer (email court).\nSois honnête : si le potentiel est faible, dis-le.';
   askClaudeProspect(PIA_SYS,prompt,function(txt,err){
     if(err){res.innerHTML='<div style="background:var(--red-bg);border:1px solid #fecaca;color:#dc2626;border-radius:10px;padding:12px;font-size:13px">\u26A0\uFE0F '+err+'</div>';return;}
-    _piaQual=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;line-height:1.6;white-space:pre-wrap">'+_escR(txt)+'</div><button class="btn bGhost" style="margin-top:10px" onclick="_copyPia(\'qual\')">📋 Copier</button>';
+    _piaQual=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;line-height:1.6;">'+_fmtAI(txt)+'</div><button class="btn bGhost" style="margin-top:10px" onclick="_copyPia(\'qual\')">📋 Copier</button>';
   });
 }
 function _copyPia(w){var t=w==='camp'?_piaCamp:_piaQual;if(navigator.clipboard&&t)navigator.clipboard.writeText(t);toast('Copié \u2705');}
 function renderProspectIA(){}
 var _sireneRes=[];
+var _sireneParams='',_sirenePage=1,_sireneTotal=0;
 function searchSirene(nafOverride){
   var q=((g('sireneQ')&&g('sireneQ').value)||'').trim();
   var ville=((g('sireneVille')&&g('sireneVille').value)||'').trim();var dept=((g('sireneDept')&&g('sireneDept').value)||'').trim();
@@ -3999,13 +4008,25 @@ function searchSirene(nafOverride){
   if(terms)url+='&q='+encodeURIComponent(terms);
   if(naf){var nc=(naf.indexOf('.')<0&&naf.length>=3)?(naf.slice(0,2)+'.'+naf.slice(2)):naf;url+='&activite_principale='+encodeURIComponent(nc);}
   if(dept)url+='&departement='+encodeURIComponent(dept);
-  var box=g('sireneResults');box.innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px">🔍 Recherche en cours...</p>';
-  fetch(url).then(function(r){return r.json();}).then(function(data){
-    _sireneRes=data.results||[];if(_filtreRecent){var _lim=Date.now()-365*86400000;_sireneRes=_sireneRes.filter(function(e){return e.date_creation&&new Date(e.date_creation).getTime()>=_lim;});}
-    if(!_sireneRes.length){box.innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px">Aucun résultat. Essayez d\'autres termes ou une autre cible.</p>';return;}
-    box.innerHTML='<div style="font-size:12px;color:var(--muted);margin-bottom:8px">'+_sireneRes.length+' entreprise(s) trouvée(s)</div>'+_sireneRes.map(_sireneCard).join('');
+  _sireneParams=url;_sirenePage=1;_sireneRes=[];_sireneTotal=0;
+  _sireneFetch(true);
+}
+function _sireneFetch(reset){
+  var box=g('sireneResults');if(!box)return;
+  if(reset)box.innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px">🔍 Recherche en cours...</p>';
+  fetch(_sireneParams+'&page='+_sirenePage).then(function(r){return r.json();}).then(function(data){
+    _sireneTotal=data.total_results||0;
+    var res=data.results||[];
+    if(_filtreRecent){var _lim=Date.now()-365*86400000;res=res.filter(function(e){return e.date_creation&&new Date(e.date_creation).getTime()>=_lim;});}
+    _sireneRes=_sireneRes.concat(res);
+    if(!_sireneRes.length){box.innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px">Aucun résultat. Essaie d\'autres termes, une autre cible ou un département.</p>';return;}
+    var totPages=data.total_pages||1;var more=(_sirenePage<totPages);
+    var head='<div style="font-size:12px;color:var(--muted);margin-bottom:8px"><b style="color:var(--navy)">'+_sireneTotal.toLocaleString('fr-FR')+'</b> entreprise(s) trouvée(s) — '+_sireneRes.length+' affichée(s)</div>';
+    var moreBtn=more?'<div style="text-align:center;margin-top:12px"><button class="btn bPrimary" onclick="chargerPlusSirene()">⬇️ Charger plus de résultats</button></div>':'<div style="text-align:center;margin-top:10px;font-size:11px;color:var(--muted)">Fin des résultats</div>';
+    box.innerHTML=head+_sireneRes.map(_sireneCard).join('')+moreBtn;
   }).catch(function(){box.innerHTML='<p style="color:var(--red);font-size:13px;padding:8px">Erreur de recherche (réseau ou API indisponible).</p>';});
 }
+function chargerPlusSirene(){_sirenePage++;_sireneFetch(false);}
 function _sireneCard(e,i){
   var nom=e.nom_complet||e.nom_raison_sociale||'Entreprise';
   var siren=e.siren||'';var siege=e.siege||{};
@@ -4126,7 +4147,7 @@ function exportProspectsCSV(){
 function _piaSetModal(txt,withActions){
   var b=g('mPiaBody');if(!b)return;
   var a=withActions?'<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn bGhost" onclick="_copyPia(\'camp\')">📋 Copier</button><button class="btn bGhost" onclick="_openMailto()">✉️ Ouvrir dans ma messagerie</button></div>':'';
-  b.innerHTML=_escR(txt)+a;
+  b.innerHTML=_fmtAI(txt)+a;
 }
 var VENTE_SYS=(typeof BORNPOWER_INFO!=='undefined'?BORNPOWER_INFO+' ':'')+'Tu es un coach de vente expert pour BORN POWER. Tu aides a transformer les prospects en clients : angle de vente, traitement des objections, prochaine action concrete, relances personnalisees. Ton professionnel, concret, oriente resultat, en francais. Appuie-toi sur nos vrais atouts : aides ADVENIR, certification IRVE, garantie decennale, service cle en main, 131 avis Google a 4,9/5.';
 function coachClosing(idx){
@@ -4206,7 +4227,7 @@ function genererParrainage(){
   out.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ Génération...</div>';
   askClaudeProspect(VENTE_SYS,'Redige un message court et chaleureux (SMS ou email) pour demander a '+(c||'un client satisfait')+' de recommander BORN POWER a son entourage (voisins, famille, collegues) qui envisagent une borne de recharge. Ton amical, valorise sa satisfaction, propose un petit geste de remerciement (parrainage). Pret a envoyer.',function(txt,err){
     if(err){out.innerHTML='<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>';return;}
-    _piaCamp=txt;out.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:12px;font-size:13.5px;white-space:pre-wrap">'+_escR(txt)+'</div><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn bGhost" style="font-size:12px" onclick="_copyPia(\'camp\')">📋 Copier</button><button class="btn bGhost" style="font-size:12px" onclick="_openMailto()">✉️ Email</button></div>';
+    _piaCamp=txt;out.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:12px;font-size:13.5px;">'+_fmtAI(txt)+'</div><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn bGhost" style="font-size:12px" onclick="_copyPia(\'camp\')">📋 Copier</button><button class="btn bGhost" style="font-size:12px" onclick="_openMailto()">✉️ Email</button></div>';
   });
 }
 function addParrainage(){
@@ -4303,7 +4324,7 @@ function genererBrief(idx){
   var res=g('briefRes');
   if(res)res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ Préparation du brief...</div>';else _piaModal('📋 Brief de conquête','⏳ Préparation...');
   askClaudeProspect(VENTE_SYS,'Prépare un BRIEF de conquête pour ce prospect BORN POWER : '+info+'.\n\nDonne, concis et actionnable : 1) CONTEXTE (qui ils sont, leur besoin probable de bornes). 2) ANGLE d\'approche. 3) ARGUMENTS cles (obligations LOM et aides ADVENIR si pertinent). 4) 3 OBJECTIONS probables avec reponses. 5) 3 QUESTIONS de decouverte. 6) Une phrase d\'accroche pour demarrer.',function(txt,err){
-    if(res){res.innerHTML=err?('<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>'):('<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;white-space:pre-wrap">'+_escR(txt)+'</div>');}
+    if(res){res.innerHTML=err?('<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>'):('<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;">'+_fmtAI(txt)+'</div>');}
     else{_piaCamp=txt||'';_piaSetModal(err?('⚠️ '+err):txt);}
   });
 }
@@ -4331,7 +4352,7 @@ function genererLog(){
   var res=g('logRes');res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ Analyse...</div>';
   askClaudeProspect(VENTE_SYS,'Voici mes notes d\'appel commercial (en vrac) : "'+notes+'".\n\nStructure-les : 1) RESUME (2-3 points). 2) SIGNAUX D\'ACHAT et niveau d\'interet. 3) OBJECTIONS relevees. 4) PROCHAINE ACTION avec echeance suggeree. 5) EMAIL DE SUIVI pret a envoyer.',function(txt,err){
     if(err){res.innerHTML='<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>';return;}
-    _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;white-space:pre-wrap">'+_escR(txt)+'</div><div style="margin-top:8px"><button class="btn bGhost" onclick="_copyPia(\'camp\')">📋 Copier</button></div>';
+    _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;">'+_fmtAI(txt)+'</div><div style="margin-top:8px"><button class="btn bGhost" onclick="_copyPia(\'camp\')">📋 Copier</button></div>';
   });
 }
 function battlecardModal(){
@@ -4343,7 +4364,7 @@ function genererBattlecard(){
   res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ ...</div>';
   askClaudeProspect(VENTE_SYS,'Prepare une BATTLECARD pour un commercial BORN POWER face a '+(conc||'la concurrence et les agregateurs (Beev, Pro-Borne, devis en ligne moins chers)')+'. Pour chaque point : ce que le client pense ou dit, pourquoi ca compte, et QUOI REPONDRE (nos vrais atouts : certification IRVE, garantie decennale, service local cle en main, 131 avis 4,9/5, accompagnement des aides). Donne 4 a 5 situations.',function(txt,err){
     if(err){res.innerHTML='<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>';return;}
-    _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;white-space:pre-wrap">'+_escR(txt)+'</div><div style="margin-top:8px"><button class="btn bGhost" onclick="_copyPia(\'camp\')">📋 Copier</button></div>';
+    _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;">'+_fmtAI(txt)+'</div><div style="margin-top:8px"><button class="btn bGhost" onclick="_copyPia(\'camp\')">📋 Copier</button></div>';
   });
 }
 function rapportHebdo(){
@@ -4427,7 +4448,7 @@ function linkedinMessageIA(){
   var res=g('liMsgRes');res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ Rédaction...</div>';
   askClaudeProspect(VENTE_SYS,'Rédige un message LinkedIn court, personnalisé et non agressif pour ce contact : "'+info+'". Objectif : engager la conversation sur les bornes de recharge (obligations LOM, aides ADVENIR selon le profil). Ton pro et humain, 4-5 lignes max, avec une question ouverte a la fin. Message pret a copier-coller dans LinkedIn.',function(txt,err){
     if(err){res.innerHTML='<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>';return;}
-    _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;white-space:pre-wrap">'+_escR(txt)+'</div><button class="btn bGhost" style="margin-top:8px" onclick="_copyPia(\'camp\')">📋 Copier</button>';
+    _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;">'+_fmtAI(txt)+'</div><button class="btn bGhost" style="margin-top:8px" onclick="_copyPia(\'camp\')">📋 Copier</button>';
   });
 }
 function renderLinkedIn(){
@@ -4642,6 +4663,56 @@ function calcAdvenir(){
   g('simRes').innerHTML='<div style="background:linear-gradient(135deg,#242a56,#171c3c);color:#fff;border-radius:14px;padding:16px;text-align:center"><div style="font-size:12px;color:rgba(255,255,255,.7)">Prix installation</div><div style="font-size:15px;text-decoration:line-through;color:rgba(255,255,255,.6)">'+fmtE(prix)+'</div><div style="font-size:12px;color:#ffe576;margin-top:8px">Aide ADVENIR</div><div style="font-size:15px;color:#ffe576">- '+fmtE(aide)+'</div><div style="border-top:1px solid rgba(255,255,255,.2);margin:10px 0"></div><div style="font-size:12px;color:rgba(255,255,255,.7)">Reste à charge</div><div style="font-size:30px;font-weight:800;letter-spacing:-.5px">'+fmtE(net)+'</div></div><button class="btn bGhost" style="margin-top:10px;width:100%" onclick="_copySimArg()">📋 Copier l\'argumentaire</button>';
 }
 function _copySimArg(){if(navigator.clipboard&&_simArg)navigator.clipboard.writeText(_simArg);toast('Copié ✅');}
+function objectionModal(){
+  var h='<div class="ov on" id="mObjTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>🛡️ Réponse à une objection</h2><button class="mcl" onclick="g(\'mObjTemp\').remove()">✕</button></div><div style="padding:16px">'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">L\'objection du client</label>'
+    +'<textarea id="objIn" rows="2" placeholder="Ex: c\'est trop cher, je vais réfléchir, un concurrent est moins cher..." style="width:100%;margin:6px 0 10px"></textarea>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"><button class="btn bGhost" style="font-size:11px;padding:4px 9px" onclick="objQuick(\'Trop cher\')">Trop cher</button><button class="btn bGhost" style="font-size:11px;padding:4px 9px" onclick="objQuick(\'Je vais reflechir\')">Je réfléchis</button><button class="btn bGhost" style="font-size:11px;padding:4px 9px" onclick="objQuick(\'Un concurrent est moins cher\')">Concurrent - cher</button><button class="btn bGhost" style="font-size:11px;padding:4px 9px" onclick="objQuick(\'Ce n est pas le moment\')">Pas le moment</button></div>'
+    +'<button class="btn bPrimary" onclick="repondreObjection()">Répondre</button><div id="objRes" style="margin-top:12px"></div>'
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function objQuick(t){if(g('objIn'))g('objIn').value=t;repondreObjection();}
+function repondreObjection(){
+  var obj=((g('objIn')&&g('objIn').value)||'').trim();if(!obj){toast('Tape l\'objection du client');return;}
+  var res=g('objRes');res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ ...</div>';
+  askClaudeProspect(VENTE_SYS,'Un client de BORN POWER (bornes de recharge) vient de dire cette objection pendant la vente : "'+obj+'". Reponds IMMEDIATEMENT et de facon tres concise (on est en direct) : 1) une reformulation qui montre qu on comprend. 2) LA meilleure reponse pour lever l objection (avec nos atouts : aides ADVENIR, certification IRVE, garantie decennale, 131 avis 4,9/5, service cle en main). 3) une phrase pour reprendre la main et avancer vers la signature. Court et percutant.',function(txt,err){
+    if(err){res.innerHTML='<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>';return;}
+    _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;">'+_fmtAI(txt)+'</div><button class="btn bGhost" style="margin-top:8px" onclick="_copyPia(\'camp\')">📋 Copier</button>';
+  });
+}
+function commissionModal(){
+  if(!DB.commRate)DB.commRate={resid:5,pro:8};
+  var h='<div class="ov on" id="mCommTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>💰 Ma commission</h2><button class="mcl" onclick="g(\'mCommTemp\').remove()">✕</button></div><div style="padding:16px">'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Type de vente</label><select id="commType" onchange="commTypeChange()" style="width:100%;margin:6px 0 12px"><option value="resid">Résidentiel (particulier)</option><option value="pro">Professionnel / copropriété</option></select>'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Montant de la vente (€ HT)</label><input id="commMontant" type="number" placeholder="1490" style="width:100%;margin:6px 0 12px">'
+    +'<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:12px;font-size:13px">Taux de commission : <input id="commTaux" type="number" style="width:56px"> % <button class="btn bGhost" style="font-size:11px;padding:4px 8px" onclick="saveCommRate()">OK</button></div>'
+    +'<button class="btn bPrimary" onclick="calcCommission()">Calculer</button><div id="commRes" style="margin-top:14px"></div>'
+    +'<div style="font-size:10.5px;color:var(--muted);margin-top:12px">Ajuste tes taux réels une fois (ils sont mémorisés).</div>'
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);setTimeout(commTypeChange,40);
+}
+function commTypeChange(){var t=(g('commType')&&g('commType').value)||'resid';if(!DB.commRate)DB.commRate={resid:5,pro:8};if(g('commTaux'))g('commTaux').value=DB.commRate[t];}
+function saveCommRate(){if(!DB.commRate)DB.commRate={resid:5,pro:8};var t=(g('commType')&&g('commType').value)||'resid';DB.commRate[t]=parseFloat(g('commTaux').value)||0;save();toast('Taux enregistré ✅');}
+function calcCommission(){var m=parseFloat(g('commMontant').value)||0;var taux=parseFloat(g('commTaux').value)||0;if(m<=0){toast('Entre le montant de la vente');return;}var com=Math.round(m*taux/100);g('commRes').innerHTML='<div style="background:linear-gradient(135deg,#242a56,#171c3c);color:#fff;border-radius:14px;padding:16px;text-align:center"><div style="font-size:12px;color:rgba(255,255,255,.7)">Ta commission sur cette vente</div><div style="font-size:32px;font-weight:800;color:#ffe576;letter-spacing:-.5px;margin-top:4px">'+fmtE(com)+'</div><div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:4px">'+taux+'% de '+fmtE(m)+'</div></div>';}
+function _fmtAI(t){
+  if(!t)return '';
+  function bold(x){return _escR(x).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');}
+  var lines=(''+t).split('\n');var html='';var inList=false;
+  function cl(){if(inList){html+='</div>';inList=false;}}
+  for(var i=0;i<lines.length;i++){
+    var ln=lines[i].replace(/\s+$/,'').replace(/^\s+/,'');
+    if(!ln){cl();continue;}
+    var mNum=ln.match(/^(\d+)[\.\)]\s+(.*)$/);
+    var mBul=ln.match(/^[-•\*]\s+(.*)$/);
+    if(mNum){if(!inList){html+='<div class="aiList">';inList=true;}html+='<div class="aiLi"><span class="aiNum">'+mNum[1]+'</span><span>'+bold(mNum[2])+'</span></div>';}
+    else if(mBul){if(!inList){html+='<div class="aiList">';inList=true;}html+='<div class="aiLi"><span class="aiBul">•</span><span>'+bold(mBul[1])+'</span></div>';}
+    else if(ln.length<=46&&/[A-ZÀ-Ü]/.test(ln)&&ln===ln.toUpperCase()){cl();html+='<div class="aiH">'+bold(ln)+'</div>';}
+    else if(/^[^:]{2,42}:\s*$/.test(ln)){cl();html+='<div class="aiH">'+bold(ln.replace(/:\s*$/,''))+'</div>';}
+    else{cl();html+='<p class="aiP">'+bold(ln)+'</p>';}
+  }
+  cl();return html;
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
