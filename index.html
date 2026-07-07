@@ -3995,6 +3995,7 @@ function searchSirene(nafOverride){
   if(terms)url+='&q='+encodeURIComponent(terms);
   if(naf){var nc=(naf.indexOf('.')<0&&naf.length>=3)?(naf.slice(0,2)+'.'+naf.slice(2)):naf;url+='&activite_principale='+encodeURIComponent(nc);}
   if(dept)url+='&departement='+encodeURIComponent(dept);
+  if(_filtreRecent){var _d12=new Date(Date.now()-365*86400000);url+='&date_creation_min='+_d12.toISOString().slice(0,10);}
   _sireneParams=url;_sirenePage=1;_sireneRes=[];_sireneTotal=0;
   _sireneFetch(true);
 }
@@ -4004,7 +4005,7 @@ function _sireneFetch(reset){
   fetch(_sireneParams+'&page='+_sirenePage).then(function(r){return r.json();}).then(function(data){
     _sireneTotal=data.total_results||0;
     var res=data.results||[];
-    if(_filtreRecent){var _lim=Date.now()-365*86400000;res=res.filter(function(e){return e.date_creation&&new Date(e.date_creation).getTime()>=_lim;});}
+    if(_filtreRecent){res.sort(function(a,b){return (new Date(b.date_creation||0))-(new Date(a.date_creation||0));});}
     _sireneRes=_sireneRes.concat(res);
     if(!_sireneRes.length){box.innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px">Aucun résultat. Essaie d\'autres termes, une autre cible ou un département.</p>';return;}
     var totPages=data.total_pages||1;var more=(_sirenePage<totPages);
