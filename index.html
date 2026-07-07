@@ -794,6 +794,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important}
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🎯 À faire maintenant</h3></div><div class="cardB" id="commPriorites" style="padding:0"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>✅ Mes tâches du jour</h3></div><div class="cardB" id="commTasks" style="padding:0"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🔔 Mes rappels</h3></div><div class="cardB" id="rappelsComm" style="padding:8px 0"></div></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🏆 Classement du mois</h3></div><div class="cardB" id="classementBox" style="padding:0"></div></div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;">
         <div class="card"><div class="cardH"><h3>Mes opportunités actives</h3></div><div class="cardB" id="commMyOpps"></div></div>
         <div class="card"><div class="cardH"><h3>Mes devis récents</h3></div><div class="cardB" id="commMyDevis"></div></div>
@@ -968,7 +969,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important}
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Vos outils de conquête</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px">
         <div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--purple-bg)">🎯</div><div class="conqT">Où prospecter</div><div class="conqD">L'IA propose des secteurs</div></div>
-        <div class="conqCard" onclick="nav('pgProspects')"><div class="conqIco" style="background:var(--blue-bg)">🔍</div><div class="conqT">Trouver des entreprises</div><div class="conqD">Base INSEE + contact</div></div>
+        <div class="conqCard" onclick="nav('pgProspects')"><div class="conqIco" style="background:var(--blue-bg)">🔍</div><div class="conqT">Trouver des entreprises</div><div class="conqD">Base INSEE + contact</div></div><div class="conqCard" onclick="nav('pgLinkedIn')"><div class="conqIco" style="background:#e0e7ff">💼</div><div class="conqT">LinkedIn</div><div class="conqD">Leads + messages IA</div></div>
         <div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--green-bg)">✍️</div><div class="conqT">Rédiger une campagne</div><div class="conqD">Email · appel · LinkedIn</div></div>
         <div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--orange-bg)">🤝</div><div class="conqT">Parrainage</div><div class="conqD">Bouche-à-oreille</div></div>
         <div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--gold3)">🔄</div><div class="conqT">Prospects dormants</div><div class="conqD">Réactiver avec l'IA</div></div>
@@ -2122,9 +2123,8 @@ var NAV_MAP={
   ],
   commercial:[
     {s:'Mon espace'},{id:'pgDashComm',ico:'📊',lbl:'Tableau de bord'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
-    {id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgConquete',ico:'🚀',lbl:'Conquête'},{id:'pgLinkedIn',ico:'💼',lbl:'LinkedIn'},{id:'pgProspects',ico:'🔍',lbl:'Prospects'},{id:'pgProspectIA',ico:'🤖',lbl:'Prospection IA'},{id:'pgAcquisition',ico:'🌱',lbl:'Acquisition'},
-    {id:'pgContacts',ico:'👥',lbl:'Mes contacts'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
-    {id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},
+    {s:'Vendre'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},{id:'pgContacts',ico:'👥',lbl:'Mes contacts'},
+    {s:'Outils'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
     {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
   ],
@@ -2165,7 +2165,7 @@ function nav(id){
   var navEl=g('nav_'+id);if(navEl)navEl.classList.add('on');
   if(isMobile()){closeMobileMenu();}
   if(id==='pgDash'){renderDash();renderRappels('rappelsDash');}
-  if(id==='pgDashComm'){renderDashComm();renderRappels('rappelsComm');if(typeof renderPriorites==='function')renderPriorites();}
+  if(id==='pgDashComm'){renderDashComm();renderRappels('rappelsComm');if(typeof renderPriorites==='function')renderPriorites();if(typeof renderClassement==='function')renderClassement();}
   if(id==='pgDashDT')renderDashDT();
   if(id==='pgPipeline')renderPipeline();
   if(id==='pgContacts')renderContacts();
@@ -4429,6 +4429,18 @@ function renderPriorites(){
   items.push({ic:'💡',txt:'Demander à l\'IA mon plan du jour',act:'propositionsDuJour()',col:'#c79732'});
   items.push({ic:'🚀',txt:'Trouver de nouveaux clients',act:'nav(\'pgConquete\')',col:'#222651'});
   el.innerHTML=items.map(function(it){return '<div onclick="'+it.act+'" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s" onmouseover="this.style.background=\'#f6f7fc\'" onmouseout="this.style.background=\'\'"><div style="width:38px;height:38px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+it.ic+'</div><div style="flex:1;font-size:13.5px;font-weight:600;color:'+it.col+'">'+it.txt+'</div><div style="color:var(--muted);font-size:18px">›</div></div>';}).join('');
+}
+function renderClassement(){
+  var el=g('classementBox');if(!el)return;
+  var now=new Date();var m=now.getMonth(),y=now.getFullYear();
+  var accounts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.role==='commercial'&&a.status==='active';});
+  var scores=accounts.map(function(a){
+    var ca=(DB.devis||[]).filter(function(d){if(d.commercialId&&d.commercialId!==a.id)return false;if(d.statut!=='Accepté')return false;var dt=new Date(d.date);return dt.getMonth()===m&&dt.getFullYear()===y;}).reduce(function(sm,d){return sm+(d.lignes||[]).reduce(function(s2,l){return s2+(l.qte||0)*(l.pu||0);},0);},0);
+    return {name:a.name,ca:ca,me:(curUserObj&&a.id===curUserObj.id)};
+  }).sort(function(a,b){return b.ca-a.ca;});
+  if(!scores.length){el.innerHTML='<div style="color:var(--muted);font-size:12.5px;padding:10px">Aucun commercial actif.</div>';return;}
+  var medals=['🥇','🥈','🥉'];
+  el.innerHTML=scores.map(function(sc,i){return '<div class="finRow" style="padding:10px 14px;'+(sc.me?'background:var(--gold3)':'')+'"><div style="width:28px;font-size:16px;text-align:center">'+(medals[i]||(i+1))+'</div><div style="flex:1;font-size:13.5px;font-weight:600">'+_escR(sc.name)+(sc.me?' <span style="font-size:10px;color:var(--gold)">(vous)</span>':'')+'</div><div style="font-weight:700;color:var(--navy)">'+fmtE(sc.ca)+'</div></div>';}).join('');
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
