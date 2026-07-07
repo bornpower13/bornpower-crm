@@ -1001,7 +1001,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Vos outils de conquête</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px">
         <div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--purple-bg)">🎯</div><div class="conqT">Où prospecter</div><div class="conqD">L'IA propose des secteurs</div></div>
-        <div class="conqCard" onclick="nav('pgProspects')"><div class="conqIco" style="background:var(--blue-bg)">🔍</div><div class="conqT">Trouver des entreprises</div><div class="conqD">Base INSEE + contact</div></div><div class="conqCard" onclick="nav('pgLinkedIn')"><div class="conqIco" style="background:#e0e7ff">💼</div><div class="conqT">LinkedIn</div><div class="conqD">Leads + messages IA</div></div>
+        <div class="conqCard" onclick="nav('pgProspects')"><div class="conqIco" style="background:var(--blue-bg)">🔍</div><div class="conqT">Trouver des entreprises</div><div class="conqD">Base INSEE + contact</div></div><div class="conqCard" onclick="nav('pgLinkedIn')"><div class="conqIco" style="background:#e0e7ff">💼</div><div class="conqT">LinkedIn</div><div class="conqD">Leads + messages IA</div></div><div class="conqCard" onclick="simulateurModal()"><div class="conqIco" style="background:#fef3c7">💶</div><div class="conqT">Simulateur d'aides</div><div class="conqD">Prix après ADVENIR</div></div>
         <div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--green-bg)">✍️</div><div class="conqT">Rédiger une campagne</div><div class="conqD">Email · appel · LinkedIn</div></div>
         <div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--orange-bg)">🤝</div><div class="conqT">Parrainage</div><div class="conqD">Bouche-à-oreille</div></div>
         <div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--gold3)">🔄</div><div class="conqT">Prospects dormants</div><div class="conqD">Réactiver avec l'IA</div></div>
@@ -2135,17 +2135,12 @@ function fmtNotifTime(ts){
 // ── NAV ──
 var NAV_MAP={
   admin:[
-    {s:'Commercial'},{id:'pgDash',ico:'📊',lbl:'Tableau de bord'},{id:'pgPipeline',ico:'🎯',lbl:'Pipeline'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
-    {id:'pgConquete',ico:'🚀',lbl:'Conquête'},{id:'pgLinkedIn',ico:'💼',lbl:'LinkedIn'},{id:'pgProspects',ico:'🔍',lbl:'Prospects'},{id:'pgProspectIA',ico:'🤖',lbl:'Prospection IA'},{id:'pgAcquisition',ico:'🌱',lbl:'Acquisition'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},
-    {id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgObjectifs',ico:'🎯',lbl:'Objectifs CA'},
-    {id:'pgRapports',ico:'📈',lbl:'Rapports'},{id:'pgCommerciaux',ico:'💼',lbl:'Commerciaux'},
-    {s:'Installateurs'},{id:'pgInst',ico:'⚡',lbl:'Installations'},{id:'pgSAV',ico:'🔧',lbl:'SAV'},
-    {id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},
-    {id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgStock',ico:'📦',lbl:'Stock'},
-    {id:'pgProfils',ico:'👷',lbl:'Installateurs'},
-    {s:'Gestion'},{id:'pgRH',ico:'👥',lbl:'RH'},{id:'pgFinance',ico:'💰',lbl:'Finance'},{id:'pgRecrutement',ico:'🎯',lbl:'Recrutement'},
+    {s:'Pilotage'},{id:'pgDash',ico:'📊',lbl:'Tableau de bord'},{id:'pgRapports',ico:'📈',lbl:'Rapports'},{id:'pgObjectifs',ico:'🎯',lbl:'Objectifs CA'},{id:'pgFinance',ico:'💰',lbl:'Finance'},
+    {s:'Ventes'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgPipeline',ico:'📊',lbl:'Pipeline'},{id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
+    {s:'Installations'},{id:'pgInst',ico:'⚡',lbl:'Installations'},{id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},{id:'pgSAV',ico:'🔧',lbl:'SAV'},{id:'pgStock',ico:'📦',lbl:'Stock'},
+    {s:'Équipe'},{id:'pgCommerciaux',ico:'💼',lbl:'Commerciaux'},{id:'pgProfils',ico:'👷',lbl:'Installateurs'},{id:'pgRH',ico:'👥',lbl:'RH'},{id:'pgRecrutement',ico:'🎓',lbl:'Recrutement'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
-    {s:'Admin'},{id:'pgUsers',ico:'🔑',lbl:'Utilisateurs'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
+    {s:'Réglages'},{id:'pgUsers',ico:'🔑',lbl:'Utilisateurs'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
   ],
   dirtech:[
     {s:"Vue d'ensemble"},{id:'pgDashDT',ico:'📊',lbl:'Tableau de bord'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
@@ -4621,6 +4616,32 @@ function _checkBanners(){
 }
 try{window.addEventListener('load',function(){setTimeout(_checkBanners,1600);});}catch(e){}
 try{setInterval(_checkBanners,45000);}catch(e){}
+var _simArg='';
+function _defBareme(){if(!DB.baremeAdvenir)DB.baremeAdvenir={coproInd:{pct:50,plaf:600},coproCol:{pct:50,plaf:8000},entreprise:{pct:50,plaf:1000},maison:{pct:0,plaf:500}};}
+function simulateurModal(){
+  _defBareme();
+  var opts='<option value="coproInd">Copropriété — point individuel</option><option value="coproCol">Copropriété — infrastructure collective</option><option value="entreprise">Entreprise / flotte</option><option value="maison">Maison individuelle</option>';
+  var h='<div class="ov on" id="mSimTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>💶 Simulateur d\'aides ADVENIR</h2><button class="mcl" onclick="g(\'mSimTemp\').remove()">✕</button></div><div style="padding:16px">'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Type de client</label><select id="simType" onchange="simTypeChange()" style="width:100%;margin:6px 0 12px">'+opts+'</select>'
+    +'<div style="display:flex;gap:10px;margin-bottom:12px"><div style="flex:1"><label style="font-size:12px;font-weight:600;color:var(--muted)">Prix installation (€)</label><input id="simPrix" type="number" placeholder="1490" style="width:100%"></div><div style="width:90px"><label style="font-size:12px;font-weight:600;color:var(--muted)">Nb points</label><input id="simNb" type="number" value="1" style="width:100%"></div></div>'
+    +'<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:12px"><div style="font-size:11px;color:var(--muted);margin-bottom:6px">Barème pour ce type (ajustable une fois) :</div><div style="display:flex;gap:6px;align-items:center;font-size:13px;flex-wrap:wrap">Aide <input id="simPct" type="number" style="width:56px"> % · plafond <input id="simPlaf" type="number" style="width:76px"> € / point <button class="btn bGhost" style="font-size:11px;padding:4px 8px" onclick="saveBareme()">OK</button></div></div>'
+    +'<button class="btn bPrimary" onclick="calcAdvenir()">Calculer</button>'
+    +'<div id="simRes" style="margin-top:14px"></div>'
+    +'<div style="font-size:10.5px;color:var(--muted);margin-top:12px">⚠️ Montants indicatifs — vérifie le barème ADVENIR en vigueur (revalorisé en 2026) et ajuste-les ci-dessus.</div>'
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);setTimeout(simTypeChange,40);
+}
+function simTypeChange(){var t=(g('simType')&&g('simType').value)||'coproInd';_defBareme();var b=DB.baremeAdvenir[t]||{pct:50,plaf:600};if(g('simPct'))g('simPct').value=b.pct;if(g('simPlaf'))g('simPlaf').value=b.plaf;}
+function saveBareme(){_defBareme();var t=(g('simType')&&g('simType').value)||'coproInd';DB.baremeAdvenir[t]={pct:parseFloat(g('simPct').value)||0,plaf:parseFloat(g('simPlaf').value)||0};save();toast('Barème enregistré ✅');}
+function calcAdvenir(){
+  var prix=parseFloat(g('simPrix').value)||0;var nb=parseInt(g('simNb').value,10)||1;
+  var pct=parseFloat(g('simPct').value)||0;var plaf=parseFloat(g('simPlaf').value)||0;
+  if(prix<=0){toast('Entre le prix de l\'installation');return;}
+  var aide=pct>0?Math.min(prix*pct/100,plaf*nb):Math.min(plaf*nb,prix);aide=Math.round(aide);var net=Math.max(0,prix-aide);
+  _simArg='Installation : '+fmtE(prix)+'  →  Aide ADVENIR : -'+fmtE(aide)+'  →  Reste à charge : '+fmtE(net);
+  g('simRes').innerHTML='<div style="background:linear-gradient(135deg,#242a56,#171c3c);color:#fff;border-radius:14px;padding:16px;text-align:center"><div style="font-size:12px;color:rgba(255,255,255,.7)">Prix installation</div><div style="font-size:15px;text-decoration:line-through;color:rgba(255,255,255,.6)">'+fmtE(prix)+'</div><div style="font-size:12px;color:#ffe576;margin-top:8px">Aide ADVENIR</div><div style="font-size:15px;color:#ffe576">- '+fmtE(aide)+'</div><div style="border-top:1px solid rgba(255,255,255,.2);margin:10px 0"></div><div style="font-size:12px;color:rgba(255,255,255,.7)">Reste à charge</div><div style="font-size:30px;font-weight:800;letter-spacing:-.5px">'+fmtE(net)+'</div></div><button class="btn bGhost" style="margin-top:10px;width:100%" onclick="_copySimArg()">📋 Copier l\'argumentaire</button>';
+}
+function _copySimArg(){if(navigator.clipboard&&_simArg)navigator.clipboard.writeText(_simArg);toast('Copié ✅');}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
