@@ -2871,6 +2871,7 @@ function generateDevisPDF(r){
 // ── PROSPECTS ──
 var eProspect=-1;
 function renderProspects(){
+  if(typeof _releaseExpiredFiches==='function')_releaseExpiredFiches();
   var q=(g('prospSearch').value||'').toLowerCase();
   var sf=g('prospStatF')?g('prospStatF').value:'';
   var list=DB.prospects.filter(function(p){return (!q||(p.nom+(p.email||'')).toLowerCase().includes(q))&&(!sf||p.statut===sf);});
@@ -2878,12 +2879,12 @@ function renderProspects(){
   g('prospTable').innerHTML=list.map(function(p){
     var idx=DB.prospects.indexOf(p);
     var sc={Nouveau:'bCours',Contacté:'bPause','En discussion':'bPlan',Gagné:'bTerm',Perdu:'bAnnul'}[p.statut]||'bCours';
-    return '<tr><td><strong>'+p.nom+'</strong>'+(p.visiteDate?' <span title="Visite technique" style="font-size:11px">🔧</span>':'')+(p.visiteDate?'<br><span style="font-size:11px;color:#0891b2">🔧 Visite '+fmtD(p.visiteDate)+(p.visiteQui?' · '+p.visiteQui:'')+'</span>':'')+'</td>'
+    return '<tr><td><strong>'+p.nom+'</strong>'+_ownerBadge(p)+(p.visiteDate?' <span title="Visite technique" style="font-size:11px">🔧</span>':'')+(p.visiteDate?'<br><span style="font-size:11px;color:#0891b2">🔧 Visite '+fmtD(p.visiteDate)+(p.visiteQui?' · '+p.visiteQui:'')+'</span>':'')+'</td>'
       +'<td>'+(p.email||'')+'</td><td>'+(p.tel||'')+'</td>'
       +'<td>'+(p.source||'')+'</td>'
       +'<td><span class="bdg '+sc+'">'+p.statut+'</span></td>'
       +'<td class="acts">'
-        +'<button class="act" onclick="genererBrief('+idx+')">📋</button><button class="act" onclick="trouverContactProspect('+idx+')">🔍</button>'+'<button class="act" onclick="openProspectModal('+idx+')">✏️</button>'
+        +'<button class="act" onclick="openFiche('+idx+')">📇</button><button class="act" onclick="genererBrief('+idx+')">📋</button><button class="act" onclick="trouverContactProspect('+idx+')">🔍</button>'+'<button class="act" onclick="openProspectModal('+idx+')">✏️</button>'
         +(isAdmin()?'<button class="act dl" onclick="delProspect('+idx+')">🗑</button>':'')
       +'</td></tr>';
   }).join('');
@@ -3984,7 +3985,8 @@ function qualifierProspect(){
 function _copyPia(w){var t=w==='camp'?_piaCamp:_piaQual;if(navigator.clipboard&&t)navigator.clipboard.writeText(t);toast('Copié \u2705');}
 function renderProspectIA(){}
 var _sireneRes=[];
-var _sireneParams='',_sirenePage=1,_sireneTotal=0;
+var _sireneParams='',_sirenePage=1,_sireneTotal=0,_sireneDept='';
+function _inDept(e,dept){var sg=e.siege||{};if(sg.departement&&sg.departement===dept)return true;var cp=sg.code_postal||'';if(!cp)return false;if(dept==='2A'||dept==='2B')return cp.slice(0,2)==='20';if(dept.length===3)return cp.slice(0,3)===dept;return cp.slice(0,2)===dept;}
 function searchSirene(nafOverride){
   var q=((g('sireneQ')&&g('sireneQ').value)||'').trim();
   var ville=((g('sireneVille')&&g('sireneVille').value)||'').trim();var dept=((g('sireneDept')&&g('sireneDept').value)||'').trim();
@@ -3996,7 +3998,7 @@ function searchSirene(nafOverride){
   if(naf){var nc=(naf.indexOf('.')<0&&naf.length>=3)?(naf.slice(0,2)+'.'+naf.slice(2)):naf;url+='&activite_principale='+encodeURIComponent(nc);}
   if(dept)url+='&departement='+encodeURIComponent(dept);
   if(_filtreRecent){var _d12=new Date(Date.now()-365*86400000);url+='&date_creation_min='+_d12.toISOString().slice(0,10);}
-  _sireneParams=url;_sirenePage=1;_sireneRes=[];_sireneTotal=0;
+  _sireneParams=url;_sireneDept=dept;_sirenePage=1;_sireneRes=[];_sireneTotal=0;
   _sireneFetch(true);
 }
 function _sireneFetch(reset){
@@ -4005,6 +4007,7 @@ function _sireneFetch(reset){
   fetch(_sireneParams+'&page='+_sirenePage).then(function(r){return r.json();}).then(function(data){
     _sireneTotal=data.total_results||0;
     var res=data.results||[];
+    if(_sireneDept){res=res.filter(function(e){return _inDept(e,_sireneDept);});}
     if(_filtreRecent){res.sort(function(a,b){return (new Date(b.date_creation||0))-(new Date(a.date_creation||0));});}
     _sireneRes=_sireneRes.concat(res);
     if(!_sireneRes.length){box.innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px">Aucun résultat. Essaie d\'autres termes, une autre cible ou un département.</p>';return;}
@@ -4623,7 +4626,7 @@ function _checkBanners(){
     if(typeof showBanner==='function')showBanner(last.txt,last.ico||'🔔',last.link||null);
   }catch(e){}
 }
-try{window.addEventListener('load',function(){setTimeout(_checkBanners,1600);});}catch(e){}
+try{window.addEventListener('load',function(){setTimeout(_checkBanners,1600);setTimeout(function(){if(typeof _releaseExpiredFiches==='function')_releaseExpiredFiches();},2000);});}catch(e){}
 try{setInterval(_checkBanners,45000);}catch(e){}
 var _simArg='';
 function _defBareme(){if(!DB.baremeAdvenir)DB.baremeAdvenir={coproInd:{pct:50,plaf:600},coproCol:{pct:50,plaf:8000},entreprise:{pct:50,plaf:1000},maison:{pct:0,plaf:500}};}
@@ -4752,6 +4755,32 @@ function calcCout(){
   }
   _simArg=arg;
   g('coutRes').innerHTML='<div style="background:linear-gradient(135deg,#242a56,#171c3c);color:#fff;border-radius:14px;padding:16px"><div style="text-align:center"><div style="font-size:12px;color:rgba(255,255,255,.7)">Coût de recharge (électrique)</div><div style="font-size:30px;font-weight:800;letter-spacing:-.5px;margin-top:2px">'+eur(elec100)+' <span style="font-size:14px;font-weight:600;color:rgba(255,255,255,.6)">/ 100 km</span></div><div style="font-size:12px;color:#ffe576;margin-top:4px">soit '+eur(elecAn)+' par an</div></div>'+ecoHtml+'</div><button class="btn bGhost" style="margin-top:10px;width:100%" onclick="_copySimArg()">📋 Copier l\'argumentaire</button>';
+}
+function _isOwned(p){if(!p.ownerId||!p.assignedAt)return false;var days=(Date.now()-new Date(p.assignedAt).getTime())/86400000;return days<60;}
+function _ownerBadge(p){
+  if(_isOwned(p)){var d=Math.max(0,60-Math.floor((Date.now()-new Date(p.assignedAt).getTime())/86400000));var me=(curUserObj&&p.ownerId===curUserObj.id);return ' <span style="font-size:10px;font-weight:700;color:'+(me?'#166534':'#3730a3')+';background:'+(me?'#dcfce7':'#e0e7ff')+';border-radius:20px;padding:1px 7px">👤 '+_escR(p.ownerName||'?')+' · J-'+d+'</span>';}
+  return ' <span style="font-size:10px;font-weight:700;color:#92400e;background:#fef3c7;border-radius:20px;padding:1px 7px">sans référent</span>';
+}
+function _releaseExpiredFiches(){try{var ch=false;(DB.prospects||[]).forEach(function(p){if(p.ownerId&&p.assignedAt&&((Date.now()-new Date(p.assignedAt).getTime())/86400000)>=60){p.ownerId='';p.ownerName='';p.assignedAt='';ch=true;}});if(ch&&typeof save==='function')save();}catch(e){}}
+function affecterFiche(idx){var p=DB.prospects[idx];if(!p)return;if(_isOwned(p)&&curUserObj&&p.ownerId!==curUserObj.id&&!isAdmin()){if(!confirm('Cette fiche est affectée à '+p.ownerName+'. La prendre quand même ?'))return;}p.ownerId=curUserObj?curUserObj.id:'';p.ownerName=curUserObj?curUserObj.name:'';p.assignedAt=new Date().toISOString();save();toast('Fiche affectée 👤 (60 jours)');if(typeof renderProspects==='function')renderProspects();if(g('mFicheTemp'))openFiche(idx);}
+function libererFiche(idx){var p=DB.prospects[idx];if(!p)return;p.ownerId='';p.ownerName='';p.assignedAt='';save();toast('Fiche libérée (sans référent)');if(typeof renderProspects==='function')renderProspects();if(g('mFicheTemp'))openFiche(idx);}
+function logAppelFiche(idx){var p=DB.prospects[idx];if(!p)return;var note=prompt('Note d\'appel (résultat, prochaine étape...) :');if(note===null)return;if(!p.activites)p.activites=[];p.activites.unshift({type:'appel',txt:note||'Appel passé',date:new Date().toISOString(),by:(curUserObj?curUserObj.name:'')});p.lastContact=new Date().toISOString().slice(0,10);if(p.statut==='Nouveau')p.statut='Contacté';save();openFiche(idx);toast('Appel journalisé 📞');}
+function ajouterRappelFiche(idx){var p=DB.prospects[idx];if(!p)return;var d=prompt('Date du rappel (AAAA-MM-JJ) :',new Date(Date.now()+3*86400000).toISOString().slice(0,10));if(!d)return;var note=prompt('Objet du rappel :')||('Rappeler '+(p.nom||''));if(!p.activites)p.activites=[];p.activites.unshift({type:'rappel',txt:note,date:new Date().toISOString(),dateRappel:d,by:(curUserObj?curUserObj.name:'')});if(!DB.taches)DB.taches=[];DB.taches.push({id:DB.nextId++,userId:(curUserObj?curUserObj.id:''),titre:note,date:d,priorite:'normale',fait:false,createdBy:(curUserObj?curUserObj.id:''),createdAt:new Date().toISOString()});save();openFiche(idx);toast('Rappel programmé 🔔');}
+function openFiche(idx){
+  var p=DB.prospects[idx];if(!p)return;var ex=g('mFicheTemp');if(ex)ex.remove();
+  var owned=_isOwned(p);var canRelease=owned&&(isAdmin()||(curUserObj&&p.ownerId===curUserObj.id));
+  var ownerHtml=owned
+    ?'<div style="background:#dcfce7;border:1px solid #bbf7d0;border-radius:10px;padding:10px 12px;font-size:13px;color:#166534">👤 Propriétaire : <b>'+_escR(p.ownerName||'?')+'</b> · encore '+Math.max(0,60-Math.floor((Date.now()-new Date(p.assignedAt).getTime())/86400000))+' jours'+(canRelease?' <button class="btn bGhost" style="font-size:11px;padding:3px 8px;margin-left:6px" onclick="libererFiche('+idx+')">Libérer</button>':'')+'</div>'
+    :'<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:10px 12px;font-size:13px;color:#92400e;display:flex;justify-content:space-between;align-items:center;gap:10px"><span>Sans référent</span><button class="btn bPrimary" style="font-size:12px;padding:5px 12px;flex-shrink:0" onclick="affecterFiche('+idx+')">M\'affecter</button></div>';
+  var acts=(p.activites||[]).map(function(a){var ic=a.type==='appel'?'📞':(a.type==='rappel'?'🔔':'📝');var when=a.date?new Date(a.date).toLocaleDateString('fr-FR'):'';var extra=(a.type==='rappel'&&a.dateRappel)?(' · pour le '+a.dateRappel):'';return '<div style="display:flex;gap:10px;padding:9px 2px;border-bottom:1px solid #f0f2f8"><div style="font-size:16px">'+ic+'</div><div style="flex:1"><div style="font-size:13px;color:#2b3050">'+_escR(a.txt||'')+'</div><div style="font-size:11px;color:var(--muted)">'+when+extra+(a.by?(' · '+_escR(a.by)):'')+'</div></div></div>';}).join('')||'<div style="font-size:12.5px;color:var(--muted);padding:8px">Aucune activité pour l\'instant.</div>';
+  var h='<div class="ov on" id="mFicheTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>📇 '+_escR(p.nom||'Fiche')+'</h2><button class="mcl" onclick="g(\'mFicheTemp\').remove()">✕</button></div><div style="padding:16px">'
+    +'<div style="font-size:12px;color:var(--muted);margin-bottom:12px">'+_escR([p.societe,p.ville,p.email,p.tel].filter(Boolean).join(' · '))+'</div>'
+    +ownerHtml
+    +'<div style="display:flex;gap:8px;margin:14px 0;flex-wrap:wrap"><button class="btn bPrimary" onclick="logAppelFiche('+idx+')">📞 Journaliser un appel</button><button class="btn bGhost" onclick="ajouterRappelFiche('+idx+')">🔔 Demander un rappel</button></div>'
+    +'<div style="font-size:11.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Historique</div>'
+    +'<div style="max-height:40vh;overflow:auto">'+acts+'</div>'
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
