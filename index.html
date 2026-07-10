@@ -1878,7 +1878,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
     <div class="fgrid">
       <div class="fi"><label>Nom du chantier *</label><input id="mIchantier" placeholder="Ex: Borne M. Dupont"></div>
       <div class="fi"><label>Client</label><input id="mIclient" placeholder="Nom du client"></div>
-      <div class="fi"><label>Adresse <a onclick="itineraireInstall()" style="color:var(--gold);cursor:pointer;font-size:11px;font-weight:700">🧭 Itinéraire</a></label><input id="mIadresse" placeholder="Adresse du chantier"></div>
+      <div class="fi"><label>Adresse <a onclick="itineraireInstall()" style="color:var(--gold);cursor:pointer;font-size:11px;font-weight:700">🧭 Itinéraire</a></label><input id="mIadresse" placeholder="Adresse du chantier"></div><div class="fi"><label>Ville / Code postal <a onclick="trouverVilleCP()" style="color:var(--gold);cursor:pointer;font-size:11px;font-weight:700">📍 Auto</a></label><div style="display:flex;gap:8px"><input id="mIville" placeholder="Ville" style="flex:2"><input id="mIcp" placeholder="CP" style="flex:1"></div></div><div class="fi"><label>Raccordement électrique</label><select id="mIphase" onchange="majCableType()"><option value="">--</option><option value="Monophasé">Monophasé</option><option value="Triphasé">Triphasé</option></select></div><div class="fi"><label>Câble (auto)</label><input id="mIcableType" readonly placeholder="défini par le raccordement" style="background:#f6f8fd"></div>
       <div class="fi"><label>Téléphone client</label><input id="mItel" placeholder="06 00 00 00 00"></div>
       <div class="fi"><label>Type de travaux</label>
         <select id="mItype"><option>Borne de recharge</option><option>Tableau électrique</option><option>Mise aux normes</option><option>Panneaux solaires</option><option>Autre</option></select>
@@ -2683,7 +2683,7 @@ function renderContacts(){
   g('contactCount').textContent=list.length+' contact(s)';
   g('contactTable').innerHTML=list.map(function(c,i){
     var idx=DB.contacts.indexOf(c);
-    return '<tr><td><div style="font-weight:600">'+c.nom+(c.visiteDate?' <span title="Visite technique le '+fmtD(c.visiteDate)+'" style="font-size:11px">🔧</span>':'')+'</div>'+(c.societe?'<div style="font-size:11px;color:var(--muted)">'+c.societe+'</div>':'')+(c.visiteDate?'<div style="font-size:11px;color:#0891b2">🔧 Visite '+fmtD(c.visiteDate)+(c.visiteQui?' · '+c.visiteQui:'')+'</div>':'')+'</td>'
+    return '<tr style="cursor:pointer" onclick="if(!event.target.closest(\'button,a,input,select\'))openContactModal('+idx+')"><td><div style="font-weight:600">'+c.nom+(c.visiteDate?' <span title="Visite technique le '+fmtD(c.visiteDate)+'" style="font-size:11px">🔧</span>':'')+'</div>'+(c.societe?'<div style="font-size:11px;color:var(--muted)">'+c.societe+'</div>':'')+(c.visiteDate?'<div style="font-size:11px;color:#0891b2">🔧 Visite '+fmtD(c.visiteDate)+(c.visiteQui?' · '+c.visiteQui:'')+'</div>':'')+'</td>'
       +'<td>'+c.email+'</td><td>'+c.tel+'</td><td><span class="bdg '+(c.type==='Client'?'bTerm':c.type==='Prospect'?'bCours':'bPause')+'">'+c.type+'</span></td>'
       +'<td class="acts"><button class="act" onclick="openContactModal('+idx+')">✏️</button>'+(isAdmin()?'<button class="act dl" onclick="delContact('+idx+')">🗑</button>':'')+'</td></tr>';
   }).join('');
@@ -2879,7 +2879,7 @@ function renderProspects(){
   g('prospTable').innerHTML=list.map(function(p){
     var idx=DB.prospects.indexOf(p);
     var sc={Nouveau:'bCours',Contacté:'bPause','En discussion':'bPlan',Gagné:'bTerm',Perdu:'bAnnul'}[p.statut]||'bCours';
-    return '<tr><td><strong>'+p.nom+'</strong>'+_ownerBadge(p)+(p.visiteDate?' <span title="Visite technique" style="font-size:11px">🔧</span>':'')+(p.visiteDate?'<br><span style="font-size:11px;color:#0891b2">🔧 Visite '+fmtD(p.visiteDate)+(p.visiteQui?' · '+p.visiteQui:'')+'</span>':'')+'</td>'
+    return '<tr style="cursor:pointer" onclick="if(!event.target.closest(\'button,a,input,select\'))openFiche('+idx+')"><td><strong>'+p.nom+'</strong>'+_ownerBadge(p)+(p.visiteDate?' <span title="Visite technique" style="font-size:11px">🔧</span>':'')+(p.visiteDate?'<br><span style="font-size:11px;color:#0891b2">🔧 Visite '+fmtD(p.visiteDate)+(p.visiteQui?' · '+p.visiteQui:'')+'</span>':'')+'</td>'
       +'<td>'+(p.email||'')+'</td><td>'+(p.tel||'')+'</td>'
       +'<td>'+(p.source||'')+'</td>'
       +'<td><span class="bdg '+sc+'">'+p.statut+'</span></td>'
@@ -3022,7 +3022,7 @@ function renderT(){
   var instSel=g('instInstF');if(instSel&&instSel.options.length<=1){DB.installateurs.forEach(function(i){var o=document.createElement('option');o.value=instName(i.prenom,i.nom);o.textContent=instName(i.prenom,i.nom);instSel.appendChild(o);});}
   g('instTable').innerHTML=list.map(function(r){
     var idx=DB.installations.indexOf(r);
-    return '<tr><td><strong>'+r.chantier+'</strong><br><span style="font-size:11px;color:var(--muted)">'+r.client+'</span></td>'
+    return '<tr style="cursor:pointer" onclick="if(!event.target.closest(\'button,a,input,select\'))openIM('+idx+')"><td><strong>'+r.chantier+'</strong><br><span style="font-size:11px;color:var(--muted)">'+r.client+'</span></td>'
       +'<td><div>'+r.type+'</div>'+(r.typeBien?'<div style="font-size:11px;color:var(--muted)">'+r.typeBien+(r.nbBornes?' &middot; '+r.nbBornes+' borne(s)':'')+'</div>':'')+'</td>'
       +'<td>'+(r.installateur||'<span style="color:var(--muted)">Non assigné</span>')+'</td>'
       +'<td><span class="bdg '+(BDGS[r.statut]||'')+'">'+r.statut+'</span></td>'
@@ -3070,7 +3070,7 @@ function openIM(idx){
   eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof renderInstallPhotos==="function")renderInstallPhotos();
   g('mInstT').textContent=idx>=0?'Modifier installation':'Nouvelle installation';
   g('mIchantier').value=r.chantier||'';g('mIclient').value=r.client||'';
-  g('mIadresse').value=r.adresse||'';g('mItel').value=r.tel||'';
+  g('mIadresse').value=r.adresse||'';if(g('mIville'))g('mIville').value=r.ville||'';if(g('mIcp'))g('mIcp').value=r.cp||'';if(g('mIphase'))g('mIphase').value=r.phase||'';if(g('mIcableType'))g('mIcableType').value=r.cableType||'';g('mItel').value=r.tel||'';
   g('mItype').value=r.type||'Borne de recharge';g('mIbien').value=r.typeBien||'Maison individuelle';
   g('mInbbornes').value=r.nbBornes||1;g('mIpuissance').value=r.puissance||'7.4 kW';
   var iSel=g('mIinst');iSel.innerHTML='<option value="">Non assigné</option>';
@@ -3127,6 +3127,7 @@ function saveI(){
     type:g('mItype').value,typeBien:g('mIbien').value,
     raccordement:g('mIraccord')?g('mIraccord').value:'',
     cableM:g('mIcable')?parseInt(g('mIcable').value)||0:0,
+    phase:g('mIphase')?g('mIphase').value:'',cableType:g('mIcableType')?g('mIcableType').value:'',ville:g('mIville')?g('mIville').value:'',cp:g('mIcp')?g('mIcp').value:'',
     visiteQui:g('mIvisiteQui')?g('mIvisiteQui').value:'',visiteDate:g('mIvisiteDate')?g('mIvisiteDate').value:'',visiteHeure:g('mIvisiteHeure')?g('mIvisiteHeure').value:'',
     remunInstallateur:g('mIremunInst')&&g('mIremunInst').value!==''?parseFloat(g('mIremunInst').value)||0:'',
     nbBornes:parseInt(g('mInbbornes').value)||0,puissance:g('mIpuissance').value,
@@ -4774,7 +4775,7 @@ function openFiche(idx){
     :'<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:10px 12px;font-size:13px;color:#92400e;display:flex;justify-content:space-between;align-items:center;gap:10px"><span>Sans référent</span><button class="btn bPrimary" style="font-size:12px;padding:5px 12px;flex-shrink:0" onclick="affecterFiche('+idx+')">M\'affecter</button></div>';
   var acts=(p.activites||[]).map(function(a){var ic=a.type==='appel'?'📞':(a.type==='rappel'?'🔔':'📝');var when=a.date?new Date(a.date).toLocaleDateString('fr-FR'):'';var extra=(a.type==='rappel'&&a.dateRappel)?(' · pour le '+a.dateRappel):'';return '<div style="display:flex;gap:10px;padding:9px 2px;border-bottom:1px solid #f0f2f8"><div style="font-size:16px">'+ic+'</div><div style="flex:1"><div style="font-size:13px;color:#2b3050">'+_escR(a.txt||'')+'</div><div style="font-size:11px;color:var(--muted)">'+when+extra+(a.by?(' · '+_escR(a.by)):'')+'</div></div></div>';}).join('')||'<div style="font-size:12.5px;color:var(--muted);padding:8px">Aucune activité pour l\'instant.</div>';
   var h='<div class="ov on" id="mFicheTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>📇 '+_escR(p.nom||'Fiche')+'</h2><button class="mcl" onclick="g(\'mFicheTemp\').remove()">✕</button></div><div style="padding:16px">'
-    +'<div style="font-size:12px;color:var(--muted);margin-bottom:12px">'+_escR([p.societe,p.ville,p.email,p.tel].filter(Boolean).join(' · '))+'</div>'
+    +'<div style="font-size:12px;color:var(--muted);margin-bottom:12px">'+_escR([p.societe,((p.cp||'')+' '+(p.ville||'')).trim(),p.email,p.tel].filter(Boolean).join(' · '))+'</div>'
     +ownerHtml
     +'<div style="display:flex;gap:8px;margin:14px 0;flex-wrap:wrap"><button class="btn bPrimary" onclick="logAppelFiche('+idx+')">📞 Journaliser un appel</button><button class="btn bGhost" onclick="ajouterRappelFiche('+idx+')">🔔 Demander un rappel</button><button class="btn bGhost" onclick="itineraireFiche('+idx+')">🧭 Itinéraire</button></div>'
     +'<div style="font-size:11.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Historique</div>'
@@ -4805,6 +4806,39 @@ function _syncInstallateurs(){
   }catch(e){}
 }
 try{window.addEventListener('load',function(){setTimeout(function(){if(typeof _syncInstallateurs==='function')_syncInstallateurs();},2200);});}catch(e){}
+function majCableType(){var p=(g('mIphase')&&g('mIphase').value)||'';var c=p==='Monophasé'?'3G10':(p==='Triphasé'?'5G10':'');if(g('mIcableType'))g('mIcableType').value=c;}
+function trouverVilleCP(){
+  var addr=((g('mIadresse')&&g('mIadresse').value)||'').trim();var ville=((g('mIville')&&g('mIville').value)||'').trim();
+  var q=(addr+' '+ville).trim();if(!q){toast('Renseigne d\'abord une adresse');return;}
+  toast('Recherche de l\'adresse...');
+  fetch('https://api-adresse.data.gouv.fr/search/?limit=1&q='+encodeURIComponent(q)).then(function(r){return r.json();}).then(function(d){
+    var ft=d&&d.features&&d.features[0];if(!ft){toast('Adresse introuvable');return;}
+    var pr=ft.properties||{};
+    if(g('mIville'))g('mIville').value=pr.city||pr.name||'';
+    if(g('mIcp'))g('mIcp').value=pr.postcode||'';
+    if(pr.name&&/^\d/.test(pr.name)===false&&g('mIadresse')&&!/\d/.test(addr))g('mIadresse').value=pr.name;
+    toast('Ville et code postal trouvés ✅');
+  }).catch(function(){toast('Erreur de recherche adresse');});
+}
+function _seedProduitsBP2(){
+  try{
+    if(typeof DB==='undefined'||!DB)return;if(DB._catSeedBP2)return;if(!DB.catalogue)DB.catalogue=[];
+    var prods=[
+      {nom:'V2C Trydan 7,4 kW',cat:'Borne',desc:'Borne monophasée 7,4 kW connectée (Wi-Fi, Bluetooth). Maison / résidentiel.',pu:0},
+      {nom:'V2C Trydan 22 kW',cat:'Borne',desc:'Borne triphasée 22 kW connectée. Entreprise, copropriété, parking.',pu:0},
+      {nom:'Raedian NEO 7,4 kW',cat:'Borne',desc:'Borne monophasée 7,4 kW connectée (WiFi/Bluetooth/RFID/OCPP).',pu:0},
+      {nom:'Raedian NEO 22 kW',cat:'Borne',desc:'Borne triphasée 22 kW connectée, équilibrage de charge.',pu:0},
+      {nom:'Ohme ePod S 7,4 kW',cat:'Borne',desc:'Borne monophasée 7,4 kW connectée 4G, optimisation des coûts.',pu:0},
+      {nom:'Ohme ePod S 22 kW',cat:'Borne',desc:'Borne triphasée 22 kW connectée 4G.',pu:0},
+      {nom:'Legrand Green\'Up 7,4 kW',cat:'Borne',desc:'Borne monophasée 7,4 kW Type 2 connectée.',pu:0},
+      {nom:'Legrand Green\'Up 22 kW',cat:'Borne',desc:'Borne triphasée 22 kW Type 2 connectée.',pu:0}
+    ];
+    var have=DB.catalogue.map(function(p){return (p.nom||'').toLowerCase();});
+    prods.forEach(function(p){if(have.indexOf(p.nom.toLowerCase())<0){p.id=(DB.nextId!==undefined?DB.nextId++:Date.now());DB.catalogue.push(p);}});
+    DB._catSeedBP2=1;if(typeof save==='function')save();
+  }catch(e){}
+}
+try{window.addEventListener('load',function(){setTimeout(_seedProduitsBP2,500);});}catch(e){}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
