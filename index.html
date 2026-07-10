@@ -4204,12 +4204,16 @@ function showBanner(txt,ico,link){
   try{
     var ex=document.getElementById('bpBanner');if(ex)ex.remove();
     var b=document.createElement('div');b.id='bpBanner';
-    b.style.cssText='position:fixed;top:calc(env(safe-area-inset-top, 0px) + 8px);left:12px;right:12px;margin:0 auto;max-width:440px;z-index:99999;background:linear-gradient(135deg,#242a56,#171c3c);color:#fff;border-radius:14px;box-shadow:0 12px 34px rgba(15,18,45,.38);padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transform:translateY(-160%);transition:transform .35s cubic-bezier(.2,.8,.2,1)';
-    b.innerHTML='<div style="font-size:20px;flex-shrink:0">'+(ico||'🔔')+'</div><div style="flex:1;font-size:13.5px;font-weight:600;line-height:1.35">'+_escR(txt)+'</div>'+(link?'<div style="font-size:11px;color:#ffe576;flex-shrink:0">Voir ›</div>':'<div onclick="event.stopPropagation();var x=document.getElementById(\'bpBanner\');if(x)x.remove();" style="font-size:16px;color:#9aa;flex-shrink:0;padding:0 4px">✕</div>');
+    b.style.cssText='position:fixed;top:calc(env(safe-area-inset-top, 0px) + 10px);left:12px;right:12px;margin:0 auto;max-width:420px;z-index:99999;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#1f2438;border:1px solid rgba(255,255,255,.65);border-radius:16px;box-shadow:0 18px 48px rgba(18,22,52,.28),0 2px 6px rgba(18,22,52,.08);overflow:hidden;cursor:pointer;transform:translateY(-180%) scale(.96);opacity:0;transition:transform .45s cubic-bezier(.2,.9,.25,1),opacity .35s ease';
+    b.innerHTML='<div style="display:flex;align-items:center;gap:12px;padding:13px 14px 13px 13px">'
+      +'<div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#242a56,#171c3c);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 4px 12px rgba(18,22,52,.22)">'+(ico||'🔔')+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#c79732">Born Power</div><div style="font-size:13.5px;font-weight:600;line-height:1.35;color:#1f2438;margin-top:1px">'+_escR(txt)+'</div></div>'
+      +(link?'<div style="font-size:11px;font-weight:700;color:#242a56;flex-shrink:0;background:#eef1f8;border-radius:20px;padding:4px 11px">Voir</div>':'<div onclick="event.stopPropagation();var x=document.getElementById(\'bpBanner\');if(x)x.remove();" style="font-size:17px;color:#b5bace;flex-shrink:0;padding:0 6px;line-height:1">\u00d7</div>')
+      +'</div><div id="bpBannerBar" style="height:3px;background:linear-gradient(90deg,#c79732,#ffe576);width:100%;transition:width 5s linear"></div>';
     b.onclick=function(){b.remove();if(link&&typeof openFromNotif==='function')openFromNotif(link);};
     document.body.appendChild(b);
-    requestAnimationFrame(function(){b.style.transform='translateY(0)';});
-    setTimeout(function(){if(b&&b.parentNode){b.style.transform='translateY(-160%)';setTimeout(function(){if(b&&b.parentNode)b.remove();},420);}},5000);
+    requestAnimationFrame(function(){b.style.transform='translateY(0) scale(1)';b.style.opacity='1';var bar=document.getElementById('bpBannerBar');if(bar)requestAnimationFrame(function(){bar.style.width='0%';});});
+    setTimeout(function(){if(b&&b.parentNode){b.style.transform='translateY(-180%) scale(.96)';b.style.opacity='0';setTimeout(function(){if(b&&b.parentNode)b.remove();},450);}},5000);
   }catch(e){}
 }
 var _dormants=[];
