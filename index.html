@@ -3344,7 +3344,7 @@ function saveMvt(){var q=parseInt(g('mMvqte').value)||0;if(!q){alert('Quantité 
 // ── PROFILS INSTALLATEURS ──
 var eProfil=-1,profColSel='#2563eb';
 var selectedDepts=[];
-function renderProfils(){
+function renderProfils(){if(typeof _syncInstallateurs==='function')_syncInstallateurs();
   var addBtn=g('profilAddBtn');if(addBtn)addBtn.style.display=(isAdmin()||isDirtech())?'inline-flex':'none';
   var se=g('profilSearch');var q=se?(se.value||'').toLowerCase():'';
   var myId=curUserObj?curUserObj.id:'';
@@ -4785,6 +4785,26 @@ function openFiche(idx){
 function itineraire(addr){addr=(addr||'').trim();if(!addr){toast('Aucune adresse renseignée');return;}window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(addr),'_blank','noopener');}
 function itineraireInstall(){var a=((g('mIadresse')&&g('mIadresse').value)||'').trim();var c=((g('mIclient')&&g('mIclient').value)||'').trim();itineraire(a||c);}
 function itineraireFiche(idx){var p=DB.prospects[idx];if(!p)return;itineraire([p.societe||p.nom,p.ville].filter(Boolean).join(' '));}
+function _syncInstallateurs(){
+  try{
+    if(typeof loadAccounts!=='function')return;
+    if(!DB.installateurs)DB.installateurs=[];
+    var accts=loadAccounts().filter(function(a){return a.role==='installer'&&(a.status==='active'||!a.status);});
+    var _cols=(typeof COLS!=='undefined'&&COLS&&COLS.length)?COLS:['#c79732','#2563eb','#059669','#7c3aed','#dc2626','#0891b2','#d97706'];
+    var changed=false;
+    accts.forEach(function(a){
+      var has=DB.installateurs.some(function(p){return (p.userId&&p.userId===a.id)||(instName(p.prenom,p.nom).trim().toLowerCase()===(a.name||'').trim().toLowerCase());});
+      if(!has){
+        var parts=(a.name||'').trim().split(/\s+/);
+        var prenom=parts.shift()||(a.name||'Installateur');var nom=parts.join(' ');
+        DB.installateurs.push({id:DB.nextId++,prenom:prenom,nom:nom,tel:a.tel||'',email:a.email||'',spec:'Installateur',depts:'',dispo:'Disponible',color:_cols[DB.installateurs.length%_cols.length],notes:'Fiche créée automatiquement depuis le compte',userId:a.id});
+        changed=true;
+      }
+    });
+    if(changed&&typeof save==='function')save();
+  }catch(e){}
+}
+try{window.addEventListener('load',function(){setTimeout(function(){if(typeof _syncInstallateurs==='function')_syncInstallateurs();},2200);});}catch(e){}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
