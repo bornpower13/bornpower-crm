@@ -460,8 +460,35 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 .notifPanel.on{display:flex;}
 .notifPanelH{padding:16px 18px;padding-top:calc(16px + env(safe-area-inset-top));background:linear-gradient(135deg,#242a56,#171c3c);display:flex;align-items:center;justify-content:space-between}
 .notifPanelH h3{font-size:15px;font-weight:800;color:#fff;letter-spacing:-.2px}
+
+#mInst .mh,#mContact .mh{background:linear-gradient(135deg,#242a56,#171c3c);border-bottom:none;padding:18px 20px 16px;border-radius:20px 20px 0 0}
+#mInst .mh h2,#mContact .mh h2{color:#fff;font-size:17px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}
+#mInst .mh h2::before{content:'⚡';width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#c79732,#ffe576);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+#mContact .mh h2::before{content:'👤';width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#c79732,#ffe576);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+#mInst .mh .mcl,#mContact .mh .mcl{background:rgba(255,255,255,.14);color:#fff}
+#mInst .mh .mcl:hover,#mContact .mh .mcl:hover{background:rgba(255,255,255,.24);color:#fff}
+#mInst .modal,#mContact .modal{border-radius:20px;overflow:hidden}
+
+.emptyState{text-align:center;padding:38px 16px}
+.emptyIco{font-size:34px;opacity:.35;margin-bottom:10px}
+.emptyTitle{font-size:13.5px;font-weight:700;color:#5b6178}
+.emptySub{font-size:12px;color:#9aa0b8;margin-top:4px}
+.skelWrap{padding:6px 2px}
+.skelRow{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid #f0f2f8}
+.skelCirc{width:36px;height:36px;border-radius:10px;background:linear-gradient(90deg,#eef1f8 25%,#e3e7f3 37%,#eef1f8 63%);background-size:400% 100%;animation:skel 1.4s ease infinite}
+.skelLines{flex:1}
+.skelLine{height:10px;border-radius:5px;background:linear-gradient(90deg,#eef1f8 25%,#e3e7f3 37%,#eef1f8 63%);background-size:400% 100%;animation:skel 1.4s ease infinite;margin-bottom:6px}
+.skelLine.w60{width:60%}.skelLine.w35{width:35%}
+@keyframes skel{0%{background-position:100% 50%}100%{background-position:0 50%}}
+.qBar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:150;display:none;background:rgba(255,255,255,.90);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.6);border-radius:18px;box-shadow:0 14px 36px rgba(18,22,52,.20);padding:8px;gap:6px}
+.qBar.on{display:flex}
+.qBar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:12px;text-decoration:none;color:#242a56;font-size:10.5px;font-weight:700}
+.qBar a:active{background:#eef1f8}
+.qBar .qIco{font-size:19px}
+@media (min-width:900px){.qBar{display:none !important}}
 .notifPanelH .btn.bGhost{background:rgba(255,255,255,.12);border:none;color:#fff}
-.notifPanelH .mcl{color:rgba(255,255,255,.75)}
+.notifPanelH .mcl{background:rgba(255,255,255,.14);color:#fff}
+.notifPanelH .mcl:hover{background:rgba(255,255,255,.24);color:#fff}
 .notifList{flex:1;overflow-y:auto;padding:10px}
 .notifItem{background:#fff;border:1px solid #edeff6;border-radius:14px;padding:12px 13px;margin-bottom:8px;cursor:pointer;display:flex;gap:11px;box-shadow:0 1px 2px rgba(20,25,60,.03);transition:transform .15s ease,box-shadow .15s ease}
 .notifItem:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(20,25,60,.08)}
@@ -2697,12 +2724,12 @@ function renderContacts(){
   var tf=g('contactTypeF')?g('contactTypeF').value:'';
   var list=DB.contacts.filter(function(c){return (!q||(c.nom+c.email+(c.societe||'')).toLowerCase().includes(q))&&(!tf||c.type===tf);});
   g('contactCount').textContent=list.length+' contact(s)';
-  g('contactTable').innerHTML=list.map(function(c,i){
+  g('contactTable').innerHTML=list.length?list.map(function(c,i){
     var idx=DB.contacts.indexOf(c);
     return '<tr style="cursor:pointer" onclick="if(!event.target.closest(\'button,a,input,select\'))openContactModal('+idx+')"><td><div style="font-weight:600">'+c.nom+(c.visiteDate?' <span title="Visite technique le '+fmtD(c.visiteDate)+'" style="font-size:11px">🔧</span>':'')+'</div>'+(c.societe?'<div style="font-size:11px;color:var(--muted)">'+c.societe+'</div>':'')+(c.visiteDate?'<div style="font-size:11px;color:#0891b2">🔧 Visite '+fmtD(c.visiteDate)+(c.visiteQui?' · '+c.visiteQui:'')+'</div>':'')+'</td>'
       +'<td>'+c.email+'</td><td>'+c.tel+'</td><td><span class="bdg '+(c.type==='Client'?'bTerm':c.type==='Prospect'?'bCours':'bPause')+'">'+c.type+'</span></td>'
       +'<td class="acts"><button class="act" onclick="openContactModal('+idx+')">✏️</button>'+(isAdmin()?'<button class="act dl" onclick="delContact('+idx+')">🗑</button>':'')+'</td></tr>';
-  }).join('');
+  }).join(''):_emptyRow(6,'👥','Aucun contact','Ajoute ton premier contact avec le bouton + Contact');
 }
 function openContactModal(idx){
   eContact=idx;var r=idx>=0?DB.contacts[idx]:{};
@@ -2739,7 +2766,7 @@ function renderDevis(){
   var list=DB.devis.filter(function(d){return (role==='admin'||!d.commercialId||d.commercialId===uid)&&(!q||(d.client+(d.societe||'')).toLowerCase().includes(q))&&(!sf||d.statut===sf);});
   g('devisCount').textContent=list.length+' devis';
   var statColors={Brouillon:'bPause',Envoyé:'bCours',Accepté:'bTerm',Refusé:'bAnnul'};
-  g('devisTable').innerHTML=list.map(function(d){
+  g('devisTable').innerHTML=list.length?list.map(function(d){
     var idx=DB.devis.indexOf(d);
     var ht=d.lignes?d.lignes.reduce(function(s,l){return s+l.qte*l.pu;},0):0;
     var tva=d.tva||5.5;var ttc=ht*(1+tva/100);
@@ -2749,12 +2776,13 @@ function renderDevis(){
       +'<td><span class="bdg '+(statColors[d.statut]||'bPause')+'">'+d.statut+'</span></td>'
       +'<td class="acts">'
         +'<button class="act" onclick="exportDevisPDFById('+idx+')" title="PDF" style="color:var(--red)">📄</button>'
+        +(d.signature?'<span class="act" title="Signé électroniquement" style="color:#166534">✅</span>':'<button class="act" onclick="signatureDevisModal('+idx+')" title="Faire signer" style="color:#166534">✍️</button>')
         +'<button class="act" onclick="emailDevis('+idx+')" title="Envoyer par email" style="color:var(--blue)">✉️</button>'
         +'<button class="act" onclick="duplicateDevis('+idx+')" title="Dupliquer" style="color:var(--gold)">⧉</button>'
         +'<button class="act" onclick="openDM('+idx+')">✏️</button>'
         +(isAdmin()?'<button class="act dl" onclick="delD('+idx+')">🗑</button>':'')
       +'</td></tr>';
-  }).join('');
+  }).join(''):_emptyRow(8,'📋','Aucun devis','Crée un devis depuis une fiche client');
 }
 function openDM(idx){
   eDevis=idx;var r=idx>=0?DB.devis[idx]:{};
@@ -2879,7 +2907,7 @@ function generateDevisPDF(r){
     +'<table><thead><tr><th style="width:50%">Désignation</th><th style="text-align:center;width:10%">Quantité</th><th style="text-align:right;width:15%">Prix unitaire</th><th style="text-align:center;width:10%">TVA</th><th style="text-align:right;width:15%">Montant HT</th></tr></thead><tbody>'+lignesHTML+'</tbody></table>'
     +'<div class="totals"><table class="tt"><tr><td style="color:#c79732;font-weight:600">Total HT</td><td style="text-align:right;font-weight:600;color:#c79732">'+totalHT.toFixed(2).replace('.',',')+'</td></tr><tr><td style="color:#c79732;font-weight:600">TVA '+tvaStr+'</td><td style="text-align:right;font-weight:600;color:#c79732">'+totalTVA.toFixed(2).replace('.',',')+'</td></tr><tr class="ttc"><td>Total TTC</td><td style="text-align:right">'+totalTTC.toFixed(2).replace('.',',')+'</td></tr></table></div>'
     +'<div style="border:1px solid #eee;border-radius:6px;padding:12px;font-size:12px;color:#333;line-height:1.8;margin-bottom:20px">Pour être accepté, le devis doit être daté, signé et suivi de la mention manuscrite &laquo; Bon pour accord &raquo;.'+(r.advenir?'<br>'+r.advenir:'')+(r.conditionsPaiement?'<br>'+r.conditionsPaiement:'')+'</div>'
-    +'<div style="display:flex;justify-content:flex-end"><div class="sig"><div style="font-size:11px;color:#888;margin-bottom:40px">Signature et mention &laquo; Bon pour accord &raquo;</div><div style="border-bottom:1px solid #222;margin-bottom:6px"></div><div style="font-size:10px;color:#888;display:flex;justify-content:space-between"><span>Nom :</span><span>Date :</span></div></div></div>'
+    +(r.signature?('<div style="display:flex;justify-content:flex-end"><div class="sig" style="text-align:center"><div style="font-size:11px;color:#888;margin-bottom:6px">Signé électroniquement — Bon pour accord</div><img src="'+r.signature.data+'" style="max-height:70px;max-width:220px"><div style="font-size:10px;color:#888;margin-top:6px">'+r.signature.nom+' &bull; '+new Date(r.signature.date).toLocaleString('fr-FR')+'</div></div></div>'):('<div style="display:flex;justify-content:flex-end"><div class="sig"><div style="font-size:11px;color:#888;margin-bottom:40px">Signature et mention &laquo; Bon pour accord &raquo;</div><div style="border-bottom:1px solid #222;margin-bottom:6px"></div><div style="font-size:10px;color:#888;display:flex;justify-content:space-between"><span>Nom :</span><span>Date :</span></div></div></div>'))
     +'<div class="footer">SAS au capital de 5 000 euros &bull; SIREN 934437153 &bull; RCS MARSEILLE &bull; NAF 3320D<br>TVA intracommunautaire : FR25934437153</div>'
     +'</body></html>');
   win.document.close();setTimeout(function(){win.print();},600);
@@ -2893,7 +2921,7 @@ function renderProspects(){
   var sf=g('prospStatF')?g('prospStatF').value:'';
   var list=DB.prospects.filter(function(p){return (!q||(p.nom+(p.email||'')).toLowerCase().includes(q))&&(!sf||p.statut===sf);});
   g('prospCount').textContent=list.length+' prospect(s)';
-  g('prospTable').innerHTML=list.map(function(p){
+  g('prospTable').innerHTML=list.length?list.map(function(p){
     var idx=DB.prospects.indexOf(p);
     var sc={Nouveau:'bCours',Contacté:'bPause','En discussion':'bPlan',Gagné:'bTerm',Perdu:'bAnnul'}[p.statut]||'bCours';
     return '<tr style="cursor:pointer" onclick="if(!event.target.closest(\'button,a,input,select\'))openFicheProspect('+idx+')"><td><strong>'+p.nom+'</strong>'+_ownerBadge(p)+(p.visiteDate?' <span title="Visite technique" style="font-size:11px">🔧</span>':'')+(p.visiteDate?'<br><span style="font-size:11px;color:#0891b2">🔧 Visite '+fmtD(p.visiteDate)+(p.visiteQui?' · '+p.visiteQui:'')+'</span>':'')+'</td>'
@@ -2904,7 +2932,7 @@ function renderProspects(){
         +'<button class="act" onclick="openFicheProspect('+idx+')">📇</button><button class="act" onclick="genererBrief('+idx+')">📋</button><button class="act" onclick="trouverContactProspect('+idx+')">🔍</button>'+'<button class="act" onclick="openProspectModal('+idx+')">✏️</button>'
         +(isAdmin()?'<button class="act dl" onclick="delProspect('+idx+')">🗑</button>':'')
       +'</td></tr>';
-  }).join('');
+  }).join(''):_emptyRow(8,'🎯','Aucun prospect','Lance une recherche dans Conquête pour en trouver');
 }
 function globalSearchRun(){
   var box=g('globalSearchResults');if(!box)return;
@@ -3037,7 +3065,7 @@ function renderT(){
   g('instCount').textContent=list.length+' installation(s)';
   // Populate installateur filter
   var instSel=g('instInstF');if(instSel&&instSel.options.length<=1){DB.installateurs.forEach(function(i){var o=document.createElement('option');o.value=instName(i.prenom,i.nom);o.textContent=instName(i.prenom,i.nom);instSel.appendChild(o);});}
-  g('instTable').innerHTML=list.map(function(r){
+  g('instTable').innerHTML=list.length?list.map(function(r){
     var idx=DB.installations.indexOf(r);
     return '<tr style="cursor:pointer" onclick="if(!event.target.closest(\'button,a,input,select\'))openIM('+idx+')"><td><strong>'+r.chantier+'</strong><br><span style="font-size:11px;color:var(--muted)">'+r.client+'</span></td>'
       +'<td><div>'+r.type+'</div>'+(r.typeBien?'<div style="font-size:11px;color:var(--muted)">'+r.typeBien+(r.nbBornes?' &middot; '+r.nbBornes+' borne(s)':'')+'</div>':'')+'</td>'
@@ -3053,7 +3081,7 @@ function renderT(){
         +(!isInstaller()?'<button class="act" onclick="openIM('+idx+')" title="Modifier">✏️</button>':'')
         +(isAdmin()?'<button class="act dl" onclick="delI('+idx+')" title="Supprimer">🗑</button>':'')
       +'</td></tr>';
-  }).join('');
+  }).join(''):_emptyRow(10,'⚡','Aucune installation','Planifie ta première installation');
 }
 var matUtiliseTmp=[];
 function fillMatSelect(){
@@ -4023,7 +4051,7 @@ function searchSirene(nafOverride){
 }
 function _sireneFetch(reset){
   var box=g('sireneResults');if(!box)return;
-  if(reset)box.innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px">🔍 Recherche en cours...</p>';
+  if(reset)box.innerHTML='<div class="skelWrap"><div class="skelRow"><div class="skelCirc"></div><div class="skelLines"><div class="skelLine w60"></div><div class="skelLine w35"></div></div></div><div class="skelRow"><div class="skelCirc"></div><div class="skelLines"><div class="skelLine w60"></div><div class="skelLine w35"></div></div></div><div class="skelRow"><div class="skelCirc"></div><div class="skelLines"><div class="skelLine w60"></div><div class="skelLine w35"></div></div></div><div class="skelRow"><div class="skelCirc"></div><div class="skelLines"><div class="skelLine w60"></div><div class="skelLine w35"></div></div></div></div>';
   fetch(_sireneParams+'&page='+_sirenePage).then(function(r){return r.json();}).then(function(data){
     _sireneTotal=data.total_results||0;
     var res=data.results||[];
@@ -4902,6 +4930,65 @@ function renderAuditInst(){
 }
 function _seedAvisLink(){try{if(typeof DB==='undefined'||!DB)return;if(!DB.avisLink){DB.avisLink='https://share.google/P6b8VN5mSARPX1Uhm';if(typeof save==='function')save();}}catch(e){}}
 try{window.addEventListener('load',function(){setTimeout(_seedAvisLink,300);});}catch(e){}
+function _emptyRow(colspan,ico,title,sub){return '<tr><td colspan="'+colspan+'"><div class="emptyState"><div class="emptyIco">'+ico+'</div><div class="emptyTitle">'+title+'</div>'+(sub?'<div class="emptySub">'+sub+'</div>':'')+'</div></td></tr>';}
+function renderQuickBar(){
+  var el=g('qBar');if(!el)return;
+  var role=(typeof getRole==='function')?getRole():'';
+  var items=[];
+  if(role==='commercial'){items=[{ic:'👤',lbl:'Prospect',act:"nav('pgProspects');setTimeout(function(){openProspectModal(-1);},200)"},{ic:'📋',lbl:'Devis',act:"nav('pgDevis');setTimeout(function(){openDM(-1);},200)"},{ic:'🚀',lbl:'Conquête',act:"nav('pgConquete')"},{ic:'🎯',lbl:'Pipeline',act:"nav('pgPipeline')"}];}
+  else if(role==='installer'){items=[{ic:'📅',lbl:'Ma journée',act:"nav('pgMaJournee')"},{ic:'⚡',lbl:'Installations',act:"nav('pgInst')"},{ic:'🧭',lbl:'Itinéraire',act:"itineraireInstall()"}];}
+  else if(role==='admin'||role==='dirtech'){items=[{ic:'📊',lbl:'Dashboard',act:"nav('pgDash')"},{ic:'🚀',lbl:'Conquête',act:"nav('pgConquete')"},{ic:'⚡',lbl:'Installations',act:"nav('pgInst')"},{ic:'💬',lbl:'Messages',act:"nav('pgChat')"}];}
+  if(!items.length){el.classList.remove('on');return;}
+  el.innerHTML=items.map(function(it){return '<a onclick="'+_escR(it.act).replace(/"/g,'&quot;')+'"><div class="qIco">'+it.ic+'</div>'+it.lbl+'</a>';}).join('');
+  el.classList.add('on');
+}
+try{window.addEventListener('load',function(){setTimeout(function(){if(typeof renderQuickBar==='function')renderQuickBar();},1000);});}catch(e){}
+var _sigDrawing=false,_sigCtx=null,_sigHasStroke=false,_sigDevisIdx=-1;
+function signatureDevisModal(idx){
+  var r=DB.devis[idx];if(!r)return;_sigDevisIdx=idx;
+  var ht=(r.lignes||[]).reduce(function(s,l){return s+(l.qte||0)*(l.pu||0);},0);var tva=r.tva||5.5;var ttc=ht*(1+tva/100);
+  var already=r.signature;
+  var h='<div class="ov on" id="mSigTemp" onclick="if(event.target===this)this.remove()"><div class="modal" style="max-width:480px">'
+    +'<div class="mh"><h2>✍️ Signature électronique</h2><button class="mcl" onclick="g(\'mSigTemp\').remove()">✕</button></div>'
+    +'<div style="padding:18px">'
+    +'<div style="background:linear-gradient(135deg,#242a56,#171c3c);border-radius:14px;padding:14px 16px;color:#fff;margin-bottom:16px"><div style="font-size:11px;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.05em">Devis N° '+_escR(r.numero||'')+'</div><div style="font-size:15px;font-weight:700;margin-top:2px">'+_escR(r.client||'')+'</div><div style="font-size:22px;font-weight:800;color:#ffe576;margin-top:6px;letter-spacing:-.5px">'+fmtE(ttc)+' <span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.7)">TTC</span></div></div>'
+    +(already
+      ?('<div style="text-align:center"><img src="'+already.data+'" style="max-width:100%;border:1px solid var(--border);border-radius:10px;background:#fff;padding:8px"><div style="font-size:12.5px;color:var(--muted);margin-top:8px">Signé électroniquement par <b style="color:var(--navy)">'+_escR(already.nom||'')+'</b><br>le '+new Date(already.date).toLocaleString('fr-FR')+'</div><button class="btn bGhost" style="margin-top:12px" onclick="resignerDevis('+idx+')">Refaire la signature</button></div>')
+      :('<div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">En signant, le client valide le devis avec la mention « Bon pour accord ». Le devis passera automatiquement en statut <b>Accepté</b>.</div>'
+        +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Nom du signataire</label><input id="sigNom" value="'+_escR(r.client||'')+'" style="width:100%;margin:6px 0 12px">'
+        +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Signature (dessiner ci-dessous)</label>'
+        +'<div style="border:2px dashed #d8dceb;border-radius:12px;margin-top:6px;background:#fbfcff"><canvas id="sigCanvas" width="440" height="180" style="width:100%;height:180px;touch-action:none;cursor:crosshair;border-radius:10px"></canvas></div>'
+        +'<div style="display:flex;gap:8px;margin-top:10px"><button class="btn bGhost" onclick="clearSignaturePad()">🗑 Effacer</button><button class="btn bPrimary" style="flex:1" onclick="validerSignature('+idx+')">✅ Valider la signature</button></div>')
+    )
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+  if(!already)setTimeout(_initSigPad,60);
+}
+function resignerDevis(idx){var r=DB.devis[idx];if(r)delete r.signature;var m=g('mSigTemp');if(m)m.remove();signatureDevisModal(idx);}
+function _initSigPad(){
+  var cv=g('sigCanvas');if(!cv)return;
+  var ratio=window.devicePixelRatio||1;var rect=cv.getBoundingClientRect();
+  cv.width=rect.width*ratio;cv.height=rect.height*ratio;
+  _sigCtx=cv.getContext('2d');_sigCtx.scale(ratio,ratio);_sigCtx.lineWidth=2.4;_sigCtx.lineCap='round';_sigCtx.strokeStyle='#242a56';_sigHasStroke=false;
+  function pos(e){var r=cv.getBoundingClientRect();var t=(e.touches&&e.touches[0])||e;return {x:t.clientX-r.left,y:t.clientY-r.top};}
+  function start(e){e.preventDefault();_sigDrawing=true;var p=pos(e);_sigCtx.beginPath();_sigCtx.moveTo(p.x,p.y);}
+  function move(e){if(!_sigDrawing)return;e.preventDefault();var p=pos(e);_sigCtx.lineTo(p.x,p.y);_sigCtx.stroke();_sigHasStroke=true;}
+  function end(e){_sigDrawing=false;}
+  cv.addEventListener('mousedown',start);cv.addEventListener('mousemove',move);window.addEventListener('mouseup',end);
+  cv.addEventListener('touchstart',start,{passive:false});cv.addEventListener('touchmove',move,{passive:false});cv.addEventListener('touchend',end);
+}
+function clearSignaturePad(){var cv=g('sigCanvas');if(!cv||!_sigCtx)return;_sigCtx.clearRect(0,0,cv.width,cv.height);_sigHasStroke=false;}
+function validerSignature(idx){
+  if(!_sigHasStroke){toast('Dessine la signature avant de valider');return;}
+  var nom=((g('sigNom')&&g('sigNom').value)||'').trim();if(!nom){toast('Indique le nom du signataire');return;}
+  var cv=g('sigCanvas');if(!cv)return;
+  var r=DB.devis[idx];if(!r)return;
+  r.signature={data:cv.toDataURL('image/png'),nom:nom,date:new Date().toISOString(),by:(curUserObj?curUserObj.name:'')};
+  r.statut='Accepté';
+  save();var m=g('mSigTemp');if(m)m.remove();
+  toast('✅ Devis signé et accepté');
+  if(typeof renderDevis==='function')renderDevis();
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
@@ -6298,5 +6385,6 @@ function updateJarvisUI(state, text) {
 
 
 </script>
+<div id="qBar" class="qBar"></div>
 </body>
 </html>
