@@ -456,12 +456,13 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 .notifBell:hover{background:rgba(255,255,255,.08);}
 .notifDot{position:absolute;top:2px;right:2px;width:8px;height:8px;background:var(--red);border-radius:50%;display:none;}
 .notifDot.on{display:block;}
-.notifPanel{position:fixed;top:0;right:0;width:340px;max-width:92vw;height:100vh;background:#f7f8fc;border-left:1px solid #e9ecf5;z-index:200;display:none;flex-direction:column;box-shadow:-8px 0 32px rgba(18,22,52,.14);padding-bottom:env(safe-area-inset-bottom);box-sizing:border-box;}
-.notifPanel.on{display:flex;}
+.notifPanel{position:fixed;top:0;right:0;width:340px;max-width:92vw;height:100vh;background:#f7f8fc;border-left:1px solid #e9ecf5;z-index:200;display:flex;flex-direction:column;box-shadow:-8px 0 32px rgba(18,22,52,.14);padding-bottom:env(safe-area-inset-bottom);box-sizing:border-box;transform:translateX(105%);transition:transform .34s cubic-bezier(.16,.9,.28,1);pointer-events:none}
+.notifPanel.on{transform:translateX(0);pointer-events:auto}
 .notifPanelH{padding:16px 18px;padding-top:calc(16px + env(safe-area-inset-top));background:linear-gradient(135deg,#242a56,#171c3c);display:flex;align-items:center;justify-content:space-between}
 .notifPanelH h3{font-size:15px;font-weight:800;color:#fff;letter-spacing:-.2px}
 
-#mInst .mh,#mContact .mh{background:linear-gradient(135deg,#242a56,#171c3c);border-bottom:none;padding:18px 20px 16px;border-radius:20px 20px 0 0}
+#mInst .mh,#mContact .mh{background:linear-gradient(135deg,#242a56,#171c3c);border-bottom:none;padding:18px 20px 16px;border-radius:20px 20px 0 0;flex-wrap:wrap}
+#mIpills,#mCpills{flex-basis:100%}
 #mInst .mh h2,#mContact .mh h2{color:#fff;font-size:17px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}
 #mInst .mh h2::before{content:'⚡';width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#c79732,#ffe576);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 #mContact .mh h2::before{content:'👤';width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#c79732,#ffe576);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
@@ -480,12 +481,6 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 .skelLine{height:10px;border-radius:5px;background:linear-gradient(90deg,#eef1f8 25%,#e3e7f3 37%,#eef1f8 63%);background-size:400% 100%;animation:skel 1.4s ease infinite;margin-bottom:6px}
 .skelLine.w60{width:60%}.skelLine.w35{width:35%}
 @keyframes skel{0%{background-position:100% 50%}100%{background-position:0 50%}}
-.qBar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:150;display:none;background:rgba(255,255,255,.90);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.6);border-radius:18px;box-shadow:0 14px 36px rgba(18,22,52,.20);padding:8px;gap:6px}
-.qBar.on{display:flex}
-.qBar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:12px;text-decoration:none;color:#242a56;font-size:10.5px;font-weight:700}
-.qBar a:active{background:#eef1f8}
-.qBar .qIco{font-size:19px}
-@media (min-width:900px){.qBar{display:none !important}}
 .notifPanelH .btn.bGhost{background:rgba(255,255,255,.12);border:none;color:#fff}
 .notifPanelH .mcl{background:rgba(255,255,255,.14);color:#fff}
 .notifPanelH .mcl:hover{background:rgba(255,255,255,.24);color:#fff}
@@ -500,6 +495,12 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 .notifItem.unread .notifTxt{font-weight:700}
 .notifTime{font-size:11px;color:#9aa0b8;margin-top:4px;display:flex;align-items:center;gap:5px}
 .notifDot{width:6px;height:6px;border-radius:50%;background:#c79732;flex-shrink:0;align-self:flex-start;margin-top:5px}
+.notifDayLbl{font-size:10.5px;font-weight:800;color:#9aa0b8;text-transform:uppercase;letter-spacing:.08em;padding:12px 8px 6px}
+.notifDayLbl:first-child{padding-top:2px}
+.notifItem{opacity:0;animation:notifIn .38s ease forwards}
+@keyframes notifIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.notifItem.unread .notifIco{color:#fff}
+
 
 /* ===== RESPONSIVE MOBILE ===== */
 #sidebar{transition:transform .25s ease;}
@@ -595,35 +596,47 @@ h1,h2,h3,.pgHead h1,.cardH h3,.conqT,.kpi .v{font-family:'Plus Jakarta Sans','DM
 .cardH{border-bottom:1px solid #eef0f7}
 input:focus,select:focus,textarea:focus{border-color:var(--gold) !important}
 #sidebar nav a.on{box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
-/* ===== PREMIUM LAYER ===== */
-body{background:radial-gradient(1100px 560px at 100% -10%,#eef2fc 0%,#e9edf8 45%,#e6eaf6 100%) fixed}
-#sidebar{background:linear-gradient(180deg,#1c2150,#141838)}
-#sidebar nav a{border-radius:10px;margin:1px 8px;padding:9px 12px;font-weight:500;color:rgba(255,255,255,.70);transition:background .15s,color .15s}
-#sidebar nav a:hover{background:rgba(255,255,255,.06);color:#fff}
-#sidebar nav a.on{background:linear-gradient(90deg,rgba(199,151,50,.22),rgba(199,151,50,.04));color:#fff;font-weight:700;position:relative}
-#sidebar nav a.on::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--gold)}
-.card{border:1px solid #e9ecf5;border-radius:18px;box-shadow:0 1px 2px rgba(20,25,60,.04),0 12px 30px rgba(20,25,60,.05)}
-.cardH{padding:14px 18px}
-.cardH h3{font-size:15px;font-weight:700;letter-spacing:-.2px}
-.cardB{padding:16px 18px}
-.kpi{border-radius:16px;border:1px solid #e9ecf5;box-shadow:0 1px 2px rgba(20,25,60,.04),0 10px 26px rgba(20,25,60,.05)}
-.kpi .v{font-weight:800;letter-spacing:-.5px}
-.btn{border-radius:11px;font-weight:600;transition:transform .12s ease,box-shadow .15s ease,filter .15s}
-.btn:active{transform:translateY(1px)}
-.btn.bPrimary{background:linear-gradient(135deg,#2b3168,#191e42);box-shadow:0 6px 16px rgba(25,30,66,.20)}
-.btn.bPrimary:hover{filter:brightness(1.09)}
-.btn.bGhost{background:#fff;border:1px solid #e3e7f1}
-.btn.bGhost:hover{border-color:var(--gold);color:var(--navy)}
-input,select,textarea{border-radius:10px !important;border:1px solid #e3e7f1;transition:border-color .15s,box-shadow .15s}
-input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-shadow:0 0 0 3px rgba(199,151,50,.15)}
-.pgHead h1{font-size:23px;font-weight:800;letter-spacing:-.6px}
-.pgHead .sub{color:#8990a8}
-.ov{backdrop-filter:blur(3px);background:rgba(18,22,52,.34)}
-.modal{border-radius:20px;box-shadow:0 30px 80px rgba(18,22,52,.35);border:1px solid #eef0f7}
-.mh{padding:16px 18px;border-bottom:1px solid #eef0f7}
-.finRow{border-bottom:1px solid #f0f2f8}
-.act{border-radius:8px;transition:background .15s}
-.act:hover{background:#f2f4fb}
+/* ===== PREMIUM LAYER v2 — plus impressionnant ===== */
+body{background:
+  radial-gradient(900px 480px at 105% -8%,rgba(199,151,50,.10) 0%,rgba(199,151,50,0) 60%),
+  radial-gradient(1200px 620px at -10% 0%,#eef2fc 0%,#e9edf8 45%,#e3e7f4 100%) fixed}
+#sidebar{background:linear-gradient(165deg,#1e2454 0%,#171b3f 55%,#11142e 100%);position:relative;box-shadow:4px 0 24px rgba(10,12,32,.18)}
+#sidebar::after{content:'';position:absolute;top:0;right:0;bottom:0;width:1px;background:linear-gradient(180deg,rgba(199,151,50,.35),rgba(199,151,50,0) 40%)}
+.sLogo{position:relative}
+#sidebar nav a{border-radius:11px;margin:1.5px 9px;padding:10px 12px;font-weight:500;color:rgba(255,255,255,.68);transition:background .18s ease,color .18s ease,transform .18s ease;letter-spacing:.1px}
+#sidebar nav a:hover{background:rgba(255,255,255,.07);color:#fff;transform:translateX(2px)}
+#sidebar nav a.on{background:linear-gradient(90deg,rgba(199,151,50,.26),rgba(199,151,50,.03));color:#fff;font-weight:700;position:relative;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+#sidebar nav a.on::before{content:"";position:absolute;left:0;top:7px;bottom:7px;width:3px;border-radius:3px;background:linear-gradient(180deg,#ffe576,#c79732);box-shadow:0 0 10px rgba(199,151,50,.55)}
+.card{border:1px solid #eceff7;border-radius:20px;background:linear-gradient(180deg,#ffffff,#fcfdff);box-shadow:0 1px 2px rgba(20,25,60,.04),0 14px 34px rgba(20,25,60,.06);transition:box-shadow .25s ease,transform .25s ease}
+.card:hover{box-shadow:0 4px 10px rgba(20,25,60,.06),0 20px 46px rgba(20,25,60,.10)}
+.cardH{padding:15px 19px;position:relative}
+.cardH h3{font-size:15px;font-weight:800;letter-spacing:-.25px;color:#1f2438}
+.cardB{padding:17px 19px}
+.kpi{border-radius:18px;border:1px solid #eceff7;background:linear-gradient(160deg,#ffffff,#fbfcff);box-shadow:0 1px 2px rgba(20,25,60,.04),0 12px 28px rgba(20,25,60,.06);transition:transform .2s ease,box-shadow .2s ease;position:relative;overflow:hidden}
+.kpi:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(20,25,60,.08),0 20px 40px rgba(20,25,60,.09)}
+.kpi::before{content:'';position:absolute;top:-40%;right:-30%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(199,151,50,.09),transparent 70%)}
+.kpi .v{font-weight:800;letter-spacing:-.6px;background:linear-gradient(135deg,#1f2438,#3a4270);-webkit-background-clip:text;background-clip:text}
+.kpiIco{box-shadow:0 3px 8px rgba(20,25,60,.10);border-radius:11px}
+.btn{border-radius:12px;font-weight:700;letter-spacing:.1px;transition:transform .14s cubic-bezier(.2,.8,.3,1.2),box-shadow .18s ease,filter .18s ease}
+.btn:active{transform:translateY(1px) scale(.985)}
+.btn.bPrimary{background:linear-gradient(135deg,#2f3672,#181c40);box-shadow:0 6px 18px rgba(25,30,66,.24),inset 0 1px 0 rgba(255,255,255,.08)}
+.btn.bPrimary:hover{filter:brightness(1.12);box-shadow:0 8px 22px rgba(25,30,66,.30)}
+.btn.bGhost{background:#fff;border:1px solid #e3e7f1;box-shadow:0 1px 2px rgba(20,25,60,.03)}
+.btn.bGhost:hover{border-color:var(--gold);color:var(--navy);box-shadow:0 3px 10px rgba(199,151,50,.14)}
+input,select,textarea{border-radius:11px !important;border:1px solid #e3e7f1;transition:border-color .18s ease,box-shadow .18s ease;background:#fff}
+input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-shadow:0 0 0 3px rgba(199,151,50,.16),0 2px 8px rgba(199,151,50,.10)}
+.pgHead h1{font-size:24px;font-weight:800;letter-spacing:-.7px;background:linear-gradient(135deg,#1f2438,#333a63);-webkit-background-clip:text;background-clip:text;color:#1f2438}
+.pgHead .sub{color:#8990a8;font-weight:500}
+.ov{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);background:rgba(15,18,42,.42)}
+.modal{border-radius:22px;box-shadow:0 8px 20px rgba(18,22,52,.18),0 36px 90px rgba(18,22,52,.32);border:1px solid #f0f1f8}
+.mh{padding:17px 19px;border-bottom:1px solid #eef0f7}
+.finRow{border-bottom:1px solid #f0f2f8;transition:background .15s ease}
+.finRow:hover{background:#fafbff}
+.act{border-radius:9px;transition:background .16s ease,transform .12s ease}
+.act:hover{background:#f2f4fb;transform:translateY(-1px)}
+.bdg{box-shadow:0 1px 3px rgba(20,25,60,.06);font-weight:700 !important;letter-spacing:.15px}
+table thead tr{background:linear-gradient(180deg,#f7f8fd,#f1f3fa)}
+table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !important;text-transform:uppercase;letter-spacing:.05em}
 #mFicheTemp .modal{overflow:hidden;padding:0}
 .aiP{font-size:13.5px;line-height:1.6;margin:0 0 9px;color:#2b3050}
 .aiH{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#c79732;margin:13px 0 7px}
@@ -854,7 +867,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
       <div class="pgHead"><div><h1>Tableau de bord</h1><p class="sub">Vue d'ensemble</p></div><button class="btn bPrimary" onclick="openIM(-1)">+ Installation</button></div>
       <div class="kpis" id="dashKpis"></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📈 Analytics</h3></div><div class="cardB" id="analyticsBox"></div></div>
-      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📢 Message à l'équipe</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Envoie un message qui apparaît en bandeau + notification chez tes commerciaux et installateurs.</div><button class="btn bPrimary" onclick="broadcastModal()">📢 Envoyer un message</button></div></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📢 Message à l'équipe</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Envoie un message qui apparaît en bandeau + notification chez tes commerciaux et installateurs.</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn bPrimary" onclick="broadcastModal()">📢 Envoyer un message</button><button class="btn bGhost" onclick="eventReminderModal()">🔔 Programmer un rappel</button></div></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🔔 Mes rappels</h3></div><div class="cardB" id="rappelsDash" style="padding:8px 0"></div></div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px;">
         <div class="card"><div class="cardH"><h3>CA mensuel</h3></div><div class="cardB"><div class="chartWrap"><canvas id="dashChart"></canvas></div></div></div>
@@ -1049,7 +1062,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Vos outils de conquête</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px">
         <div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--purple-bg)">🎯</div><div class="conqT">Où prospecter</div><div class="conqD">L'IA propose des secteurs</div></div>
-        <div class="conqCard" onclick="nav('pgProspects')"><div class="conqIco" style="background:var(--blue-bg)">🔍</div><div class="conqT">Trouver des entreprises</div><div class="conqD">Base INSEE + contact</div></div><div class="conqCard" onclick="nav('pgLinkedIn')"><div class="conqIco" style="background:#e0e7ff">💼</div><div class="conqT">LinkedIn</div><div class="conqD">Leads + messages IA</div></div><div class="conqCard" onclick="simulateurModal()"><div class="conqIco" style="background:#fef3c7">💶</div><div class="conqT">Simulateur d'aides</div><div class="conqD">Prix après ADVENIR</div></div><div class="conqCard" onclick="rechargeModal()"><div class="conqIco" style="background:#dcfce7">🔌</div><div class="conqT">Temps de recharge</div><div class="conqD">Calcul pour le client</div></div><div class="conqCard" onclick="coutRechargeModal()"><div class="conqIco" style="background:#dbeafe">🔋</div><div class="conqT">Coût de recharge</div><div class="conqD">Économies vs essence</div></div>
+        <div class="conqCard" onclick="nav('pgProspects')"><div class="conqIco" style="background:var(--blue-bg)">🔍</div><div class="conqT">Trouver des entreprises</div><div class="conqD">Base INSEE + contact</div></div><div class="conqCard" onclick="nav('pgLinkedIn')"><div class="conqIco" style="background:#e0e7ff">💼</div><div class="conqT">LinkedIn</div><div class="conqD">Leads + messages IA</div></div><div class="conqCard" onclick="simulateurModal()"><div class="conqIco" style="background:#fef3c7">💶</div><div class="conqT">Simulateur d'aides</div><div class="conqD">Prix après ADVENIR</div></div><div class="conqCard" onclick="rechargeModal()"><div class="conqIco" style="background:#dcfce7">🔌</div><div class="conqT">Temps de recharge</div><div class="conqD">Calcul pour le client</div></div><div class="conqCard" onclick="coutRechargeModal()"><div class="conqIco" style="background:#dbeafe">🔋</div><div class="conqT">Coût de recharge</div><div class="conqD">Économies vs essence</div></div><div class="conqCard" onclick="recommandeurModal()"><div class="conqIco" style="background:#ede9fe">💡</div><div class="conqT">Recommandeur de borne</div><div class="conqD">Guide le client</div></div><div class="conqCard" onclick="rentabiliteModal()"><div class="conqIco" style="background:#dcfce7">📈</div><div class="conqT">Rentabilité pro (ROI)</div><div class="conqD">Argument B2B</div></div>
         <div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--green-bg)">✍️</div><div class="conqT">Rédiger une campagne</div><div class="conqD">Email · appel · LinkedIn</div></div>
         <div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--orange-bg)">🤝</div><div class="conqT">Parrainage</div><div class="conqD">Bouche-à-oreille</div></div>
         <div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--gold3)">🔄</div><div class="conqT">Prospects dormants</div><div class="conqD">Réactiver avec l'IA</div></div>
@@ -1060,7 +1073,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
         <div class="conqCard" onclick="propositionsDuJour()"><div class="conqIco" style="background:var(--gold3)">💡</div><div class="conqT">Propositions du jour</div><div class="conqD">L'IA analyse tout et propose</div></div><div class="conqCard" onclick="briefConqueteModal()"><div class="conqIco" style="background:var(--blue-bg)">📋</div><div class="conqT">Brief de conquête</div><div class="conqD">Avant d'appeler un prospect</div></div>
         <div class="conqCard" onclick="logAppelModal()"><div class="conqIco" style="background:var(--green-bg)">📞</div><div class="conqT">Log d'appel</div><div class="conqD">Notes → suivi structuré</div></div>
         <div class="conqCard" onclick="battlecardModal()"><div class="conqIco" style="background:var(--red-bg)">⚔️</div><div class="conqT">Battlecard</div><div class="conqD">Répondre à la concurrence</div></div>
-        <div class="conqCard" onclick="rapportHebdo()"><div class="conqIco" style="background:var(--gold3)">📊</div><div class="conqT">Rapport hebdo</div><div class="conqD">Vert / orange / rouge</div></div><div class="conqCard" onclick="objectionModal()"><div class="conqIco" style="background:#fee2e2">🛡️</div><div class="conqT">Objection killer</div><div class="conqD">Réponse en temps réel</div></div><div class="conqCard" onclick="commissionModal()"><div class="conqIco" style="background:var(--gold3)">💰</div><div class="conqT">Ma commission</div><div class="conqD">Ce que tu gagnes</div></div>
+        <div class="conqCard" onclick="rapportHebdo()"><div class="conqIco" style="background:var(--gold3)">📊</div><div class="conqT">Rapport hebdo</div><div class="conqD">Vert / orange / rouge</div></div><div class="conqCard" onclick="objectionModal()"><div class="conqIco" style="background:#fee2e2">🛡️</div><div class="conqT">Objection killer</div><div class="conqD">Réponse en temps réel</div></div><div class="conqCard" onclick="commissionModal()"><div class="conqIco" style="background:var(--gold3)">💰</div><div class="conqT">Ma commission</div><div class="conqD">Ce que tu gagnes</div></div><div class="conqCard" onclick="eventReminderModal()"><div class="conqIco" style="background:#e0e7ff">🔔</div><div class="conqT">Rappeler un collègue</div><div class="conqD">Installateur, commercial...</div></div>
       </div>
     </div>
     <div class="pg" id="pgAcquisition">
@@ -1835,7 +1848,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
 
 <div class="ov" id="mContact">
   <div class="modal">
-    <div class="mh"><h2 id="mContactT">Nouveau contact</h2><button class="mcl" onclick="closeContactModal()">&#10005;</button></div>
+    <div class="mh"><h2 id="mContactT">Nouveau contact</h2><button class="mcl" onclick="closeContactModal()">&#10005;</button><div id="mCpills" style="grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;width:100%"></div></div>
     <div class="fgrid">
       <div class="fi"><label>Prénom *</label><input id="mCprenom" placeholder="Prénom"></div>
       <div class="fi"><label>Nom *</label><input id="mCnom" placeholder="Nom"></div>
@@ -1851,7 +1864,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
       <div class="fi"><label>Date de visite</label><input type="date" id="mCvisiteDate"></div>
       <div class="fi"><label>Heure</label><input type="time" id="mCvisiteHeure"></div>
       <div class="fi"><label>Statut visite</label><select id="mCvisiteStat"><option value="">--</option><option>À planifier</option><option>Planifiée</option><option>Réalisée</option><option>Annulée</option></select></div>
-      <div class="fi full"><label>🔌 Modèle de borne souhaité</label><select id="mCborne"><option value="">-- Choisir un modèle --</option></select></div>
+      <div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">💡 Projet</div><div class="fi full"><label>🔌 Modèle de borne souhaité</label><select id="mCborne"><option value="">-- Choisir un modèle --</option></select></div>
       <div class="fi full"><label>Notes</label><textarea id="mCnotes" placeholder="Notes..."></textarea></div>
     </div>
     <div class="mf"><button class="btn bGhost" onclick="closeContactModal()">Annuler</button><button class="btn bPrimary" onclick="saveContact()">Enregistrer</button></div>
@@ -1914,12 +1927,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
 <!-- SIGNATURE CLIENT -->
 <div class="ov" id="mInst">
   <div class="modal lg">
-    <div class="mh"><h2 id="mInstT">Installation</h2><button class="mcl" onclick="closeIM()">&#10005;</button></div>
+    <div class="mh"><h2 id="mInstT">Installation</h2><button class="mcl" onclick="closeIM()">&#10005;</button><div id="mIpills" style="grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;width:100%"></div></div>
     <div id="mIcreatorInfo" style="margin-bottom:12px"></div>
     <div class="fgrid">
       <div class="fi"><label>Nom du chantier *</label><input id="mIchantier" placeholder="Ex: Borne M. Dupont"></div>
       <div class="fi"><label>Client</label><input id="mIclient" placeholder="Nom du client"></div>
-      <div class="fi"><label>Adresse <a onclick="itineraireInstall()" style="color:var(--gold);cursor:pointer;font-size:11px;font-weight:700">🧭 Itinéraire</a></label><input id="mIadresse" placeholder="Adresse du chantier"></div><div class="fi"><label>Ville / Code postal <a onclick="trouverVilleCP()" style="color:var(--gold);cursor:pointer;font-size:11px;font-weight:700">📍 Auto</a></label><div style="display:flex;gap:8px"><input id="mIville" placeholder="Ville" style="flex:2"><input id="mIcp" placeholder="CP" style="flex:1"></div></div><div class="fi"><label>Raccordement électrique</label><select id="mIphase" onchange="majCableType()"><option value="">--</option><option value="Monophasé">Monophasé</option><option value="Triphasé">Triphasé</option></select></div><div class="fi"><label>Câble (auto)</label><input id="mIcableType" readonly placeholder="défini par le raccordement" style="background:#f6f8fd"></div>
+      <div class="fi"><label>Adresse <a onclick="itineraireInstall()" style="color:var(--gold);cursor:pointer;font-size:11px;font-weight:700">🧭 Itinéraire</a></label><input id="mIadresse" placeholder="Adresse du chantier"></div><div class="fi"><label>Ville / Code postal <a onclick="trouverVilleCP()" style="color:var(--gold);cursor:pointer;font-size:11px;font-weight:700">📍 Auto</a></label><div style="display:flex;gap:8px"><input id="mIville" placeholder="Ville" style="flex:2"><input id="mIcp" placeholder="CP" style="flex:1"></div></div><div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">⚙️ Détails techniques</div><div class="fi"><label>Raccordement électrique</label><select id="mIphase" onchange="majCableType()"><option value="">--</option><option value="Monophasé">Monophasé</option><option value="Triphasé">Triphasé</option></select></div><div class="fi"><label>Câble (auto)</label><input id="mIcableType" readonly placeholder="défini par le raccordement" style="background:#f6f8fd"></div>
       <div class="fi"><label>Téléphone client</label><input id="mItel" placeholder="06 00 00 00 00"></div>
       <div class="fi"><label>Type de travaux</label>
         <select id="mItype"><option>Borne de recharge</option><option>Tableau électrique</option><option>Mise aux normes</option><option>Panneaux solaires</option><option>Autre</option></select>
@@ -1955,8 +1968,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-
       <div class="fi"><label>Statut paiement</label>
         <select id="mIpaiement"><option>En attente</option><option>Acompte reçu</option><option>Payé</option><option>En retard</option></select>
       </div>
-      <div class="fi full"><label>Notes</label><textarea id="mInotes" placeholder="Notes internes..."></textarea></div>
+      <div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">📝 Suivi</div><div class="fi full"><label>Notes</label><textarea id="mInotes" placeholder="Notes internes..."></textarea></div>
       <div class="fi full"><label>📷 Photos / Ordre de mission</label><div id="mIphotos" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div><input type="file" accept="image/*" capture="environment" multiple onchange="addInstallPhoto(this)" style="font-size:12px"></div>
+      <div class="fi full"><label>⏱️ Pointage du chantier</label><div id="mIpointage"></div></div>
+      <div class="fi full"><button class="btn bGhost" style="width:100%;color:#dc2626;border-color:#fecaca" onclick="if(typeof eInst!=='undefined'&&eInst>=0)signalerProblemeModal(eInst);else toast('Enregistre d\'abord l\'installation')">⚠️ Signaler un problème</button></div>
       <div class="fi full"><label>🕓 Historique des modifications</label><div id="mIaudit" style="max-height:220px;overflow:auto;background:#f8f9fd;border:1px solid var(--border);border-radius:10px;padding:8px 10px"></div></div>
       <div class="fi full">
         <label>Devis Tiime (PDF, max 5MB)</label>
@@ -2416,7 +2431,32 @@ function updateNotifDiag(){
     dot(!!window._fcmTokenOk)+' Jeton push obtenu : <b>'+(window._fcmTokenOk?'oui ✅':'pas encore')+'</b>'+
     (iosVer?'<br>📱 iOS détecté : <b>'+iosVer+'</b>':'');
 }
-function renderNotifPanel(){updateNotifDiag();var pb=g('notifPermBtn');if(pb){var st=notifPermState();pb.textContent=st==='granted'?'🔔 Notifications activées':(st==='denied'?'🔕 Bloquées (voir réglages)':'🔔 Activer les notifications');pb.disabled=(st==='granted');pb.style.opacity=st==='granted'?'.6':'1';}var notifs=visibleNotifs();g('notifList').innerHTML=notifs.length?notifs.map(function(n){var gi=(DB.notifications||[]).indexOf(n);return '<div class="notifItem'+(n.read?'':' unread')+'" onclick="clickNotif('+gi+')">'+'<div class="notifIco">'+n.ico+'</div>'+'<div style="flex:1"><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+fmtNotifTime(n.ts)+(n.link?' · <span style="color:#c79732;font-weight:700">Voir la fiche ›</span>':'')+'</div></div>'+(n.read?'':'<div class="notifDot"></div>')+'</div>';}).join(''):'<div style="text-align:center;padding:50px 20px;color:#9aa0b8;font-size:13px"><div style="font-size:32px;margin-bottom:10px;opacity:.5">🔔</div>Aucune notification pour le moment</div>';}
+var _NOTIF_COL={devis:'#059669',win:'#c79732',opp:'#7c3aed',install:'#2563eb',visite:'#0891b2',sav:'#dc2626',pay:'#c79732',assign:'#2563eb',message:'#242a56',user:'#8990a8',prospects:'#d97706',done:'#059669'};
+function _notifDayLabel(ts){
+  var d=new Date(ts);var now=new Date();var d0=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  var dd=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  var diff=Math.round((d0-dd)/86400000);
+  if(diff<=0)return "Aujourd'hui";if(diff===1)return 'Hier';if(diff<7)return 'Cette semaine';return 'Plus ancien';
+}
+function renderNotifPanel(){updateNotifDiag();var pb=g('notifPermBtn');if(pb){var st=notifPermState();pb.textContent=st==='granted'?'🔔 Notifications activées':(st==='denied'?'🔕 Bloquées (voir réglages)':'🔔 Activer les notifications');pb.disabled=(st==='granted');pb.style.opacity=st==='granted'?'.6':'1';}
+  var notifs=visibleNotifs();
+  if(!notifs.length){g('notifList').innerHTML='<div class="emptyState"><div class="emptyIco">🔔</div><div class="emptyTitle">Aucune notification</div><div class="emptySub">Tu es à jour, rien à signaler</div></div>';return;}
+  var groups={};var order=[];
+  notifs.forEach(function(n){var lbl=_notifDayLabel(n.ts);if(!groups[lbl]){groups[lbl]=[];order.push(lbl);}groups[lbl].push(n);});
+  var html='';var k=0;
+  order.forEach(function(lbl){
+    html+='<div class="notifDayLbl">'+lbl+'</div>';
+    groups[lbl].forEach(function(n){
+      var gi=(DB.notifications||[]).indexOf(n);var col=_NOTIF_COL[n.type]||'#242a56';
+      html+='<div class="notifItem'+(n.read?'':' unread')+'" style="animation-delay:'+(k*28)+'ms" onclick="clickNotif('+gi+')">'
+        +'<div class="notifIco" style="'+(n.read?'':('background:linear-gradient(135deg,'+col+',#171c3c)'))+'">'+n.ico+'</div>'
+        +'<div style="flex:1;min-width:0"><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+fmtNotifTime(n.ts)+(n.link?' · <span style="color:#c79732;font-weight:700">Voir la fiche ›</span>':'')+'</div></div>'
+        +(n.read?'':'<div class="notifDot"></div>')+'</div>';
+      k++;
+    });
+  });
+  g('notifList').innerHTML=html;
+}
 function clickNotif(i){var n=DB.notifications[i];if(n)n.read=true;save();updateNotifBadge();renderNotifPanel();if(n&&n.link){openFromNotif(n.link);return;}if(n&&n.type==='user'&&isAdmin()){var np=g('notifPanel');if(np)np.classList.remove('on');nav('pgUsers');}}
 function openFromNotif(link){
   if(!link||!link.kind)return;
@@ -2738,7 +2778,7 @@ function openContactModal(idx){
   g('mCsociete').value=r.societe||'';g('mCposte').value=r.poste||'';
   g('mCemail').value=r.email||'';g('mCtel').value=r.tel||'';
   g('mCtype').value=r.type||'Client';g('mCstat').value=r.statut||'Actif';
-  g('mCadresse').value=r.adresse||'';g('mCnotes').value=r.notes||'';if(typeof _fillBorneSelect==='function')_fillBorneSelect('mCborne');if(g('mCborne'))g('mCborne').value=r.borneModele||'';
+  g('mCadresse').value=r.adresse||'';g('mCnotes').value=r.notes||'';if(typeof _renderQuickPills==='function')_renderQuickPills('mCpills',r.tel,r.email,r.adresse);if(typeof _fillBorneSelect==='function')_fillBorneSelect('mCborne');if(g('mCborne'))g('mCborne').value=r.borneModele||'';
   fillVisiteQui('mCvisiteQui',r.visiteQui||'');
   g('mCvisiteDate').value=r.visiteDate||'';g('mCvisiteHeure').value=r.visiteHeure||'';
   g('mCvisiteStat').value=r.visiteStat||'';
@@ -3068,7 +3108,7 @@ function renderT(){
   g('instTable').innerHTML=list.length?list.map(function(r){
     var idx=DB.installations.indexOf(r);
     return '<tr style="cursor:pointer" onclick="if(!event.target.closest(\'button,a,input,select\'))openIM('+idx+')"><td><strong>'+r.chantier+'</strong><br><span style="font-size:11px;color:var(--muted)">'+r.client+'</span></td>'
-      +'<td><div>'+r.type+'</div>'+(r.typeBien?'<div style="font-size:11px;color:var(--muted)">'+r.typeBien+(r.nbBornes?' &middot; '+r.nbBornes+' borne(s)':'')+'</div>':'')+'</td>'
+      +'<td><div>'+r.type+'</div>'+(r.borneModele?'<div style="font-size:11px;color:#166534;font-weight:600">🔌 '+r.borneModele+'</div>':'')+(r.typeBien?'<div style="font-size:11px;color:var(--muted)">'+r.typeBien+(r.nbBornes?' &middot; '+r.nbBornes+' borne(s)':'')+'</div>':'')+'</td>'
       +'<td>'+(r.installateur||'<span style="color:var(--muted)">Non assigné</span>')+'</td>'
       +'<td><span class="bdg '+(BDGS[r.statut]||'')+'">'+r.statut+'</span></td>'
       +'<td>'+(r.dateDebut?fmtD(r.dateDebut):'--')+'</td>'
@@ -3112,10 +3152,10 @@ function deduireStock(inst){
   inst.stockDeduit=true;
 }
 function openIM(idx){
-  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof _fillBorneSelect==='function')_fillBorneSelect('mIborne');if(g('mIborne'))g('mIborne').value=r.borneModele||'';if(typeof renderInstallPhotos==="function")renderInstallPhotos();if(typeof renderAuditInst==='function')renderAuditInst();
+  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof _fillBorneSelect==='function')_fillBorneSelect('mIborne');if(g('mIborne'))g('mIborne').value=r.borneModele||'';if(typeof renderInstallPhotos==="function")renderInstallPhotos();if(typeof renderAuditInst==='function')renderAuditInst();if(typeof renderPointage==='function'&&idx>=0)renderPointage(idx);
   g('mInstT').textContent=idx>=0?'Modifier installation':'Nouvelle installation';
   g('mIchantier').value=r.chantier||'';g('mIclient').value=r.client||'';
-  g('mIadresse').value=r.adresse||'';if(g('mIville'))g('mIville').value=r.ville||'';if(g('mIcp'))g('mIcp').value=r.cp||'';if(g('mIphase'))g('mIphase').value=r.phase||'';if(g('mIcableType'))g('mIcableType').value=r.cableType||'';g('mItel').value=r.tel||'';
+  g('mIadresse').value=r.adresse||'';if(typeof _renderQuickPills==='function')_renderQuickPills('mIpills',r.tel,'',([r.adresse,r.cp,r.ville].filter(Boolean).join(' ')));if(g('mIville'))g('mIville').value=r.ville||'';if(g('mIcp'))g('mIcp').value=r.cp||'';if(g('mIphase'))g('mIphase').value=r.phase||'';if(g('mIcableType'))g('mIcableType').value=r.cableType||'';g('mItel').value=r.tel||'';
   g('mItype').value=r.type||'Borne de recharge';g('mIbien').value=r.typeBien||'Maison individuelle';
   g('mInbbornes').value=r.nbBornes||1;g('mIpuissance').value=r.puissance||'7.4 kW';
   var iSel=g('mIinst');iSel.innerHTML='<option value="">Non assigné</option>';
@@ -3243,7 +3283,7 @@ function openFiche(idx){
       +'<div class="frow"><span>Adresse</span><span>'+(r.adresse||'--')+'</span></div>'
       +'<div class="frow"><span>Téléphone</span><span>'+(r.tel||'--')+'</span></div>'
     +'</div>'
-    +'<div class="ficheBlock"><div class="ficheSectionH">Installation</div>'
+    +'<div class="ficheBlock"><div class="ficheSectionH">Installation</div>'+(r.borneModele?'<div class="frow" style="background:linear-gradient(135deg,#fdf3cc,#fff7de);border-radius:8px;padding:8px 10px;margin:-2px 0 8px"><span style="font-weight:700;color:var(--navy)">🔌 Borne à installer</span><span style="font-weight:800;color:var(--navy)">'+r.borneModele+'</span></div>':'<div class="frow"><span>🔌 Borne à installer</span><span style="color:var(--muted)">Non précisée</span></div>')+''
       +'<div class="frow"><span>Type de travaux</span><span>'+r.type+'</span></div>'
       +'<div class="frow"><span>Type de bien</span><span>'+(r.typeBien||'--')+'</span></div>'
       +(r.nbBornes?'<div class="frow"><span>Bornes</span><span>'+r.nbBornes+(r.puissance?' x '+r.puissance:'')+'</span></div>':'')
@@ -4931,18 +4971,6 @@ function renderAuditInst(){
 function _seedAvisLink(){try{if(typeof DB==='undefined'||!DB)return;if(!DB.avisLink){DB.avisLink='https://share.google/P6b8VN5mSARPX1Uhm';if(typeof save==='function')save();}}catch(e){}}
 try{window.addEventListener('load',function(){setTimeout(_seedAvisLink,300);});}catch(e){}
 function _emptyRow(colspan,ico,title,sub){return '<tr><td colspan="'+colspan+'"><div class="emptyState"><div class="emptyIco">'+ico+'</div><div class="emptyTitle">'+title+'</div>'+(sub?'<div class="emptySub">'+sub+'</div>':'')+'</div></td></tr>';}
-function renderQuickBar(){
-  var el=g('qBar');if(!el)return;
-  var role=(typeof getRole==='function')?getRole():'';
-  var items=[];
-  if(role==='commercial'){items=[{ic:'👤',lbl:'Prospect',act:"nav('pgProspects');setTimeout(function(){openProspectModal(-1);},200)"},{ic:'📋',lbl:'Devis',act:"nav('pgDevis');setTimeout(function(){openDM(-1);},200)"},{ic:'🚀',lbl:'Conquête',act:"nav('pgConquete')"},{ic:'🎯',lbl:'Pipeline',act:"nav('pgPipeline')"}];}
-  else if(role==='installer'){items=[{ic:'📅',lbl:'Ma journée',act:"nav('pgMaJournee')"},{ic:'⚡',lbl:'Installations',act:"nav('pgInst')"},{ic:'🧭',lbl:'Itinéraire',act:"itineraireInstall()"}];}
-  else if(role==='admin'||role==='dirtech'){items=[{ic:'📊',lbl:'Dashboard',act:"nav('pgDash')"},{ic:'🚀',lbl:'Conquête',act:"nav('pgConquete')"},{ic:'⚡',lbl:'Installations',act:"nav('pgInst')"},{ic:'💬',lbl:'Messages',act:"nav('pgChat')"}];}
-  if(!items.length){el.classList.remove('on');return;}
-  el.innerHTML=items.map(function(it){return '<a onclick="'+_escR(it.act).replace(/"/g,'&quot;')+'"><div class="qIco">'+it.ic+'</div>'+it.lbl+'</a>';}).join('');
-  el.classList.add('on');
-}
-try{window.addEventListener('load',function(){setTimeout(function(){if(typeof renderQuickBar==='function')renderQuickBar();},1000);});}catch(e){}
 var _sigDrawing=false,_sigCtx=null,_sigHasStroke=false,_sigDevisIdx=-1;
 function signatureDevisModal(idx){
   var r=DB.devis[idx];if(!r)return;_sigDevisIdx=idx;
@@ -4988,6 +5016,208 @@ function validerSignature(idx){
   save();var m=g('mSigTemp');if(m)m.remove();
   toast('✅ Devis signé et accepté');
   if(typeof renderDevis==='function')renderDevis();
+}
+function eventReminderModal(){
+  var accts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.status==='active'&&a.role!=='admin';});
+  var groups={commercial:'💼 Commerciaux',installer:'👷 Installateurs',dirtech:'🛠️ Direction technique',cm:'📣 Community management'};
+  var byRole={};accts.forEach(function(a){var r=a.role||'autre';if(!byRole[r])byRole[r]=[];byRole[r].push(a);});
+  var listHtml='';
+  Object.keys(groups).forEach(function(r){
+    if(!byRole[r]||!byRole[r].length)return;
+    listHtml+='<div style="font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 5px">'+groups[r]+'</div>';
+    byRole[r].forEach(function(a){
+      listHtml+='<label style="display:flex;align-items:center;gap:9px;padding:8px 4px;border-bottom:1px solid #f0f2f8;cursor:pointer;font-size:13.5px"><input type="checkbox" class="evtRecip" value="'+a.id+'" data-name="'+_escR(a.name)+'" style="width:16px;height:16px">'+_escR(a.name)+'</label>';
+    });
+  });
+  if(!listHtml)listHtml='<div style="font-size:12.5px;color:var(--muted);padding:10px 0">Aucun commercial/installateur actif trouvé.</div>';
+  var h='<div class="ov on" id="mEvtTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>🔔 Rappel d\'événement</h2><button class="mcl" onclick="g(\'mEvtTemp\').remove()">✕</button></div><div style="padding:16px">'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Objet du rappel</label><input id="evtTitre" placeholder="Ex: Livraison matériel, RDV client, réunion..." style="width:100%;margin:6px 0 12px">'
+    +'<div style="display:flex;gap:10px;margin-bottom:6px"><div style="flex:1"><label style="font-size:12px;font-weight:600;color:var(--muted)">Date</label><input id="evtDate" type="date" value="'+new Date(Date.now()+86400000).toISOString().slice(0,10)+'" style="width:100%"></div><div style="width:110px"><label style="font-size:12px;font-weight:600;color:var(--muted)">Heure</label><input id="evtHeure" type="time" style="width:100%"></div></div>'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-top:10px">Qui doit être prévenu ?</label>'
+    +'<div style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:4px 10px;margin-top:6px">'+listHtml+'</div>'
+    +'<button class="btn bPrimary" style="width:100%;margin-top:14px" onclick="envoyerEventReminder()">🔔 Programmer le rappel</button>'
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function envoyerEventReminder(){
+  var titre=((g('evtTitre')&&g('evtTitre').value)||'').trim();if(!titre){toast('Indique l\'objet du rappel');return;}
+  var date=(g('evtDate')&&g('evtDate').value)||'';var heure=(g('evtHeure')&&g('evtHeure').value)||'';
+  var checks=document.querySelectorAll('.evtRecip:checked');
+  if(!checks.length){toast('Choisis au moins une personne à prévenir');return;}
+  if(!DB.taches)DB.taches=[];
+  var titreFinal=titre+(heure?(' — '+heure):'');
+  var who=(curUserObj?curUserObj.name:'');var n=0;
+  checks.forEach(function(cb){
+    var uid=cb.value;var name=cb.getAttribute('data-name');
+    DB.taches.push({id:DB.nextId++,userId:uid,titre:titreFinal,date:date,priorite:'normale',fait:false,createdBy:(curUserObj?curUserObj.id:''),createdAt:new Date().toISOString()});
+    addNotif('event','🔔 Nouveau rappel'+(who?(' de '+who):'')+' : '+titreFinal+(date?(' — '+fmtD(date)):''),'🔔',name);
+    n++;
+  });
+  save();var m=g('mEvtTemp');if(m)m.remove();
+  toast('✅ Rappel programmé pour '+n+' personne(s)');
+}
+function _checkInstallJm1(){
+  try{
+    if(!DB.installations||!DB.installations.length)return;
+    if(!DB._rappelsJm1Sent)DB._rappelsJm1Sent={};
+    var accts=(typeof loadAccounts==='function'?loadAccounts():[]);
+    var tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);var tKey=tomorrow.toISOString().slice(0,10);
+    var changed=false;
+    DB.installations.forEach(function(inst){
+      if(!inst.dateDebut||!inst.installateur)return;
+      if(inst.dateDebut.slice(0,10)!==tKey)return;
+      if(inst.statut==='Annulée'||inst.statut==='Terminée')return;
+      var sentKey=inst.id+'_'+tKey;
+      if(DB._rappelsJm1Sent[sentKey])return;
+      var acc=accts.find(function(a){return a.name===inst.installateur;});
+      var uid=acc?acc.id:'';
+      var txt='📅 Demain : '+(inst.chantier||inst.client||'chantier')+(inst.heure?(' à '+inst.heure):'')+(inst.adresse?(' — '+inst.adresse):'');
+      if(!DB.taches)DB.taches=[];
+      DB.taches.push({id:DB.nextId++,userId:uid,titre:txt,date:tKey,priorite:'haute',fait:false,createdBy:'auto',createdAt:new Date().toISOString()});
+      addNotif('install',txt,'⚡',inst.installateur);
+      DB._rappelsJm1Sent[sentKey]=true;changed=true;
+    });
+    if(changed&&typeof save==='function')save();
+  }catch(e){}
+}
+try{window.addEventListener('load',function(){setTimeout(_checkInstallJm1,2600);});}catch(e){}
+try{setInterval(_checkInstallJm1,3*3600000);}catch(e){}
+function _checkRdvJm1(){
+  try{
+    if(!DB.prospects||!DB.prospects.length)return;
+    if(!DB._rappelsRdvSent)DB._rappelsRdvSent={};
+    var accts=(typeof loadAccounts==='function'?loadAccounts():[]);
+    var tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);var tKey=tomorrow.toISOString().slice(0,10);
+    var changed=false;
+    DB.prospects.forEach(function(p){
+      if(!p.visiteDate)return;
+      if(p.visiteDate.slice(0,10)!==tKey)return;
+      var sentKey='rdv_'+p.id+'_'+tKey;
+      if(DB._rappelsRdvSent[sentKey])return;
+      var who=p.visiteQui||p.ownerName||'';
+      var acc=accts.find(function(a){return a.name===who;});
+      var uid=acc?acc.id:(p.ownerId||'');
+      if(!uid&&!who)return;
+      var txt='📅 Demain : RDV avec '+(p.nom||p.societe||'un prospect')+(p.visiteHeure?(' à '+p.visiteHeure):'')+(p.ville?(' — '+p.ville):'');
+      if(!DB.taches)DB.taches=[];
+      DB.taches.push({id:DB.nextId++,userId:uid,titre:txt,date:tKey,priorite:'haute',fait:false,createdBy:'auto',createdAt:new Date().toISOString()});
+      addNotif('visite',txt,'📅',who||'');
+      DB._rappelsRdvSent[sentKey]=true;changed=true;
+    });
+    if(changed&&typeof save==='function')save();
+  }catch(e){}
+}
+try{window.addEventListener('load',function(){setTimeout(_checkRdvJm1,2800);});}catch(e){}
+try{setInterval(_checkRdvJm1,3*3600000);}catch(e){}
+function _cleanCatalogueAmbigu(){
+  try{
+    if(typeof DB==='undefined'||!DB||!DB.catalogue)return;
+    if(DB._catCleanAmbigu)return;
+    var ambigus=['Raedian NEO','Ohme ePod S',"Legrand Green'Up Home M3"];
+    var noms=DB.catalogue.map(function(p){return p.nom;});
+    var changed=false;
+    ambigus.forEach(function(nomAmbigu){
+      var has74=noms.indexOf(nomAmbigu+' 7,4 kW')>=0;var has22=noms.indexOf(nomAmbigu+' 22 kW')>=0;
+      if(has74&&has22){
+        var before=DB.catalogue.length;
+        DB.catalogue=DB.catalogue.filter(function(p){return p.nom!==nomAmbigu;});
+        if(DB.catalogue.length<before)changed=true;
+      }
+    });
+    DB._catCleanAmbigu=1;
+    if(changed&&typeof save==='function')save();
+  }catch(e){}
+}
+try{window.addEventListener('load',function(){setTimeout(_cleanCatalogueAmbigu,700);});}catch(e){}
+function recommandeurModal(){
+  var h='<div class="ov on" id="mRecoTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>💡 Recommandeur de borne</h2><button class="mcl" onclick="g(\'mRecoTemp\').remove()">✕</button></div><div style="padding:16px">'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Type de véhicule</label><select id="recoVeh" style="width:100%;margin:6px 0 12px"><option value="citadine">Citadine (petite batterie)</option><option value="berline">Berline / SUV familial</option><option value="flotte">Flotte / plusieurs véhicules</option></select>'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Usage principal</label><select id="recoUsage" style="width:100%;margin:6px 0 12px"><option value="quotidien">Recharge quotidienne à domicile</option><option value="rapide">Besoin de recharge rapide (peu de temps)</option><option value="pro">Usage professionnel / plusieurs bornes</option></select>'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Budget client</label><select id="recoBudget" style="width:100%;margin:6px 0 12px"><option value="serre">Serré, priorité au prix</option><option value="normal">Normal</option><option value="premium">Peu de contrainte, veut le meilleur</option></select>'
+    +'<button class="btn bPrimary" style="width:100%" onclick="calcRecommandeur()">Recommander une borne</button><div id="recoRes" style="margin-top:14px"></div>'
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function calcRecommandeur(){
+  var veh=(g('recoVeh')&&g('recoVeh').value)||'citadine';var usage=(g('recoUsage')&&g('recoUsage').value)||'quotidien';var budget=(g('recoBudget')&&g('recoBudget').value)||'normal';
+  var puiss=(usage==='rapide'||veh==='flotte')?'22 kW':'7,4 kW';
+  var cat=(DB.catalogue||[]).filter(function(p){return (p.cat==='Borne')&&p.nom.indexOf(puiss.replace(',','.').replace(' kW',''))>=0 || (p.nom.indexOf(puiss)>=0);});
+  if(!cat.length)cat=(DB.catalogue||[]).filter(function(p){return p.cat==='Borne';});
+  var pick=null;
+  if(budget==='serre')pick=cat.find(function(p){return p.nom.indexOf('Legrand')>=0;})||cat[0];
+  else if(budget==='premium')pick=cat.find(function(p){return p.nom.indexOf('V2C')>=0;})||cat.find(function(p){return p.nom.indexOf('Ohme')>=0;})||cat[0];
+  else pick=cat.find(function(p){return p.nom.indexOf('Raedian')>=0;})||cat[0];
+  if(!pick){g('recoRes').innerHTML='<div style="color:var(--muted);font-size:12.5px">Ajoute des bornes dans ton catalogue pour utiliser le recommandeur.</div>';return;}
+  var why=[];
+  if(usage==='rapide'||veh==='flotte')why.push('22 kW pour une recharge rapide');else why.push('7,4 kW, largement suffisant pour une recharge de nuit');
+  if(budget==='serre')why.push('bon rapport qualité-prix');if(budget==='premium')why.push('modèle premium, connectivité avancée');
+  if(veh==='flotte')why.push('adapté à un usage intensif/flotte');
+  _simArg='Borne recommandée : '+pick.nom+' — '+why.join(', ')+'.';
+  g('recoRes').innerHTML='<div style="background:linear-gradient(135deg,#242a56,#171c3c);color:#fff;border-radius:14px;padding:16px"><div style="font-size:11px;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.05em">Recommandation</div><div style="font-size:19px;font-weight:800;color:#ffe576;margin-top:4px">'+pick.nom+'</div><div style="font-size:12.5px;color:rgba(255,255,255,.8);margin-top:8px">'+why.map(function(w){return '✓ '+w;}).join('<br>')+'</div></div><button class="btn bGhost" style="margin-top:10px;width:100%" onclick="_copySimArg()">📋 Copier l\'argumentaire</button>';
+}
+function rentabiliteModal(){
+  var h='<div class="ov on" id="mRoiTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>📈 Rentabilité pro (ROI)</h2><button class="mcl" onclick="g(\'mRoiTemp\').remove()">✕</button></div><div style="padding:16px">'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Type d\'établissement</label><select id="roiType" style="width:100%;margin:6px 0 12px"><option value="hotel">Hôtel / camping</option><option value="entreprise">Entreprise (flotte/salariés)</option><option value="commerce">Commerce / restaurant</option></select>'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Coût installation (€)</label><input id="roiCout" type="number" placeholder="3500" style="width:100%;margin:6px 0 12px">'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Prix de revente au kWh (€)</label><input id="roiPrixKwh" type="number" step="0.01" value="0.45" style="width:100%;margin:6px 0 12px">'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Recharges estimées / mois</label><input id="roiNb" type="number" placeholder="40" style="width:100%;margin:6px 0 12px">'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">kWh moyen par recharge</label><input id="roiKwh" type="number" value="30" style="width:100%;margin:6px 0 12px">'
+    +'<button class="btn bPrimary" style="width:100%" onclick="calcROI()">Calculer la rentabilité</button><div id="roiRes" style="margin-top:14px"></div>'
+    +'<div style="font-size:10.5px;color:var(--muted);margin-top:10px">⚠️ Estimation indicative. Ajoute aussi la valeur d\'image/attractivité (non chiffrable) dans ton argumentaire.</div>'
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function calcROI(){
+  var cout=parseFloat(g('roiCout').value)||0;var prixKwh=parseFloat(g('roiPrixKwh').value)||0.45;var nb=parseFloat(g('roiNb').value)||0;var kwh=parseFloat(g('roiKwh').value)||30;
+  if(cout<=0||nb<=0){toast('Renseigne le coût et le nombre de recharges');return;}
+  var revenuMensuel=nb*kwh*prixKwh;var revenuAnnuel=revenuMensuel*12;var moisRemb=Math.ceil(cout/revenuMensuel);
+  _simArg='Investissement '+fmtE(cout)+' — Revenu estimé '+fmtE(revenuMensuel)+'/mois — Rentabilisé en '+moisRemb+' mois.';
+  g('roiRes').innerHTML='<div style="background:linear-gradient(135deg,#242a56,#171c3c);color:#fff;border-radius:14px;padding:16px;text-align:center"><div style="font-size:12px;color:rgba(255,255,255,.7)">Revenu estimé</div><div style="font-size:24px;font-weight:800;color:#ffe576">'+fmtE(revenuMensuel)+' <span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.6)">/ mois</span></div><div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:4px">soit '+fmtE(revenuAnnuel)+' / an</div><div style="border-top:1px solid rgba(255,255,255,.15);margin:10px 0;padding-top:10px"><div style="font-size:12px;color:rgba(255,255,255,.7)">Investissement rentabilisé en</div><div style="font-size:28px;font-weight:800">'+moisRemb+' mois</div></div></div><button class="btn bGhost" style="margin-top:10px;width:100%" onclick="_copySimArg()">📋 Copier l\'argumentaire</button>';
+}
+function signalerProblemeModal(idx){
+  var r=DB.installations[idx];if(!r)return;
+  var h='<div class="ov on" id="mPbTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>⚠️ Signaler un problème</h2><button class="mcl" onclick="g(\'mPbTemp\').remove()">✕</button></div><div style="padding:16px">'
+    +'<div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Chantier : <b style="color:var(--navy)">'+_escR(r.chantier||r.client||'')+'</b></div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"><button class="btn bGhost" style="font-size:11px;padding:5px 10px" onclick="pbQuick(\'Accès chantier impossible\')">Accès impossible</button><button class="btn bGhost" style="font-size:11px;padding:5px 10px" onclick="pbQuick(\'Client absent\')">Client absent</button><button class="btn bGhost" style="font-size:11px;padding:5px 10px" onclick="pbQuick(\'Tableau électrique non conforme\')">Tableau non conforme</button><button class="btn bGhost" style="font-size:11px;padding:5px 10px" onclick="pbQuick(\'Matériel manquant\')">Matériel manquant</button></div>'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Décris le problème</label><textarea id="pbTxt" rows="3" placeholder="Explique ce qui bloque..." style="width:100%;margin:6px 0 12px"></textarea>'
+    +'<button class="btn bPrimary" style="width:100%;background:linear-gradient(135deg,#dc2626,#991b1b)" onclick="envoyerSignalement('+idx+')">⚠️ Envoyer l\'alerte</button>'
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function pbQuick(t){if(g('pbTxt'))g('pbTxt').value=t;}
+function envoyerSignalement(idx){
+  var r=DB.installations[idx];if(!r)return;
+  var txt=((g('pbTxt')&&g('pbTxt').value)||'').trim();if(!txt){toast('Décris le problème');return;}
+  if(!r.activites)r.activites=[];
+  r.activites.unshift({type:'probleme',txt:txt,date:new Date().toISOString(),by:(curUserObj?curUserObj.name:'')});
+  var qui=(curUserObj?curUserObj.name:'un installateur');
+  var msg='⚠️ Problème signalé par '+qui+' sur « '+(r.chantier||r.client||'chantier')+' » : '+txt;
+  addNotif('sav',msg,'⚠️','');
+  if(r.commercialId){var accts=(typeof loadAccounts==='function'?loadAccounts():[]);var com=accts.find(function(a){return a.id===r.commercialId;});if(com)addNotif('sav',msg,'⚠️',com.name);}
+  save();var m=g('mPbTemp');if(m)m.remove();
+  toast('✅ Alerte envoyée à l\'équipe');
+}
+var _pointStart={};
+function pointerDebut(idx){
+  var r=DB.installations[idx];if(!r)return;
+  r.pointageDebut=new Date().toISOString();save();toast('⏱️ Chantier démarré : '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
+  if(typeof renderInstallPhotos==='function'){}
+  if(g('mIpointage'))renderPointage(idx);
+}
+function pointerFin(idx){
+  var r=DB.installations[idx];if(!r)return;
+  if(!r.pointageDebut){toast('Le chantier n\'a pas été démarré');return;}
+  r.pointageFin=new Date().toISOString();
+  var ms=new Date(r.pointageFin)-new Date(r.pointageDebut);var h=Math.floor(ms/3600000);var mn=Math.round((ms%3600000)/60000);
+  r.dureeReelle=h+'h'+(mn<10?'0':'')+mn;
+  save();toast('✅ Chantier terminé : '+r.dureeReelle);
+  if(g('mIpointage'))renderPointage(idx);
+}
+function renderPointage(idx){
+  var el=g('mIpointage');if(!el)return;var r=DB.installations[idx];if(!r)return;
+  if(r.pointageFin){el.innerHTML='<div style="font-size:12.5px;color:#166534;font-weight:600">✅ Terminé — durée : '+r.dureeReelle+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px">'+new Date(r.pointageDebut).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+' → '+new Date(r.pointageFin).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div>';}
+  else if(r.pointageDebut){el.innerHTML='<div style="font-size:12.5px;color:#d97706;font-weight:600">⏱️ En cours depuis '+new Date(r.pointageDebut).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div><button class="btn bPrimary" style="margin-top:8px;width:100%" onclick="pointerFin('+idx+')">⏹ Terminer le chantier</button>';}
+  else{el.innerHTML='<button class="btn bPrimary" style="width:100%" onclick="pointerDebut('+idx+')">▶️ Démarrer le chantier</button>';}
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
@@ -6385,6 +6615,5 @@ function updateJarvisUI(state, text) {
 
 
 </script>
-<div id="qBar" class="qBar"></div>
 </body>
 </html>
