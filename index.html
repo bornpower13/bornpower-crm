@@ -531,12 +531,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 }
 </style>
 <!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
 <style id="bp-refonte">
 /* ===== BORNPOWER — REFONTE ESTHÉTIQUE (Phase 4) ===== */
 :root{
@@ -648,6 +643,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
 #mPiaBody{white-space:normal !important}
 @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;}}
 </style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
 
@@ -867,7 +863,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="pgHead"><div><h1>Tableau de bord</h1><p class="sub">Vue d'ensemble</p></div><button class="btn bPrimary" onclick="openIM(-1)">+ Installation</button></div>
       <div class="kpis" id="dashKpis"></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📈 Analytics</h3></div><div class="cardB" id="analyticsBox"></div></div>
-      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📢 Message à l'équipe</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Envoie un message qui apparaît en bandeau + notification chez tes commerciaux et installateurs.</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn bPrimary" onclick="broadcastModal()">📢 Envoyer un message</button><button class="btn bGhost" onclick="eventReminderModal()">🔔 Programmer un rappel</button></div></div></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📢 Message à l'équipe</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Envoie un message qui apparaît en bandeau + notification chez tes commerciaux et installateurs.</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn bPrimary" onclick="broadcastModal()">📢 Envoyer un message</button><button class="btn bGhost" onclick="eventReminderModal()">🔔 Programmer un rappel</button><button class="btn bGhost" onclick="openMissionControl()">📺 Mode Mission Control</button></div></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🔔 Mes rappels</h3></div><div class="cardB" id="rappelsDash" style="padding:8px 0"></div></div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px;">
         <div class="card"><div class="cardH"><h3>CA mensuel</h3></div><div class="cardB"><div class="chartWrap"><canvas id="dashChart"></canvas></div></div></div>
@@ -1050,6 +1046,37 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
         </div>
       </div>
     </div>
+    <div class="pg" id="pgCarte">
+      <div class="pgHead"><div><h1>🗺️ Carte</h1><p class="sub">Tous tes prospects, chantiers et clients sur la carte</p></div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;background:#fff;border:1px solid var(--border);border-radius:20px;padding:6px 12px;cursor:pointer"><input type="checkbox" id="carteFP" checked onchange="renderCarte()"><span style="color:#2563eb">●</span> Prospects</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;background:#fff;border:1px solid var(--border);border-radius:20px;padding:6px 12px;cursor:pointer"><input type="checkbox" id="carteFC" checked onchange="renderCarte()"><span style="color:#d97706">●</span> Chantiers en cours</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;background:#fff;border:1px solid var(--border);border-radius:20px;padding:6px 12px;cursor:pointer"><input type="checkbox" id="carteFT" checked onchange="renderCarte()"><span style="color:#059669">●</span> Terminés</label>
+        <span id="carteGeoStatus" style="margin-left:auto;font-size:11.5px;color:var(--muted);align-self:center"></span>
+      </div>
+      <div id="carteMap" style="width:100%;height:62vh;border-radius:16px;border:1px solid #e9ecf5;box-shadow:0 1px 2px rgba(20,25,60,.04),0 12px 30px rgba(20,25,60,.05)"></div>
+    </div>
+    <div class="pg" id="pgMission" style="padding:0;background:linear-gradient(160deg,#0d1030,#171c40 60%,#1e2454);min-height:100vh;color:#fff">
+      <button onclick="exitMission()" style="position:fixed;top:16px;right:16px;z-index:50;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:10px;padding:8px 14px;font-size:12px;cursor:pointer">✕ Quitter</button>
+      <div style="padding:30px 40px">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:6px"><div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#c79732,#ffe576);display:flex;align-items:center;justify-content:center;font-size:22px">⚡</div><div style="font-size:26px;font-weight:800;letter-spacing:-.5px">BORN<span style="color:#ffe576">POWER</span></div><div style="margin-left:auto;font-size:15px;color:rgba(255,255,255,.5)" id="missionClock"></div></div>
+        <div id="missionKpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:26px"></div>
+        <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:20px;margin-top:24px">
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:20px 24px">
+            <div style="font-size:13px;font-weight:800;color:#ffe576;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px">🏆 Classement du mois</div>
+            <div id="missionRanking"></div>
+          </div>
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:20px 24px">
+            <div style="font-size:13px;font-weight:800;color:#ffe576;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px">⚡ Chantiers du jour</div>
+            <div id="missionChantiers"></div>
+          </div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:20px 24px;margin-top:20px">
+          <div style="font-size:13px;font-weight:800;color:#ffe576;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px">🎉 Dernières ventes</div>
+          <div id="missionVentes"></div>
+        </div>
+      </div>
+    </div>
     <div class="pg" id="pgConquete">
       <div style="background:linear-gradient(135deg,#242a56,#171c3c);border-radius:20px;padding:24px;color:#fff;margin-bottom:18px;box-shadow:var(--shadow-lg)">
         <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:#ffe576;text-transform:uppercase;margin-bottom:6px">Conquête client · IA</div>
@@ -1062,7 +1089,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Vos outils de conquête</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px">
         <div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--purple-bg)">🎯</div><div class="conqT">Où prospecter</div><div class="conqD">L'IA propose des secteurs</div></div>
-        <div class="conqCard" onclick="nav('pgProspects')"><div class="conqIco" style="background:var(--blue-bg)">🔍</div><div class="conqT">Trouver des entreprises</div><div class="conqD">Base INSEE + contact</div></div><div class="conqCard" onclick="nav('pgLinkedIn')"><div class="conqIco" style="background:#e0e7ff">💼</div><div class="conqT">LinkedIn</div><div class="conqD">Leads + messages IA</div></div><div class="conqCard" onclick="simulateurModal()"><div class="conqIco" style="background:#fef3c7">💶</div><div class="conqT">Simulateur d'aides</div><div class="conqD">Prix après ADVENIR</div></div><div class="conqCard" onclick="rechargeModal()"><div class="conqIco" style="background:#dcfce7">🔌</div><div class="conqT">Temps de recharge</div><div class="conqD">Calcul pour le client</div></div><div class="conqCard" onclick="coutRechargeModal()"><div class="conqIco" style="background:#dbeafe">🔋</div><div class="conqT">Coût de recharge</div><div class="conqD">Économies vs essence</div></div><div class="conqCard" onclick="recommandeurModal()"><div class="conqIco" style="background:#ede9fe">💡</div><div class="conqT">Recommandeur de borne</div><div class="conqD">Guide le client</div></div><div class="conqCard" onclick="rentabiliteModal()"><div class="conqIco" style="background:#dcfce7">📈</div><div class="conqT">Rentabilité pro (ROI)</div><div class="conqD">Argument B2B</div></div>
+        <div class="conqCard" onclick="nav('pgProspects')"><div class="conqIco" style="background:var(--blue-bg)">🔍</div><div class="conqT">Trouver des entreprises</div><div class="conqD">Base INSEE + contact</div></div><div class="conqCard" onclick="nav('pgLinkedIn')"><div class="conqIco" style="background:#e0e7ff">💼</div><div class="conqT">LinkedIn</div><div class="conqD">Leads + messages IA</div></div><div class="conqCard" onclick="simulateurModal()"><div class="conqIco" style="background:#fef3c7">💶</div><div class="conqT">Simulateur d'aides</div><div class="conqD">Prix après ADVENIR</div></div><div class="conqCard" onclick="rechargeModal()"><div class="conqIco" style="background:#dcfce7">🔌</div><div class="conqT">Temps de recharge</div><div class="conqD">Calcul pour le client</div></div><div class="conqCard" onclick="autoProspectionModal()"><div class="conqIco" style="background:#f3e8ff">🤖</div><div class="conqT">Prospection automatique</div><div class="conqD">Trouve des leads sans y penser</div></div><div class="conqCard" onclick="coutRechargeModal()"><div class="conqIco" style="background:#dbeafe">🔋</div><div class="conqT">Coût de recharge</div><div class="conqD">Économies vs essence</div></div><div class="conqCard" onclick="recommandeurModal()"><div class="conqIco" style="background:#ede9fe">💡</div><div class="conqT">Recommandeur de borne</div><div class="conqD">Guide le client</div></div><div class="conqCard" onclick="rentabiliteModal()"><div class="conqIco" style="background:#dcfce7">📈</div><div class="conqT">Rentabilité pro (ROI)</div><div class="conqD">Argument B2B</div></div>
         <div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--green-bg)">✍️</div><div class="conqT">Rédiger une campagne</div><div class="conqD">Email · appel · LinkedIn</div></div>
         <div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--orange-bg)">🤝</div><div class="conqT">Parrainage</div><div class="conqD">Bouche-à-oreille</div></div>
         <div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--gold3)">🔄</div><div class="conqT">Prospects dormants</div><div class="conqD">Réactiver avec l'IA</div></div>
@@ -2003,6 +2030,13 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
 </div>
 
 <!-- MOUVEMENT STOCK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 
 var KEY='bpcrm_v2', ACCOUNTS_KEY='bp_accounts_v2';
@@ -2189,7 +2223,7 @@ function fmtNotifTime(ts){
 var NAV_MAP={
   admin:[
     {s:'Pilotage'},{id:'pgDash',ico:'📊',lbl:'Tableau de bord'},{id:'pgRapports',ico:'📈',lbl:'Rapports'},{id:'pgObjectifs',ico:'🎯',lbl:'Objectifs CA'},{id:'pgFinance',ico:'💰',lbl:'Finance'},
-    {s:'Ventes'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgPipeline',ico:'📊',lbl:'Pipeline'},{id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
+    {s:'Ventes'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgPipeline',ico:'📊',lbl:'Pipeline'},{id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
     {s:'Installations'},{id:'pgInst',ico:'⚡',lbl:'Installations'},{id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},{id:'pgSAV',ico:'🔧',lbl:'SAV'},{id:'pgStock',ico:'📦',lbl:'Stock'},
     {s:'Équipe'},{id:'pgCommerciaux',ico:'💼',lbl:'Commerciaux'},{id:'pgProfils',ico:'👷',lbl:'Installateurs'},{id:'pgRH',ico:'👥',lbl:'RH'},{id:'pgRecrutement',ico:'🎓',lbl:'Recrutement'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
@@ -2205,7 +2239,7 @@ var NAV_MAP={
   ],
   commercial:[
     {s:'Mon espace'},{id:'pgDashComm',ico:'📊',lbl:'Tableau de bord'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
-    {s:'Vendre'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},{id:'pgContacts',ico:'👥',lbl:'Mes contacts'},
+    {s:'Vendre'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},{id:'pgContacts',ico:'👥',lbl:'Mes contacts'},
     {s:'Outils'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
     {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
@@ -2258,7 +2292,7 @@ function nav(id){
   if(id==='pgMaJournee'){renderMaJournee();renderRappels('rappelsJournee');}
   if(id==='pgCatalogue')renderCatalogue();
   if(id==='pgProfils'){if(fbReady&&db){loadFromFirebase(function(){renderProfils();});}else{renderProfils();}}
-  if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgLinkedIn')renderLinkedIn();
+  if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgLinkedIn')renderLinkedIn();
   if(id==='pgSAV')renderSAV();
   if(id==='pgChat')renderChat();
   if(id==='pgMonCA')renderMonCA();
@@ -5219,6 +5253,149 @@ function renderPointage(idx){
   else if(r.pointageDebut){el.innerHTML='<div style="font-size:12.5px;color:#d97706;font-weight:600">⏱️ En cours depuis '+new Date(r.pointageDebut).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div><button class="btn bPrimary" style="margin-top:8px;width:100%" onclick="pointerFin('+idx+')">⏹ Terminer le chantier</button>';}
   else{el.innerHTML='<button class="btn bPrimary" style="width:100%" onclick="pointerDebut('+idx+')">▶️ Démarrer le chantier</button>';}
 }
+var _carteMap=null,_carteMarkers=[],_carteGeoQueue=[],_carteGeoBusy=false;
+function _geoAddr(obj){
+  var parts=[];
+  if(obj.adresse)parts.push(obj.adresse);
+  if(obj.cp||obj.ville)parts.push(((obj.cp||'')+' '+(obj.ville||'')).trim());
+  else if(obj.ville)parts.push(obj.ville);
+  return parts.filter(Boolean).join(', ');
+}
+function _carteGeocodeNext(){
+  if(_carteGeoBusy||!_carteGeoQueue.length)return;
+  _carteGeoBusy=true;
+  var item=_carteGeoQueue.shift();
+  var q=_geoAddr(item.obj);
+  if(!q){_carteGeoBusy=false;_carteGeocodeNext();return;}
+  fetch('https://api-adresse.data.gouv.fr/search/?limit=1&q='+encodeURIComponent(q)).then(function(r){return r.json();}).then(function(d){
+    var ft=d&&d.features&&d.features[0];
+    if(ft&&ft.geometry&&ft.geometry.coordinates){
+      item.obj.geoLat=ft.geometry.coordinates[1];item.obj.geoLng=ft.geometry.coordinates[0];
+      if(typeof save==='function')save();
+      _carteAddMarker(item);
+    }
+  }).catch(function(){}).finally(function(){
+    _carteGeoBusy=false;
+    var st=g('carteGeoStatus');if(st)st.textContent=_carteGeoQueue.length?('📍 Localisation en cours... ('+_carteGeoQueue.length+' restant(s))'):'';
+    setTimeout(_carteGeocodeNext,220);
+  });
+}
+function _carteAddMarker(item){
+  if(!_carteMap||typeof L==='undefined')return;
+  var obj=item.obj;if(obj.geoLat==null||obj.geoLng==null)return;
+  var col=item.color;
+  var icon=L.divIcon({className:'',html:'<div style="width:16px;height:16px;border-radius:50%;background:'+col+';border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>',iconSize:[16,16],iconAnchor:[8,8]});
+  var m=L.marker([obj.geoLat,obj.geoLng],{icon:icon}).addTo(_carteMap);
+  var name=_escR(obj.chantier||obj.nom||obj.societe||obj.client||'?');
+  var sub=_escR(obj.ville||'');
+  m.bindPopup('<div style="font-family:inherit;min-width:150px"><div style="font-weight:700;font-size:13px;color:#1f2438">'+name+'</div><div style="font-size:11px;color:#8990a8;margin:2px 0 8px">'+sub+'</div><button style="background:#242a56;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer" onclick="'+item.openAction+'">Ouvrir la fiche</button></div>');
+  _carteMarkers.push(m);
+}
+function renderCarte(){
+  if(typeof L==='undefined'){var el=g('carteMap');if(el)el.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px">Chargement de la carte...</div>';setTimeout(renderCarte,500);return;}
+  if(!_carteMap){_carteMap=L.map('carteMap').setView([43.5297,5.4474],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(_carteMap);}
+  _carteMarkers.forEach(function(m){_carteMap.removeLayer(m);});_carteMarkers=[];_carteGeoQueue=[];
+  var showP=g('carteFP')&&g('carteFP').checked;var showC=g('carteFC')&&g('carteFC').checked;var showT=g('carteFT')&&g('carteFT').checked;
+  var items=[];
+  if(showP)(DB.prospects||[]).forEach(function(p,idx){items.push({obj:p,color:'#2563eb',openAction:"nav('pgProspects');setTimeout(function(){openFicheProspect("+idx+")},250)"});});
+  if(showC)(DB.installations||[]).forEach(function(r,idx){if(r.statut==='Terminée'||r.statut==='Annulée')return;items.push({obj:r,color:'#d97706',openAction:"nav('pgInst');setTimeout(function(){openIM("+idx+")},250)"});});
+  if(showT)(DB.installations||[]).forEach(function(r,idx){if(r.statut!=='Terminée')return;items.push({obj:r,color:'#059669',openAction:"nav('pgInst');setTimeout(function(){openIM("+idx+")},250)"});});
+  items.forEach(function(item){
+    if(item.obj.geoLat!=null&&item.obj.geoLng!=null)_carteAddMarker(item);
+    else if(_geoAddr(item.obj))_carteGeoQueue.push(item);
+  });
+  var st=g('carteGeoStatus');if(st)st.textContent=_carteGeoQueue.length?('📍 Localisation en cours... ('+_carteGeoQueue.length+' restant(s))'):'';
+  _carteGeocodeNext();
+  setTimeout(function(){if(_carteMap)_carteMap.invalidateSize();},120);
+}
+var _missionInterval=null,_missionClockInterval=null;
+function openMissionControl(){nav('pgMission');startMission();}
+function exitMission(){stopMission();nav('pgDash');}
+function startMission(){
+  renderMission();
+  if(_missionInterval)clearInterval(_missionInterval);
+  _missionInterval=setInterval(renderMission,20000);
+  if(_missionClockInterval)clearInterval(_missionClockInterval);
+  _missionClockInterval=setInterval(function(){var el=g('missionClock');if(el)el.textContent=new Date().toLocaleString('fr-FR',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});},1000);
+  try{if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(function(){});}catch(e){}
+}
+function stopMission(){
+  if(_missionInterval){clearInterval(_missionInterval);_missionInterval=null;}
+  if(_missionClockInterval){clearInterval(_missionClockInterval);_missionClockInterval=null;}
+  try{if(document.exitFullscreen&&document.fullscreenElement)document.exitFullscreen().catch(function(){});}catch(e){}
+}
+function renderMission(){
+  var now=new Date(),mois=now.getMonth(),an=now.getFullYear(),todayKey=now.toISOString().slice(0,10);
+  var caMois=(DB.devis||[]).filter(function(d){if(d.statut!=='Accepté')return false;var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;}).reduce(function(s,d){return s+(d.lignes||[]).reduce(function(s2,l){return s2+(l.qte||0)*(l.pu||0);},0);},0);
+  var chantiersJour=(DB.installations||[]).filter(function(i){return i.dateDebut&&i.dateDebut.slice(0,10)===todayKey&&i.statut!=='Annulée';});
+  var termineesMois=(DB.installations||[]).filter(function(i){if(i.statut!=='Terminée'||!i.dateFin)return false;var d=new Date(i.dateFin);return d.getMonth()===mois&&d.getFullYear()===an;}).length;
+  var avisTotal=131;
+  function kpiCard(ico,lbl,val,col){return '<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px"><div style="font-size:26px">'+ico+'</div><div style="font-size:32px;font-weight:800;margin-top:8px;letter-spacing:-.5px;color:'+col+'">'+val+'</div><div style="font-size:12px;color:rgba(255,255,255,.55);margin-top:2px;text-transform:uppercase;letter-spacing:.04em">'+lbl+'</div></div>';}
+  var kEl=g('missionKpis');if(kEl)kEl.innerHTML=kpiCard('💰','CA du mois',fmtE(caMois),'#ffe576')+kpiCard('⚡','Chantiers aujourd\'hui',chantiersJour.length,'#60a5fa')+kpiCard('✅','Installations ce mois',termineesMois,'#4ade80')+kpiCard('⭐','Avis Google',avisTotal,'#ffe576');
+
+  var accts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.role==='commercial'&&a.status==='active';});
+  var ranking=accts.map(function(a){var ca=(DB.devis||[]).filter(function(d){if(d.commercialId&&d.commercialId!==a.id)return false;if(d.statut!=='Accepté')return false;var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;}).reduce(function(s,d){return s+(d.lignes||[]).reduce(function(s2,l){return s2+(l.qte||0)*(l.pu||0);},0);},0);return {name:a.name,ca:ca};}).sort(function(a,b){return b.ca-a.ca;});
+  var medals=['🥇','🥈','🥉'];
+  var rEl=g('missionRanking');if(rEl)rEl.innerHTML=ranking.length?ranking.slice(0,6).map(function(r,i){return '<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)"><div style="font-size:20px;width:30px">'+(medals[i]||(i+1))+'</div><div style="flex:1;font-size:15px;font-weight:600">'+_escR(r.name)+'</div><div style="font-size:16px;font-weight:800;color:#ffe576">'+fmtE(r.ca)+'</div></div>';}).join(''):'<div style="color:rgba(255,255,255,.4);font-size:13px">Aucun commercial actif</div>';
+
+  var cEl=g('missionChantiers');if(cEl)cEl.innerHTML=chantiersJour.length?chantiersJour.map(function(i){return '<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08)"><div style="width:8px;height:8px;border-radius:50%;background:#60a5fa;flex-shrink:0"></div><div style="flex:1;font-size:14px">'+_escR(i.chantier||i.client||'')+(i.heure?(' — '+i.heure):'')+'</div><div style="font-size:12px;color:rgba(255,255,255,.5)">'+_escR(i.installateur||'Non assigné')+'</div></div>';}).join(''):'<div style="color:rgba(255,255,255,.4);font-size:13px">Aucun chantier aujourd\'hui</div>';
+
+  var ventes=(DB.devis||[]).filter(function(d){return d.statut==='Accepté';}).sort(function(a,b){return new Date(b.date)-new Date(a.date);}).slice(0,5);
+  var vEl=g('missionVentes');if(vEl)vEl.innerHTML=ventes.length?ventes.map(function(d){var mt=(d.lignes||[]).reduce(function(s,l){return s+(l.qte||0)*(l.pu||0);},0);return '<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08)"><div style="font-size:18px">🎉</div><div style="flex:1;font-size:14px">'+_escR(d.client||'')+'</div><div style="font-size:14px;font-weight:700;color:#4ade80">'+fmtE(mt)+'</div><div style="font-size:11px;color:rgba(255,255,255,.4)">'+fmtD(d.date)+'</div></div>';}).join(''):'<div style="color:rgba(255,255,255,.4);font-size:13px">Aucune vente récente</div>';
+}
+function autoProspectionModal(){
+  if(!DB.autoProspectConfig)DB.autoProspectConfig=[];
+  var rows=DB.autoProspectConfig.map(function(c,i){return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f0f2f8;font-size:13px"><span style="flex:1">'+_escR(c.label)+' — dépt '+_escR(c.dept||'toute la région')+'</span><button class="act" onclick="delAutoProspectCritere('+i+')">🗑</button></div>';}).join('')||'<div style="font-size:12.5px;color:var(--muted);padding:8px 0">Aucun critère configuré.</div>';
+  var h='<div class="ov on" id="mAutoPTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>🤖 Prospection automatique</h2><button class="mcl" onclick="g(\'mAutoPTemp\').remove()">✕</button></div><div style="padding:16px">'
+    +'<div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Configure une fois tes critères. Chaque jour, à l\'ouverture du CRM, de nouveaux prospects correspondants seront ajoutés automatiquement.</div>'
+    +'<div style="display:flex;gap:8px;margin-bottom:8px"><input id="apLabel" placeholder="Activité (ex: hôtels, copros...)" style="flex:1"><input id="apDept" placeholder="Dépt (13, 83...)" style="width:90px"></div>'
+    +'<button class="btn bGhost" style="width:100%;margin-bottom:14px" onclick="addAutoProspectCritere()">+ Ajouter ce critère</button>'
+    +'<div style="font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Critères actifs</div>'
+    +'<div id="apList">'+rows+'</div>'
+    +'<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)">Dernier scan : <b id="apLastRun">'+(DB.autoProspectLastRun?new Date(DB.autoProspectLastRun).toLocaleString('fr-FR'):'jamais')+'</b></div>'
+    +'<button class="btn bPrimary" style="width:100%;margin-top:10px" onclick="_runAutoProspection(true)">🤖 Lancer un scan maintenant</button>'
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function addAutoProspectCritere(){
+  var label=((g('apLabel')&&g('apLabel').value)||'').trim();var dept=((g('apDept')&&g('apDept').value)||'').trim();
+  if(!label){toast('Indique une activité');return;}
+  if(!DB.autoProspectConfig)DB.autoProspectConfig=[];
+  DB.autoProspectConfig.push({label:label,dept:dept});save();
+  var m=g('mAutoPTemp');if(m)m.remove();autoProspectionModal();
+}
+function delAutoProspectCritere(i){DB.autoProspectConfig.splice(i,1);save();var m=g('mAutoPTemp');if(m)m.remove();autoProspectionModal();}
+function _runAutoProspection(manual){
+  if(!DB.autoProspectConfig||!DB.autoProspectConfig.length){if(manual)toast('Configure au moins un critère d\'abord');return;}
+  if(!manual){var last=DB.autoProspectLastRun?new Date(DB.autoProspectLastRun):null;if(last&&(Date.now()-last.getTime())<20*3600000)return;}
+  var existants={};(DB.prospects||[]).forEach(function(p){if(p.siret)existants[p.siret]=true;if(p.nom)existants[(p.nom||'').toLowerCase()]=true;});
+  var criteres=DB.autoProspectConfig.slice();var added=0;var idx=0;
+  function next(){
+    if(idx>=criteres.length){
+      DB.autoProspectLastRun=new Date().toISOString();save();
+      if(added>0)addNotif('prospects','🤖 Prospection auto : '+added+' nouveau(x) prospect(s) ajouté(s)','🤖','');
+      if(manual)toast(added>0?('✅ '+added+' nouveau(x) prospect(s) ajouté(s)'):'Aucun nouveau prospect trouvé cette fois');
+      if(typeof renderProspects==='function')renderProspects();
+      var lr=g('apLastRun');if(lr)lr.textContent=new Date(DB.autoProspectLastRun).toLocaleString('fr-FR');
+      return;
+    }
+    var crit=criteres[idx++];
+    var url='https://recherche-entreprises.api.gouv.fr/search?per_page=8&etat_administratif=A&q='+encodeURIComponent(crit.label);
+    if(crit.dept)url+='&departement='+encodeURIComponent(crit.dept);
+    fetch(url).then(function(r){return r.json();}).then(function(data){
+      (data.results||[]).forEach(function(e){
+        var nom=e.nom_complet||e.nom_raison_sociale||'';var siege=e.siege||{};
+        if(!nom)return;
+        if(existants[e.siren]||existants[nom.toLowerCase()])return;
+        var adr=[siege.numero_voie,siege.type_voie,siege.libelle_voie].filter(Boolean).join(' ');
+        DB.prospects.push({id:DB.nextId++,nom:nom,societe:nom,siret:e.siren||'',naf:e.activite_principale||'',formeJ:e.nature_juridique||'',adresse:adr,ville:siege.libelle_commune||'',cp:siege.code_postal||'',effectif:e.tranche_effectif_salarie||'',dateCreationEnt:e.date_creation||'',statut:'Nouveau',contactPrenom:'',contactNom:'',tel:'',email:'',notes:'Ajouté par la prospection automatique ('+crit.label+')',source:'Auto',lastContact:new Date().toISOString().slice(0,10)});
+        existants[e.siren]=true;existants[nom.toLowerCase()]=true;added++;
+      });
+    }).catch(function(){}).finally(function(){setTimeout(next,300);});
+  }
+  next();
+}
+try{window.addEventListener('load',function(){setTimeout(function(){_runAutoProspection(false);},3200);});}catch(e){}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
@@ -5511,7 +5688,7 @@ document.addEventListener('DOMContentLoaded',function(){
       DB.nextId=data.nextId||DB.nextId;
       try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}
       var ap=document.querySelector('.pg.on');
-      if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgLinkedIn')renderLinkedIn();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgMaJournee')renderMaJournee();}
+      if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgLinkedIn')renderLinkedIn();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgMaJournee')renderMaJournee();}
     });
     fbListen(FIREBASE_ACCOUNTS_COLLECTION,function(data){
       if(data&&data.accounts){
