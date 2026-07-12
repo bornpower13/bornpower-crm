@@ -2080,7 +2080,7 @@ var FCM_VAPID_KEY="BM1OnkoqJUdKy4hPMi8NiG2cZrjTArsUiNu5vEbbKSSoEgorZv8ADD__ZBycS
 // ⚠️ REMPLACE par l'URL de ton worker push Cloudflare (ex: https://bornpower-push.xxx.workers.dev)
 var PUSH_PROXY_URL="COLLE_URL_WORKER_PUSH_ICI";
 function initFirebase(){
-  try{fbApp=firebase.initializeApp(firebaseConfig);db=firebase.firestore();fbAuth=firebase.auth();fbReady=true;try{db.enablePersistence({synchronizeTabs:true}).catch(function(e){console.log('persistence:',e.code);});}catch(pe){}console.log('Firebase OK (offline activé)');}
+  try{fbApp=firebase.initializeApp(firebaseConfig);db=firebase.firestore();fbAuth=firebase.auth();fbReady=true;try{db.enablePersistence({synchronizeTabs:true}).catch(function(e){console.log('persistence:',e.code,'(normal en navigation privée, la lecture directe prend le relais)');});}catch(pe){}console.log('Firebase OK (offline activé)');}
   catch(e){console.log('Firebase error:',e);fbReady=false;}
 }
 function fbSave(collection,data){if(!fbReady||!db)return;db.collection(collection).doc('main').set(data).catch(function(e){console.log('fbSave error:',e);});}
