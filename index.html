@@ -529,7 +529,6 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
   #mobileTopBar{display:none !important;}
   #sidebar{transform:none !important;}
 }
-#toastEl.on{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 <!-- Firebase -->
 
@@ -819,7 +818,6 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
 <!-- APP -->
 
 <div id="sidebarOverlay" onclick="toggleMobileMenu()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:49;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);"></div>
-<div id="toastEl" style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);z-index:99999;background:#1f2438;color:#fff;font-size:13px;font-weight:600;padding:11px 18px;border-radius:12px;box-shadow:0 12px 32px rgba(18,22,52,.35);opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;max-width:86vw;text-align:center"></div>
 <div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,#222651,#2d3270);color:#fff;padding:14px 16px;padding-bottom:calc(14px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,.3)">
   <div style="display:flex;align-items:center;gap:12px;max-width:560px;margin:0 auto">
     <img src="icon-180.png" style="width:42px;height:42px;border-radius:10px;flex-shrink:0">
@@ -1048,33 +1046,6 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
         </div>
       </div>
     </div>
-    <div class="pg" id="pgSequences">
-      <div class="pgHead"><div><h1>🚀 Prospection multicanal</h1><p class="sub">Séquences Email · WhatsApp · LinkedIn pilotées par l'IA</p></div></div>
-      <div class="card" style="margin-bottom:16px;background:#eff6ff;border:1px solid #bfdbfe">
-        <div class="cardB" style="font-size:12.5px;color:#1e40af">ℹ️ <b>Comment ça marche :</b> l'IA rédige une séquence de relances personnalisées sur plusieurs canaux. Chaque jour, tu retrouves ici les messages prêts à envoyer (email et WhatsApp partent directement, LinkedIn se copie-colle) — un clic pour envoyer, un clic pour valider. Aucun envoi n'est automatique : LinkedIn et WhatsApp interdisent les bots, chaque message reste envoyé par toi.</div>
-      </div>
-      <div class="card" style="margin-bottom:16px">
-        <div class="cardH"><h3>📌 File du jour</h3></div>
-        <div class="cardB"><div id="seqFileDuJour"><div style="color:var(--muted);font-size:12.5px;padding:8px">Chargement...</div></div></div>
-      </div>
-      <div class="card" style="margin-bottom:16px">
-        <div class="cardH"><h3>🎬 Lancer une séquence pour un prospect</h3></div>
-        <div class="cardB">
-          <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">L'IA choisit les canaux disponibles (email s'il a un mail, WhatsApp s'il a un tél, LinkedIn en complément) et rédige chaque étape.</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap"><select id="seqProspectSel" style="flex:1;min-width:200px"></select><button class="btn bPrimary" onclick="genererSequenceIA()">✨ Générer la séquence</button></div>
-          <div id="seqGenRes" style="margin-top:14px"></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="cardH"><h3>💬 Message WhatsApp rapide</h3></div>
-        <div class="cardB">
-          <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Pour un contact ponctuel, hors séquence. L'IA rédige, tu ouvres WhatsApp pré-rempli.</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><input id="waTel" placeholder="Numéro (ex: 06 12 34 56 78)"><input id="waNom" placeholder="Nom / contexte (ex: Jean, gérant hôtel Marseille)"></div>
-          <button class="btn bPrimary" onclick="genererMsgWhatsAppRapide()">✨ Générer le message</button>
-          <div id="waMsgRes" style="margin-top:12px"></div>
-        </div>
-      </div>
-    </div>
     <div class="pg" id="pgCarte">
       <div class="pgHead"><div><h1>🗺️ Carte</h1><p class="sub">Tous tes prospects, chantiers et clients sur la carte</p></div></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
@@ -1118,7 +1089,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Vos outils de conquête</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px">
         <div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--purple-bg)">🎯</div><div class="conqT">Où prospecter</div><div class="conqD">L'IA propose des secteurs</div></div>
-        <div class="conqCard" onclick="nav('pgProspects')"><div class="conqIco" style="background:var(--blue-bg)">🔍</div><div class="conqT">Trouver des entreprises</div><div class="conqD">Base INSEE + contact</div></div><div class="conqCard" onclick="nav('pgLinkedIn')"><div class="conqIco" style="background:#e0e7ff">💼</div><div class="conqT">LinkedIn</div><div class="conqD">Leads + messages IA</div></div><div class="conqCard" onclick="nav('pgSequences')"><div class="conqIco" style="background:#dcfce7">📡</div><div class="conqT">Prospection multicanal</div><div class="conqD">Séquences email · WhatsApp · LinkedIn</div></div><div class="conqCard" onclick="simulateurModal()"><div class="conqIco" style="background:#fef3c7">💶</div><div class="conqT">Simulateur d'aides</div><div class="conqD">Prix après ADVENIR</div></div><div class="conqCard" onclick="rechargeModal()"><div class="conqIco" style="background:#dcfce7">🔌</div><div class="conqT">Temps de recharge</div><div class="conqD">Calcul pour le client</div></div><div class="conqCard" onclick="autoProspectionModal()"><div class="conqIco" style="background:#f3e8ff">🤖</div><div class="conqT">Prospection automatique</div><div class="conqD">Trouve des leads sans y penser</div></div><div class="conqCard" onclick="coutRechargeModal()"><div class="conqIco" style="background:#dbeafe">🔋</div><div class="conqT">Coût de recharge</div><div class="conqD">Économies vs essence</div></div><div class="conqCard" onclick="recommandeurModal()"><div class="conqIco" style="background:#ede9fe">💡</div><div class="conqT">Recommandeur de borne</div><div class="conqD">Guide le client</div></div><div class="conqCard" onclick="rentabiliteModal()"><div class="conqIco" style="background:#dcfce7">📈</div><div class="conqT">Rentabilité pro (ROI)</div><div class="conqD">Argument B2B</div></div>
+        <div class="conqCard" onclick="nav('pgProspects')"><div class="conqIco" style="background:var(--blue-bg)">🔍</div><div class="conqT">Trouver des entreprises</div><div class="conqD">Base INSEE + contact</div></div><div class="conqCard" onclick="nav('pgLinkedIn')"><div class="conqIco" style="background:#e0e7ff">💼</div><div class="conqT">LinkedIn</div><div class="conqD">Leads + messages IA</div></div><div class="conqCard" onclick="simulateurModal()"><div class="conqIco" style="background:#fef3c7">💶</div><div class="conqT">Simulateur d'aides</div><div class="conqD">Prix après ADVENIR</div></div><div class="conqCard" onclick="rechargeModal()"><div class="conqIco" style="background:#dcfce7">🔌</div><div class="conqT">Temps de recharge</div><div class="conqD">Calcul pour le client</div></div><div class="conqCard" onclick="autoProspectionModal()"><div class="conqIco" style="background:#f3e8ff">🤖</div><div class="conqT">Prospection automatique</div><div class="conqD">Trouve des leads sans y penser</div></div><div class="conqCard" onclick="coutRechargeModal()"><div class="conqIco" style="background:#dbeafe">🔋</div><div class="conqT">Coût de recharge</div><div class="conqD">Économies vs essence</div></div><div class="conqCard" onclick="recommandeurModal()"><div class="conqIco" style="background:#ede9fe">💡</div><div class="conqT">Recommandeur de borne</div><div class="conqD">Guide le client</div></div><div class="conqCard" onclick="rentabiliteModal()"><div class="conqIco" style="background:#dcfce7">📈</div><div class="conqT">Rentabilité pro (ROI)</div><div class="conqD">Argument B2B</div></div>
         <div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--green-bg)">✍️</div><div class="conqT">Rédiger une campagne</div><div class="conqD">Email · appel · LinkedIn</div></div>
         <div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--orange-bg)">🤝</div><div class="conqT">Parrainage</div><div class="conqD">Bouche-à-oreille</div></div>
         <div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--gold3)">🔄</div><div class="conqT">Prospects dormants</div><div class="conqD">Réactiver avec l'IA</div></div>
@@ -2252,7 +2223,7 @@ function fmtNotifTime(ts){
 var NAV_MAP={
   admin:[
     {s:'Pilotage'},{id:'pgDash',ico:'📊',lbl:'Tableau de bord'},{id:'pgRapports',ico:'📈',lbl:'Rapports'},{id:'pgObjectifs',ico:'🎯',lbl:'Objectifs CA'},{id:'pgFinance',ico:'💰',lbl:'Finance'},
-    {s:'Ventes'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgSequences',ico:'📡',lbl:'Prospection multicanal'},{id:'pgPipeline',ico:'📊',lbl:'Pipeline'},{id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
+    {s:'Ventes'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgPipeline',ico:'📊',lbl:'Pipeline'},{id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
     {s:'Installations'},{id:'pgInst',ico:'⚡',lbl:'Installations'},{id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},{id:'pgSAV',ico:'🔧',lbl:'SAV'},{id:'pgStock',ico:'📦',lbl:'Stock'},
     {s:'Équipe'},{id:'pgCommerciaux',ico:'💼',lbl:'Commerciaux'},{id:'pgProfils',ico:'👷',lbl:'Installateurs'},{id:'pgRH',ico:'👥',lbl:'RH'},{id:'pgRecrutement',ico:'🎓',lbl:'Recrutement'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
@@ -2268,7 +2239,7 @@ var NAV_MAP={
   ],
   commercial:[
     {s:'Mon espace'},{id:'pgDashComm',ico:'📊',lbl:'Tableau de bord'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
-    {s:'Vendre'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgSequences',ico:'📡',lbl:'Prospection multicanal'},{id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},{id:'pgContacts',ico:'👥',lbl:'Mes contacts'},
+    {s:'Vendre'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},{id:'pgContacts',ico:'👥',lbl:'Mes contacts'},
     {s:'Outils'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
     {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
@@ -2321,7 +2292,7 @@ function nav(id){
   if(id==='pgMaJournee'){renderMaJournee();renderRappels('rappelsJournee');}
   if(id==='pgCatalogue')renderCatalogue();
   if(id==='pgProfils'){if(fbReady&&db){loadFromFirebase(function(){renderProfils();});}else{renderProfils();}}
-  if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgLinkedIn')renderLinkedIn();if(id==='pgSequences')renderSequences();
+  if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgLinkedIn')renderLinkedIn();
   if(id==='pgSAV')renderSAV();
   if(id==='pgChat')renderChat();
   if(id==='pgMonCA')renderMonCA();
@@ -3456,9 +3427,7 @@ function removeDevisPDF(){currentDevisPDFData=null;var prev=g('mIdevisPreview');
 function viewDevisPDF(idx){var r=DB.installations[idx];if(!r||!r.devisPDF)return;var win=window.open();win.document.write('<html><body style="margin:0"><embed src="'+r.devisPDF+'" type="application/pdf" width="100%" height="100%"></body></html>');}
 
 // ── STOCK ──
-var eMat=-1,eMvt=-1,eMvtType='';
-function openMvtModal(matIdx,type){eMvt=matIdx;eMvtType=type;var mat=DB.materiel[matIdx];g('mMvtT').textContent=type+' stock — '+mat.nom;if(g('mMvtNm'))g('mMvtNm').textContent=mat.nom;if(g('mMvtCur'))g('mMvtCur').textContent=mat.stock;if(g('mMvtQty'))g('mMvtQty').value=1;if(g('mMvtMotif'))g('mMvtMotif').value='';g('mMvt').classList.add('on');}
-function saveMvt(){var q=parseInt(g('mMvtQty').value)||0;if(!q){alert('Quantité requise');return;}var type=eMvtType;var mat=DB.materiel[eMvt];mat.stock+=type==='Entrée'?q:-q;if(mat.stock<0)mat.stock=0;DB.mouvements.push({id:DB.nextId++,matId:mat.id,nom:mat.nom,type:type,qte:q,notes:(g('mMvtMotif')&&g('mMvtMotif').value)||'',date:new Date().toLocaleDateString('fr-FR'),author:curUserObj?curUserObj.name:''});save();g('mMvt').classList.remove('on');renderS();toast('Mouvement enregistré !');}
+var eMat=-1,eMvt=-1;
 function renderS(){
   var q=(g('stockSearch').value||'').toLowerCase();
   var cf=g('stockCatF')?g('stockCatF').value:'';
@@ -3491,7 +3460,8 @@ function renderS(){
 function openMatModal(idx){eMat=idx;var r=idx>=0?DB.materiel[idx]:{};g('mMatT').textContent=idx>=0?'Modifier':'Nouveau matériel';g('mMnom').value=r.nom||'';if(g('mMcat'))g('mMcat').value=r.cat||'Bornes';g('mMref').value=r.ref||'';g('mMunite').value=r.unite||'Unité';g('mMstock').value=r.stock||0;g('mMseuil').value=r.seuil||5;g('mMat').classList.add('on');}
 function saveMat(){var nom=g('mMnom').value.trim();if(!nom){alert('Nom requis');return;}var row={id:eMat>=0?DB.materiel[eMat].id:DB.nextId++,nom:nom,cat:g('mMcat')?g('mMcat').value:'Autre',ref:g('mMref').value,unite:g('mMunite').value,stock:parseInt(g('mMstock').value)||0,seuil:parseInt(g('mMseuil').value)||5};if(eMat>=0)DB.materiel[eMat]=row;else DB.materiel.push(row);save();g('mMat').classList.remove('on');renderS();toast('Matériel enregistré !');}
 function delMat(i){if(confirm('Supprimer ?')){DB.materiel.splice(i,1);save();renderS();}}
-
+function openMvtModal(matIdx,type){eMvt=matIdx;g('mMvtT').textContent=type+' stock — '+DB.materiel[matIdx].nom;g('mMvtype').value=type;g('mMvqte').value=1;g('mMvnotes').value='';g('mMvt').classList.add('on');}
+function saveMvt(){var q=parseInt(g('mMvqte').value)||0;if(!q){alert('Quantité requise');return;}var type=g('mMvtype').value;var mat=DB.materiel[eMvt];mat.stock+=type==='Entrée'?q:-q;if(mat.stock<0)mat.stock=0;DB.mouvements.push({id:DB.nextId++,matId:mat.id,nom:mat.nom,type:type,qte:q,notes:g('mMvnotes').value,date:new Date().toLocaleDateString('fr-FR'),author:curUserObj?curUserObj.name:''});save();g('mMvt').classList.remove('on');renderS();toast('Mouvement enregistré !');}
 
 // ── PROFILS INSTALLATEURS ──
 var eProfil=-1,profColSel='#2563eb';
@@ -4287,50 +4257,6 @@ function exportProspectsCSV(){
   var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='prospects_bornpower.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
   toast('\u2705 Export CSV téléchargé ('+rows.length+' prospects)');
 }
-function exportCSV(){
-  var rows=DB.installations||[];
-  if(!rows.length){toast('Aucune installation à exporter');return;}
-  var cols=['Chantier','Client','Adresse','Telephone','Type de bien','Installateur','Statut','DateDebut','DateFin','Montant','Notes'];
-  var q=function(v){v=(v==null?'':''+v).replace(/"/g,'""');return '"'+v+'"';};
-  var csv=cols.join(';')+'\r\n'+rows.map(function(i){return [i.chantier||'',i.client||'',i.adresse||'',i.tel||'',i.typeBien||'',i.installateur||'',i.statut||'',i.dateDebut||'',i.dateFin||'',i.montant||0,(i.notes||'').replace(/[\r\n]+/g,' ')].map(q).join(';');}).join('\r\n');
-  var blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
-  var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='installations_bornpower.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
-  toast('✅ Export CSV téléchargé ('+rows.length+' installations)');
-}
-function exportJSON(){
-  var rows=DB.installations||[];
-  if(!rows.length){toast('Aucune installation à exporter');return;}
-  var blob=new Blob([JSON.stringify(rows,null,2)],{type:'application/json'});
-  var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='installations_bornpower.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
-  toast('✅ Export JSON téléchargé ('+rows.length+' installations)');
-}
-function importJSON(evt){
-  var file=evt&&evt.target&&evt.target.files&&evt.target.files[0];if(!file)return;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    try{
-      var data=JSON.parse(e.target.result);
-      if(!Array.isArray(data)){toast('Fichier invalide : attendu un tableau JSON');return;}
-      if(!DB.installations)DB.installations=[];
-      var added=0;
-      data.forEach(function(row){if(row&&typeof row==='object'){row.id=DB.nextId++;DB.installations.push(row);added++;}});
-      save();renderT();
-      toast('✅ '+added+' installation(s) importée(s)');
-    }catch(err){toast('Erreur : fichier JSON illisible');}
-    evt.target.value='';
-  };
-  reader.readAsText(file);
-}
-function convertProspect(){
-  if(eProspect<0){toast('Ouvrez une fiche prospect d\'abord');return;}
-  var p=DB.prospects[eProspect];if(!p)return;
-  var nomComplet=[p.contactPrenom,p.contactNom].filter(Boolean).join(' ')||p.nom||p.societe;
-  ensureContact({nom:nomComplet,societe:p.societe||p.nom||'',tel:p.tel||'',email:p.email||'',adresse:[p.adresse,p.ville].filter(Boolean).join(', '),type:'Client',origine:'un prospect converti'});
-  save();
-  toast('✅ Converti en contact');
-  closeProspectModal();
-  if(typeof renderContacts==='function')renderContacts();
-}
 function _piaSetModal(txt,withActions){
   var b=g('mPiaBody');if(!b)return;
   var a=withActions?'<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn bGhost" onclick="_copyPia(\'camp\')">📋 Copier</button><button class="btn bGhost" onclick="_openMailto()">✉️ Ouvrir dans ma messagerie</button></div>':'';
@@ -4972,9 +4898,6 @@ function openFicheProspect(idx){
   var ownerHtml=owned
     ?'<div style="background:#dcfce7;border:1px solid #bbf7d0;border-radius:10px;padding:10px 12px;font-size:13px;color:#166534">👤 Propriétaire : <b>'+_escR(p.ownerName||'?')+'</b> · encore '+Math.max(0,60-Math.floor((Date.now()-new Date(p.assignedAt).getTime())/86400000))+' jours'+(canRelease?' <button class="btn bGhost" style="font-size:11px;padding:3px 8px;margin-left:6px" onclick="libererFiche('+idx+')">Libérer</button>':'')+'</div>'
     :'<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:10px 12px;font-size:13px;color:#92400e;display:flex;justify-content:space-between;align-items:center;gap:10px"><span>Sans référent</span><button class="btn bPrimary" style="font-size:12px;padding:5px 12px;flex-shrink:0" onclick="affecterFiche('+idx+')">M\'affecter</button></div>';
-  var seq=p.sequence;var seqHtml='';
-  if(seq&&seq.active){var seqStep=seq.steps[seq.currentStep];seqHtml='<div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:10px 12px;font-size:12.5px;color:#3730a3;margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px"><span>📡 Séquence en cours — prochaine étape : '+_seqChannelLbl(seqStep?seqStep.channel:'')+' (étape '+(seqStep?seqStep.n:'')+'/'+seq.steps.length+')</span><button class="btn bGhost" style="font-size:11px;padding:4px 9px;flex-shrink:0" onclick="g(\'mFicheTemp\').remove();nav(\'pgSequences\')">Voir</button></div>';}
-  else if(p.email||p.tel){seqHtml='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--muted);margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px"><span>📡 Aucune séquence de prospection en cours</span><button class="btn bPrimary" style="font-size:11px;padding:4px 9px;flex-shrink:0" onclick="g(\'mFicheTemp\').remove();nav(\'pgSequences\');setTimeout(function(){var s=g(\'seqProspectSel\');if(s)s.value=\''+idx+'\'},100)">Démarrer</button></div>';}
   var acts=(p.activites||[]).map(function(a){var ic=a.type==='appel'?'📞':(a.type==='rappel'?'🔔':'📝');var when=a.date?new Date(a.date).toLocaleDateString('fr-FR'):'';var extra=(a.type==='rappel'&&a.dateRappel)?(' · pour le '+a.dateRappel):'';return '<div style="display:flex;gap:10px;padding:9px 2px;border-bottom:1px solid #f0f2f8"><div style="font-size:16px">'+ic+'</div><div style="flex:1"><div style="font-size:13px;color:#2b3050">'+_escR(a.txt||'')+'</div><div style="font-size:11px;color:var(--muted)">'+when+extra+(a.by?(' · '+_escR(a.by)):'')+'</div></div></div>';}).join('')||'<div style="font-size:12.5px;color:var(--muted);padding:8px">Aucune activité pour l\'instant.</div>';
   var _ini=(p.nom||'?').trim().split(/\s+/).slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase();
   h='<div class="ov on" id="mFicheTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div style="background:linear-gradient(135deg,#242a56,#171c3c);border-radius:20px 20px 0 0;padding:20px 20px 18px;color:#fff;position:relative"><button class="mcl" onclick="g(\'mFicheTemp\').remove()" style="position:absolute;top:14px;right:14px;color:rgba(255,255,255,.7)">✕</button>'
@@ -4982,7 +4905,6 @@ function openFicheProspect(idx){
     +(p.email||p.tel?('<div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">'+(p.tel?'<a href="tel:'+_escR(p.tel)+'" style="text-decoration:none;background:rgba(255,255,255,.12);color:#fff;font-size:12px;font-weight:600;border-radius:20px;padding:6px 12px">📞 '+_escR(p.tel)+'</a>':'')+(p.email?'<a href="mailto:'+_escR(p.email)+'" style="text-decoration:none;background:rgba(255,255,255,.12);color:#fff;font-size:12px;font-weight:600;border-radius:20px;padding:6px 12px">✉️ '+_escR(p.email)+'</a>':'')+'</div>'):'')
     +'</div><div style="padding:16px">'
     +ownerHtml
-    +seqHtml
     +'<div style="display:flex;gap:8px;margin:14px 0;flex-wrap:wrap"><button class="btn bPrimary" onclick="logAppelFiche('+idx+')">📞 Journaliser un appel</button><button class="btn bGhost" onclick="ajouterRappelFiche('+idx+')">🔔 Demander un rappel</button><button class="btn bGhost" onclick="itineraireFiche('+idx+')">🧭 Itinéraire</button></div>'
     +'<div style="font-size:11.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Historique</div>'
     +'<div style="max-height:40vh;overflow:auto">'+acts+'</div>'
@@ -5704,21 +5626,8 @@ function unblockUser(i){var a=loadAccounts();if(!a[i])return;a[i].status='active
 function deleteUser(i){if(!confirm('Supprimer ce compte ?'))return;var a=loadAccounts();a.splice(i,1);saveAccounts(a);renderUsers();toast('Compte supprimé.');}
 
 // ── MON PROFIL ──
-function renderMonProfil(){if(!curUserObj)return;var el=g('profilInfos');if(!el)return;el.innerHTML='<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="width:48px;height:48px;border-radius:50%;background:'+(curUserObj.color||'#888')+';color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">'+_escR(curUserObj.avatar||'?')+'</div><div><div style="font-weight:700;font-size:15px">'+_escR(curUserObj.name||'')+'</div><div style="font-size:12.5px;color:var(--muted)">'+_escR(ROLE_LABELS[curUserObj.role]||curUserObj.role||'')+'</div></div></div><div style="font-size:13px;color:#2b3050">✉️ '+_escR(curUserObj.email||'Non renseigné')+'</div>';}
-function changePassword(){
-  var errEl=g('passErr'),okEl=g('passOkMsg');if(errEl)errEl.style.display='none';if(okEl)okEl.style.display='none';
-  var old=(g('passOld')&&g('passOld').value)||'',nw=(g('passNew')&&g('passNew').value)||'',nw2=(g('passNew2')&&g('passNew2').value)||'';
-  var showErr=function(msg){if(errEl){errEl.textContent=msg;errEl.style.display='block';}else alert(msg);};
-  if(!old||!nw||!nw2){showErr('Remplissez tous les champs');return;}
-  if(curUserObj.pass!==old){showErr('Ancien mot de passe incorrect');return;}
-  if(nw.length<6){showErr('Le mot de passe doit faire au moins 6 caractères');return;}
-  if(nw!==nw2){showErr('Les mots de passe ne correspondent pas');return;}
-  curUserObj.pass=nw;
-  if(curUserObj.id==='florian'){ADMIN.pass=nw;}else{var accounts=loadAccounts();var idx=accounts.findIndex(function(a){return a.id===curUserObj.id;});if(idx>=0){accounts[idx].pass=nw;saveAccounts(accounts);}}
-  if(g('passOld'))g('passOld').value='';if(g('passNew'))g('passNew').value='';if(g('passNew2'))g('passNew2').value='';
-  if(okEl){okEl.textContent='Mot de passe modifié !';okEl.style.display='block';}
-  toast('Mot de passe modifié !');
-}
+function renderMonProfil(){if(!curUserObj)return;g('profNom').textContent=curUserObj.name||'';g('profEmail').textContent=curUserObj.email||'';g('profRole').textContent=ROLE_LABELS[curUserObj.role]||curUserObj.role;g('profAvatar').textContent=curUserObj.avatar||'?';g('profAvatar').style.background=curUserObj.color||'#888';}
+function changePassword(){var old=g('oldPass').value;var nw=g('newPass').value;var nw2=g('newPass2').value;if(!old||!nw||!nw2){alert('Remplissez tous les champs');return;}if(curUserObj.pass!==old){alert('Ancien mot de passe incorrect');return;}if(nw.length<6){alert('Le mot de passe doit faire au moins 6 caractères');return;}if(nw!==nw2){alert('Les mots de passe ne correspondent pas');return;}curUserObj.pass=nw;if(curUserObj.id==='florian'){ADMIN.pass=nw;}else{var accounts=loadAccounts();var idx=accounts.findIndex(function(a){return a.id===curUserObj.id;});if(idx>=0){accounts[idx].pass=nw;saveAccounts(accounts);}}g('oldPass').value='';g('newPass').value='';g('newPass2').value='';toast('Mot de passe modifié !');}
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',function(){
@@ -5779,7 +5688,7 @@ document.addEventListener('DOMContentLoaded',function(){
       DB.nextId=data.nextId||DB.nextId;
       try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}
       var ap=document.querySelector('.pg.on');
-      if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgLinkedIn')renderLinkedIn();if(id==='pgSequences')renderSequences();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgMaJournee')renderMaJournee();}
+      if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgLinkedIn')renderLinkedIn();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgMaJournee')renderMaJournee();}
     });
     fbListen(FIREBASE_ACCOUNTS_COLLECTION,function(data){
       if(data&&data.accounts){
@@ -6881,121 +6790,7 @@ function updateJarvisUI(state, text) {
   panel.style.display = state === 'idle' ? 'none' : 'flex';
 }
 
-// ── Prospection multicanal (séquences Email / WhatsApp / LinkedIn) ──
-function _seqChannelLbl(c){return c==='email'?'✉️ Email':(c==='whatsapp'?'💬 WhatsApp':(c==='linkedin'?'💼 LinkedIn':c));}
-function _seqCleanTel(tel){
-  if(!tel)return '';
-  var t=(''+tel).replace(/[^\d+]/g,'');
-  if(t.indexOf('+')===0)t=t.slice(1);
-  else if(t.indexOf('0')===0)t='33'+t.slice(1);
-  return t;
-}
-function renderSequences(){renderSeqProspectSelect();renderSeqFileDuJour();}
-function renderSeqProspectSelect(){
-  var sel=g('seqProspectSel');if(!sel)return;
-  var cur=sel.value;
-  var opts='<option value="">-- Choisir un prospect --</option>';
-  (DB.prospects||[]).forEach(function(p,i){
-    if(!p.email&&!p.tel)return;
-    opts+='<option value="'+i+'">'+_escR(p.nom||p.societe||('Prospect '+i))+(p.ville?(' — '+_escR(p.ville)):'')+(p.sequence&&p.sequence.active?' (séquence en cours)':'')+'</option>';
-  });
-  sel.innerHTML=opts;if(cur)sel.value=cur;
-}
-function _seqDueList(){
-  var today=new Date();today.setHours(0,0,0,0);
-  var out=[];
-  (DB.prospects||[]).forEach(function(p,i){
-    var s=p.sequence;if(!s||!s.active)return;
-    var step=s.steps[s.currentStep];if(!step){s.active=false;return;}
-    var due=new Date(s.startedAt);due.setDate(due.getDate()+(step.delayDays||0));due.setHours(0,0,0,0);
-    if(due<=today)out.push({p:p,idx:i,step:step,due:due});
-  });
-  out.sort(function(a,b){return a.due-b.due;});
-  return out;
-}
-function renderSeqFileDuJour(){
-  var el=g('seqFileDuJour');if(!el)return;
-  var due=_seqDueList();
-  if(!due.length){el.innerHTML='<div style="color:var(--muted);font-size:12.5px;padding:8px">Aucune action en attente aujourd\'hui 🎉</div>';return;}
-  el.innerHTML=due.map(function(o){
-    var p=o.p,step=o.step,idx=o.idx;
-    var preview=(step.content||'').slice(0,220)+((step.content||'').length>220?'…':'');
-    var actBtn='';
-    if(step.channel==='email'){
-      if(p.email)actBtn='<a class="btn bGhost" style="font-size:12px" href="mailto:'+_escR(p.email)+'?subject='+encodeURIComponent(step.subject||'Born Power')+'&body='+encodeURIComponent(step.content||'')+'" onclick="setTimeout(function(){marquerEtapeEnvoyee('+idx+')},400)">✉️ Envoyer</a>';
-      else actBtn='<span style="font-size:11.5px;color:var(--muted)">Pas d\'email</span>';
-    }else if(step.channel==='whatsapp'){
-      var tel=_seqCleanTel(p.tel);
-      actBtn=tel?('<a class="btn bGhost" style="font-size:12px" target="_blank" rel="noopener" href="https://wa.me/'+tel+'?text='+encodeURIComponent(step.content||'')+'" onclick="setTimeout(function(){marquerEtapeEnvoyee('+idx+')},400)">💬 Ouvrir WhatsApp</a>'):'<span style="font-size:11.5px;color:var(--muted)">Pas de tél.</span>';
-    }else if(step.channel==='linkedin'){
-      actBtn='<button class="btn bGhost" style="font-size:12px" onclick="_copySeqStep('+idx+')">📋 Copier le message</button>';
-    }
-    return '<div style="border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap"><div style="min-width:0"><b style="font-size:13.5px">'+_escR(p.nom||p.societe||'Prospect')+'</b> <span style="font-size:11.5px;color:var(--muted)">'+_seqChannelLbl(step.channel)+' · étape '+step.n+'</span><div style="font-size:12.5px;color:#2b3050;margin-top:6px;white-space:pre-wrap">'+_escR(preview)+'</div></div><div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap">'+actBtn+'<button class="btn bGhost" style="font-size:12px" onclick="marquerEtapeEnvoyee('+idx+')">✅ Marquer envoyé</button></div></div></div>';
-  }).join('');
-}
-function _parseSequenceIA(txt,delays){
-  var blocks=(txt||'').split(/###ETAPE/i).slice(1);
-  var steps=[];
-  blocks.forEach(function(b,i){
-    var canalM=b.match(/CANAL:\s*([^\n]+)/i);
-    var objM=b.match(/OBJET:\s*([^\n]+)/i);
-    var msgM=b.match(/MESSAGE:\s*([\s\S]*)/i);
-    var canalTxt=(canalM?canalM[1]:'').toUpperCase();
-    var channel='email';
-    if(canalTxt.indexOf('WHATSAPP')>=0)channel='whatsapp';else if(canalTxt.indexOf('LINKEDIN')>=0)channel='linkedin';
-    steps.push({n:i+1,channel:channel,delayDays:delays[i]!==undefined?delays[i]:(i*4),subject:objM?objM[1].trim():'',content:msgM?msgM[1].trim():b.trim(),status:'pending'});
-  });
-  return steps;
-}
-function genererSequenceIA(){
-  var sel=g('seqProspectSel');var idx=sel?parseInt(sel.value,10):NaN;
-  if(isNaN(idx)||!DB.prospects[idx]){toast('Choisis un prospect');return;}
-  var p=DB.prospects[idx];
-  var res=g('seqGenRes');res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:10px">⏳ L\'IA prépare la séquence...</div>';
-  var canaux=[];if(p.email)canaux.push('EMAIL');if(p.tel)canaux.push('WHATSAPP');canaux.push('LINKEDIN');
-  var delays=[0,3,7,10];
-  var info=(p.nom||p.societe||'')+', '+(p.ville||'')+(p.notes?(', '+p.notes):'');
-  var prompt='Prépare une séquence de prospection B2B en '+canaux.length+' étapes pour ce prospect : '+info+'.\nCanaux disponibles, dans cet ordre : '+canaux.join(' puis ')+'.\nPour CHAQUE étape, respecte exactement ce format :\n###ETAPE\nCANAL: [nom du canal]\nOBJET: [objet court, uniquement si canal EMAIL, sinon laisse la ligne vide]\nMESSAGE: [message prêt à l\'emploi, court, personnalisé, adapté au canal]\n\nLes messages doivent être complémentaires (pas de répétition d\'une étape à l\'autre), de plus en plus directs, ton professionnel et humain, conformes RGPD (offre pertinente, possibilité de désinscription pour l\'email).';
-  askClaudeProspect(PIA_SYS,prompt,function(txt,err){
-    if(err){res.innerHTML='<div style="background:var(--red-bg);border:1px solid #fecaca;color:#dc2626;border-radius:10px;padding:12px;font-size:13px">⚠️ '+err+'</div>';return;}
-    var steps=_parseSequenceIA(txt,delays);
-    if(!steps.length){res.innerHTML='<div style="color:var(--muted);font-size:13px">Réponse IA illisible, réessaie.</div>';return;}
-    p.sequence={active:true,startedAt:new Date().toISOString(),currentStep:0,steps:steps};
-    save();
-    res.innerHTML='<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px;font-size:12.5px;color:#166534;margin-bottom:10px">✅ Séquence de '+steps.length+' étape(s) programmée pour '+_escR(p.nom||p.societe||'')+'. Retrouve-la dans la file du jour au fur et à mesure.</div>'+steps.map(function(s){return '<div style="border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px;font-size:12.5px"><b>Étape '+s.n+' · '+_seqChannelLbl(s.channel)+' · J+'+s.delayDays+'</b><div style="margin-top:4px;white-space:pre-wrap;color:#2b3050">'+_escR(s.content)+'</div></div>';}).join('');
-    renderSeqFileDuJour();renderSeqProspectSelect();
-  });
-}
-function marquerEtapeEnvoyee(idx){
-  var p=DB.prospects[idx];if(!p||!p.sequence)return;
-  var s=p.sequence;var step=s.steps[s.currentStep];if(!step)return;
-  step.status='sent';step.doneDate=new Date().toISOString();
-  if(!p.activites)p.activites=[];
-  p.activites.unshift({type:'note',txt:'Séquence — '+_seqChannelLbl(step.channel)+' envoyé (étape '+step.n+')',date:new Date().toISOString(),by:(curUserObj?curUserObj.name:'')});
-  p.lastContact=new Date().toISOString().slice(0,10);
-  if(p.statut==='Nouveau')p.statut='Contacté';
-  s.currentStep++;
-  if(s.currentStep>=s.steps.length)s.active=false;
-  save();
-  toast('Étape marquée envoyée ✅');
-  renderSeqFileDuJour();renderSeqProspectSelect();
-  if(g('mFicheTemp'))openFicheProspect(idx);
-}
-function _copySeqStep(idx){var p=DB.prospects[idx];if(!p||!p.sequence)return;var step=p.sequence.steps[p.sequence.currentStep];if(!step)return;if(navigator.clipboard)navigator.clipboard.writeText(step.content||'');toast('Message copié 📋 — colle-le dans LinkedIn');}
-function genererMsgWhatsAppRapide(){
-  var tel=((g('waTel')&&g('waTel').value)||'').trim();
-  var nom=((g('waNom')&&g('waNom').value)||'').trim();
-  if(!tel){toast('Renseigne un numéro de téléphone');return;}
-  if(!nom){toast('Ajoute un nom / contexte pour personnaliser le message');return;}
-  var res=g('waMsgRes');res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ Rédaction...</div>';
-  askClaudeProspect(PIA_SYS,'Rédige un message WhatsApp court, chaleureux et non intrusif pour ce contact : "'+nom+'". Objectif : engager la conversation sur les bornes de recharge (aides ADVENIR selon le profil). 3-4 lignes max, ton naturel et humain, avec une question ouverte à la fin. Message prêt à envoyer tel quel.',function(txt,err){
-    if(err){res.innerHTML='<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>';return;}
-    var clean=_seqCleanTel(tel);_waLastMsg=txt;
-    res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;white-space:pre-wrap">'+_escR(txt)+'</div><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">'+(clean?('<a class="btn bPrimary" target="_blank" rel="noopener" href="https://wa.me/'+clean+'?text='+encodeURIComponent(txt)+'">💬 Ouvrir WhatsApp</a>'):'')+'<button class="btn bGhost" onclick="_copyWaMsg()">📋 Copier</button></div>';
-  });
-}
-var _waLastMsg='';
-function _copyWaMsg(){if(navigator.clipboard&&_waLastMsg)navigator.clipboard.writeText(_waLastMsg);toast('Copié 📋');}
+
 </script>
 </body>
 </html>
