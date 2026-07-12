@@ -2063,6 +2063,8 @@ var ROLE_CSS={admin:'roleAdmin',dirtech:'roleDirtech',commercial:'roleCommercial
 var ADMIN={id:'florian',name:'Florian',prenom:'Florian',nom:'',email:'contact@bornpower.fr',pass:'Admin2026@',role:'admin',avatar:'F',color:'#c79732',status:'active'};
 
 var DB={installations:[],installateurs:[],materiel:[],mouvements:[],opportunites:[],contacts:[],devis:[],prospects:[],savTickets:[],chatMessages:[],notifications:[],activites:[],objectifs:[],conges:[],certifications:[],paiements:[],candidatures:[],mediaGallery:[],editorialCal:[],socialStats:[],contentIdeas:[],socialObjectifs:[],commercialPrimes:{},catalogue:[],nextId:1};
+var _postLoginReady=false;
+function _runAfterLogin(fn,extraDelay){function tryRun(){if(_postLoginReady){setTimeout(fn,extraDelay||0);}else{setTimeout(tryRun,400);}}tryRun();}
 var curUserObj=null;
 
 // ── FIREBASE ──
@@ -2350,6 +2352,7 @@ function initApp(){
   if(isAdmin()){
     setTimeout(function(){ checkPendingAccounts(); }, 1500);
   }
+  _postLoginReady=true;
 }
 
 function checkPendingAccounts(){
@@ -4696,7 +4699,7 @@ function _seedProduitsBP(){
     if(typeof save==='function')save();
   }catch(e){}
 }
-try{window.addEventListener('load',function(){setTimeout(_seedProduitsBP,300);});}catch(e){}
+try{window.addEventListener('load',function(){_runAfterLogin(_seedProduitsBP,300);});}catch(e){}
 function addInstallPhoto(input){
   if(typeof eInst==='undefined'||eInst<0){toast('Enregistre d\'abord l\'installation, puis ajoute des photos');input.value='';return;}
   var inst=DB.installations[eInst];if(!inst){input.value='';return;}if(!inst.photos)inst.photos=[];
@@ -4763,7 +4766,7 @@ function _checkBanners(){
     if(typeof showBanner==='function')showBanner(last.txt,last.ico||'🔔',last.link||null);
   }catch(e){}
 }
-try{window.addEventListener('load',function(){setTimeout(_checkBanners,1600);setTimeout(function(){if(typeof _releaseExpiredFiches==='function')_releaseExpiredFiches();},2000);});}catch(e){}
+try{window.addEventListener('load',function(){_runAfterLogin(_checkBanners,1600);_runAfterLogin(function(){if(typeof _releaseExpiredFiches==='function')_releaseExpiredFiches();},2000);});}catch(e){}
 try{setInterval(_checkBanners,45000);}catch(e){}
 var _simArg='';
 function _defBareme(){if(!DB.baremeAdvenir)DB.baremeAdvenir={coproInd:{pct:50,plaf:600},coproCol:{pct:50,plaf:8000},entreprise:{pct:50,plaf:1000},maison:{pct:0,plaf:500}};}
@@ -4944,7 +4947,7 @@ function _syncInstallateurs(){
     if(changed&&typeof save==='function')save();
   }catch(e){}
 }
-try{window.addEventListener('load',function(){setTimeout(function(){if(typeof _syncInstallateurs==='function')_syncInstallateurs();},2200);});}catch(e){}
+try{window.addEventListener('load',function(){_runAfterLogin(function(){if(typeof _syncInstallateurs==='function')_syncInstallateurs();},2200);});}catch(e){}
 function majCableType(){var p=(g('mIphase')&&g('mIphase').value)||'';var c=p==='Monophasé'?'3G10':(p==='Triphasé'?'5G10':'');if(g('mIcableType'))g('mIcableType').value=c;}
 function trouverVilleCP(){
   var addr=((g('mIadresse')&&g('mIadresse').value)||'').trim();var ville=((g('mIville')&&g('mIville').value)||'').trim();
@@ -4977,7 +4980,7 @@ function _seedProduitsBP2(){
     DB._catSeedBP2=1;if(typeof save==='function')save();
   }catch(e){}
 }
-try{window.addEventListener('load',function(){setTimeout(_seedProduitsBP2,500);});}catch(e){}
+try{window.addEventListener('load',function(){_runAfterLogin(_seedProduitsBP2,500);});}catch(e){}
 function _fillBorneSelect(selId){
   var sel=g(selId);if(!sel)return;
   var cur=sel.value;
@@ -5014,7 +5017,7 @@ function renderAuditInst(){
   el.innerHTML=audit.slice(0,15).map(function(a){var when=a.ts?new Date(a.ts).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'';return '<div style="padding:8px 2px;border-bottom:1px solid #f0f2f8;font-size:12px"><b style="color:var(--navy)">'+_escR(a.champ)+'</b> modifié par <b>'+_escR(a.by)+'</b><div style="color:var(--muted);margin-top:2px">'+_escR(''+a.avant)+' → <span style="color:#166534;font-weight:600">'+_escR(''+a.apres)+'</span> · '+when+'</div></div>';}).join('');
 }
 function _seedAvisLink(){try{if(typeof DB==='undefined'||!DB)return;if(!DB.avisLink){DB.avisLink='https://share.google/P6b8VN5mSARPX1Uhm';if(typeof save==='function')save();}}catch(e){}}
-try{window.addEventListener('load',function(){setTimeout(_seedAvisLink,300);});}catch(e){}
+try{window.addEventListener('load',function(){_runAfterLogin(_seedAvisLink,300);});}catch(e){}
 function _emptyRow(colspan,ico,title,sub){return '<tr><td colspan="'+colspan+'"><div class="emptyState"><div class="emptyIco">'+ico+'</div><div class="emptyTitle">'+title+'</div>'+(sub?'<div class="emptySub">'+sub+'</div>':'')+'</div></td></tr>';}
 var _sigDrawing=false,_sigCtx=null,_sigHasStroke=false,_sigDevisIdx=-1;
 function signatureDevisModal(idx){
@@ -5125,7 +5128,7 @@ function _checkInstallJm1(){
     if(changed&&typeof save==='function')save();
   }catch(e){}
 }
-try{window.addEventListener('load',function(){setTimeout(_checkInstallJm1,2600);});}catch(e){}
+try{window.addEventListener('load',function(){_runAfterLogin(_checkInstallJm1,2600);});}catch(e){}
 try{setInterval(_checkInstallJm1,3*3600000);}catch(e){}
 function _checkRdvJm1(){
   try{
@@ -5152,7 +5155,7 @@ function _checkRdvJm1(){
     if(changed&&typeof save==='function')save();
   }catch(e){}
 }
-try{window.addEventListener('load',function(){setTimeout(_checkRdvJm1,2800);});}catch(e){}
+try{window.addEventListener('load',function(){_runAfterLogin(_checkRdvJm1,2800);});}catch(e){}
 try{setInterval(_checkRdvJm1,3*3600000);}catch(e){}
 function _cleanCatalogueAmbigu(){
   try{
@@ -5173,7 +5176,7 @@ function _cleanCatalogueAmbigu(){
     if(changed&&typeof save==='function')save();
   }catch(e){}
 }
-try{window.addEventListener('load',function(){setTimeout(_cleanCatalogueAmbigu,700);});}catch(e){}
+try{window.addEventListener('load',function(){_runAfterLogin(_cleanCatalogueAmbigu,700);});}catch(e){}
 function recommandeurModal(){
   var h='<div class="ov on" id="mRecoTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>💡 Recommandeur de borne</h2><button class="mcl" onclick="g(\'mRecoTemp\').remove()">✕</button></div><div style="padding:16px">'
     +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Type de véhicule</label><select id="recoVeh" style="width:100%;margin:6px 0 12px"><option value="citadine">Citadine (petite batterie)</option><option value="berline">Berline / SUV familial</option><option value="flotte">Flotte / plusieurs véhicules</option></select>'
@@ -5406,7 +5409,7 @@ function _runAutoProspection(manual){
   }
   next();
 }
-try{window.addEventListener('load',function(){setTimeout(function(){_runAutoProspection(false);},3200);});}catch(e){}
+try{window.addEventListener('load',function(){_runAfterLogin(function(){_runAutoProspection(false);},3200);});}catch(e){}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
