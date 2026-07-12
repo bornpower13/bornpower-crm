@@ -2285,6 +2285,7 @@ function buildNav(){
 }
 
 function nav(id){
+  try{window.scrollTo(0,0);}catch(e){}
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
   document.querySelectorAll('#navLinks a').forEach(function(a){a.classList.remove('on');});
   var pg=g(id);if(pg)pg.classList.add('on');
