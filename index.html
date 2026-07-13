@@ -634,6 +634,11 @@ table thead tr{background:linear-gradient(180deg,#f7f8fd,#f1f3fa)}
 table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !important;text-transform:uppercase;letter-spacing:.05em}
 #mFicheTemp .modal{overflow:hidden;padding:0}
 
+@keyframes celebFall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(420px) rotate(360deg);opacity:0}}
+@keyframes celebPop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+
+@media (max-width:820px){#dashCABlock{grid-template-columns:1fr !important}}
+
 .weekGrid{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px}
 .weekDayCol{flex:1;min-width:150px;box-shadow:0 1px 2px rgba(20,25,60,.04),0 8px 20px rgba(20,25,60,.05);border-radius:14px}
 @media (max-width:820px){
@@ -879,6 +884,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
     <!-- DASH ADMIN -->
     <div class="pg" id="pgDash">
       <div class="pgHead"><div><h1>Tableau de bord</h1><p class="sub">Vue d'ensemble</p></div><button class="btn bPrimary" onclick="openIM(-1)">+ Installation</button></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>💰 Chiffre d'affaires</h3></div><div class="cardB" id="dashCABlock" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px"></div></div>
       <div class="kpis" id="dashKpis"></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📈 Analytics</h3></div><div class="cardB" id="analyticsBox"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📢 Message à l'équipe</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Envoie un message qui apparaît en bandeau + notification chez tes commerciaux et installateurs.</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn bPrimary" onclick="broadcastModal()">📢 Envoyer un message</button><button class="btn bGhost" onclick="eventReminderModal()">🔔 Programmer un rappel</button><button class="btn bGhost" onclick="openMissionControl()">📺 Mode Mission Control</button></div></div></div>
@@ -2007,7 +2013,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="fi"><label>Date début</label><input type="date" id="mIdebut"></div>
       <div class="fi"><label>Heure d'intervention</label><input type="time" id="mIheure"></div>
       <div class="fi"><label>Date fin</label><input type="date" id="mIfin"></div>
-      <div class="fi"><label>Type de client</label><select id="mITypeClient" onchange="majTVAClient('mITypeClient','mITva','mImontant','mIttc')"><option value="">--</option><option value="Particulier">Particulier (5,5%)</option><option value="Professionnel">Professionnel (20%)</option></select></div><div class="fi"><label>Montant HT (€)</label><input type="number" id="mImontant" placeholder="0" oninput="majTTC('mImontant','mITva','mIttc')"></div><div class="fi"><label>TVA (%)</label><input type="number" id="mITva" step="0.1" placeholder="20" oninput="majTTC('mImontant','mITva','mIttc')"></div><div class="fi"><label>Montant TTC (€)</label><input type="number" id="mIttc" placeholder="0" readonly style="background:#f6f8fd;font-weight:700;color:var(--navy)"></div>
+      <div class="fi"><label>Type de client</label><select id="mITypeClient" onchange="majTVAClient('mITypeClient','mITva','mImontant','mIttc')"><option value="">--</option><option value="Particulier">Particulier (5,5%)</option><option value="Professionnel">Professionnel (20%)</option></select></div><div class="fi"><label>Commercial (vente)</label><select id="mIcommercial"><option value="">--</option></select></div><div class="fi"><label>Montant HT (€)</label><input type="number" id="mImontant" placeholder="0" oninput="majTTC('mImontant','mITva','mIttc')"></div><div class="fi"><label>TVA (%)</label><input type="number" id="mITva" step="0.1" placeholder="20" oninput="majTTC('mImontant','mITva','mIttc')"></div><div class="fi"><label>Montant TTC (€)</label><input type="number" id="mIttc" placeholder="0" readonly style="background:#f6f8fd;font-weight:700;color:var(--navy)"></div>
       <div class="fi"><label>Acompte reçu (€)</label><input type="number" id="mIacompte" value="0"></div>
       <div class="fi"><label>💶 Rémunération installateur (€)</label><input type="number" id="mIremunInst" min="0" placeholder="Auto selon le taux"></div>
       <div class="fi"><label>Statut paiement</label>
@@ -2524,6 +2530,17 @@ function openFromNotif(link){
   else if(link.kind==='install'){idx=(DB.installations||[]).findIndex(function(i){return i.id===link.id;});if(idx>=0)openFiche(idx);else nav('pgInst');}
   else if(link.kind==='sav'){idx=(DB.savTickets||[]).findIndex(function(s){return s.id===link.id;});nav('pgSAV');if(idx>=0)openSAVModal(idx);}
   else if(link.kind==='visite'){nav('pgVisites');}
+  else if(link.kind==='install_celebrate'){
+    idx=(DB.installations||[]).findIndex(function(i){return i.id===link.id;});
+    if(typeof showCelebration==='function'&&curUserObj&&link.commercialId===curUserObj.id){
+      var caMois=_caMoisCommercial(link.commercialId);
+      var inst=idx>=0?DB.installations[idx]:null;
+      var mt=inst?(inst.montantTTC||inst.montant||0):0;
+      var rate=inst?_commRateFor(inst.typeClient||''):5;var comm=Math.round((inst?(inst.montant||0):0)*rate/100);
+      showCelebration({icon:'💰',title:'Vente confirmée installée !',sub:(inst?(inst.chantier||inst.client||''):''),stats:[{val:fmtE(caMois),lbl:'CA du mois',col:'#ffe576'},{val:fmtE(comm),lbl:'Commission',col:'#4ade80'}]});
+    }
+    if(idx>=0)openIM(idx);else nav('pgInst');
+  }
 }
 function markAllRead(){(DB.notifications||[]).forEach(function(n){n.read=true;});save();updateNotifBadge();renderNotifPanel();}
 
@@ -2601,7 +2618,23 @@ function doLogout(){
 }
 
 // ── DASHBOARD ──
+function _instMontant(i){return i.montantTTC||i.montant||0;}
+function renderDashCA(){
+  var el=g('dashCABlock');if(!el)return;
+  var now=new Date();var d0=new Date();d0.setHours(0,0,0,0);
+  var dow=(d0.getDay()+6)%7;var weekStart=new Date(d0);weekStart.setDate(d0.getDate()-dow);
+  var weekEnd=new Date(weekStart);weekEnd.setDate(weekStart.getDate()+6);weekEnd.setHours(23,59,59,999);
+  var mois=now.getMonth(),an=now.getFullYear();
+  var caInstalleMois=(DB.installations||[]).filter(function(i){if(i.statut!=='Terminée'||!i.dateFin)return false;var d=new Date(i.dateFin);return d.getMonth()===mois&&d.getFullYear()===an;}).reduce(function(s,i){return s+_instMontant(i);},0);
+  var aInstallerSemaine=(DB.installations||[]).filter(function(i){if(i.statut==='Terminée'||i.statut==='Annulée'||!i.dateDebut)return false;var d=new Date(i.dateDebut);return d>=weekStart&&d<=weekEnd;}).reduce(function(s,i){return s+_instMontant(i);},0);
+  var aInstallerMois=(DB.installations||[]).filter(function(i){if(i.statut==='Terminée'||i.statut==='Annulée'||!i.dateDebut)return false;var d=new Date(i.dateDebut);return d.getMonth()===mois&&d.getFullYear()===an;}).reduce(function(s,i){return s+_instMontant(i);},0);
+  function box(ico,lbl,val,col,sub){return '<div style="background:linear-gradient(160deg,#fff,#fbfcff);border:1px solid #eceff7;border-radius:14px;padding:16px;text-align:center"><div style="font-size:22px;margin-bottom:6px">'+ico+'</div><div style="font-size:23px;font-weight:800;color:'+col+';letter-spacing:-.5px">'+fmtE(val)+'</div><div style="font-size:11.5px;color:var(--muted);font-weight:600;margin-top:3px">'+lbl+'</div>'+(sub?'<div style="font-size:10px;color:#c2c8dc;margin-top:2px">'+sub+'</div>':'')+'</div>';}
+  el.innerHTML=box('✅','CA déjà installé',caInstalleMois,'#166534','ce mois-ci')
+    +box('📅','CA à installer',aInstallerSemaine,'#d97706','cette semaine')
+    +box('🗓️','CA à installer',aInstallerMois,'#2563eb','ce mois-ci');
+}
 function renderDash(){
+  renderDashCA();
   var relances=getProspectsEnRetard();
   if(relances.length>0)addNotif('prospects',relances.length+' prospect(s) sans contact depuis +7 jours','⚠️');
   var totalOpp=DB.opportunites.reduce(function(s,o){return s+o.montant;},0);
@@ -3218,7 +3251,7 @@ function deduireStock(inst){
   inst.stockDeduit=true;
 }
 function openIM(idx){
-  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof _fillBorneSelect==='function')_fillBorneSelect('mIborne');if(g('mIborne'))g('mIborne').value=r.borneModele||'';if(g('mITypeClient'))g('mITypeClient').value=r.typeClient||'';if(g('mITva'))g('mITva').value=r.tva||'';setTimeout(function(){majTTC('mImontant','mITva','mIttc');},0);if(typeof renderInstallPhotos==="function")renderInstallPhotos();if(typeof renderAuditInst==='function')renderAuditInst();if(typeof renderPointage==='function'&&idx>=0)renderPointage(idx);
+  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof _fillBorneSelect==='function')_fillBorneSelect('mIborne');if(g('mIborne'))g('mIborne').value=r.borneModele||'';if(g('mITypeClient'))g('mITypeClient').value=r.typeClient||'';if(g('mITva'))g('mITva').value=r.tva||'';if(typeof _fillCommercialSelect==='function')_fillCommercialSelect(r.commercialId||'');setTimeout(function(){majTTC('mImontant','mITva','mIttc');},0);if(typeof renderInstallPhotos==="function")renderInstallPhotos();if(typeof renderAuditInst==='function')renderAuditInst();if(typeof renderPointage==='function'&&idx>=0)renderPointage(idx);
   g('mInstT').textContent=idx>=0?'Modifier installation':'Nouvelle installation';
   g('mIchantier').value=r.chantier||'';g('mIclient').value=r.client||'';
   g('mIadresse').value=r.adresse||'';if(typeof _renderQuickPills==='function')_renderQuickPills('mIpills',r.tel,'',([r.adresse,r.cp,r.ville].filter(Boolean).join(' ')));if(g('mIville'))g('mIville').value=r.ville||'';if(g('mIcp'))g('mIcp').value=r.cp||'';if(g('mIphase'))g('mIphase').value=r.phase||'';if(g('mIcableType'))g('mIcableType').value=r.cableType||'';g('mItel').value=r.tel||'';
@@ -3278,7 +3311,7 @@ function saveI(){
     type:g('mItype').value,typeBien:g('mIbien').value,
     raccordement:g('mIraccord')?g('mIraccord').value:'',
     cableM:g('mIcable')?parseInt(g('mIcable').value)||0:0,
-    typeClient:g('mITypeClient')?g('mITypeClient').value:'',tva:g('mITva')?parseFloat(g('mITva').value)||0:0,montantTTC:g('mIttc')?parseFloat(g('mIttc').value)||0:0,
+    typeClient:g('mITypeClient')?g('mITypeClient').value:'',tva:g('mITva')?parseFloat(g('mITva').value)||0:0,montantTTC:g('mIttc')?parseFloat(g('mIttc').value)||0:0,commercialId:g('mIcommercial')?g('mIcommercial').value:'',
     borneModele:g('mIborne')?g('mIborne').value:'',
     phase:g('mIphase')?g('mIphase').value:'',cableType:g('mIcableType')?g('mIcableType').value:'',ville:g('mIville')?g('mIville').value:'',cp:g('mIcp')?g('mIcp').value:'',
     visiteQui:g('mIvisiteQui')?g('mIvisiteQui').value:'',visiteDate:g('mIvisiteDate')?g('mIvisiteDate').value:'',visiteHeure:g('mIvisiteHeure')?g('mIvisiteHeure').value:'',
@@ -3328,7 +3361,19 @@ function saveI(){
   }
   _logAudit(row,(eInst>=0?existing:null),_AUDIT_FIELDS_INST);
   _deductStockForInstall(row,(eInst>=0&&existing?existing.statut:''));
+  var _wasTerminee=(eInst>=0&&existing?existing.statut:'')==='Terminée';
   if(eInst>=0)DB.installations[eInst]=row;else DB.installations.push(row);
+  if(row.statut==='Terminée'&&!_wasTerminee){
+    if(typeof showCelebration==='function'){
+      var moisKey=new Date().getMonth(),anKey=new Date().getFullYear();
+      var nbMois=(DB.installations||[]).filter(function(i){if(i.statut!=='Terminée'||!i.dateFin)return false;var d=new Date(i.dateFin);return d.getMonth()===moisKey&&d.getFullYear()===anKey;}).length;
+      showCelebration({icon:'⚡',title:'Chantier terminé !',sub:row.chantier||row.client||'',stats:[{val:nbMois,lbl:'Chantiers ce mois-ci',col:'#60a5fa'}]});
+    }
+    if(row.commercialId){
+      var accts=(typeof loadAccounts==='function'?loadAccounts():[]);var com=accts.find(function(a){return a.id===row.commercialId;});
+      if(com)addNotif('win','✅ Installation terminée : '+(row.chantier||row.client||'')+' — vente confirmée !','🎉',com.name,{kind:'install_celebrate',id:row.id,commercialId:row.commercialId});
+    }
+  }
   ensureContact({nom:row.client,tel:row.tel,adresse:row.adresse,type:'Client',origine:'une installation'});
   addActivite('install',(eInst>=0?'Installation modifiée: ':'Nouvelle installation: ')+chantier);
   save();closeIM();renderT();toast('Installation enregistrée !');
@@ -5102,6 +5147,13 @@ function validerSignature(idx){
   save();var m=g('mSigTemp');if(m)m.remove();
   toast('✅ Devis signé et accepté');
   if(typeof renderDevis==='function')renderDevis();
+  if(typeof showCelebration==='function'){
+    var accId=r.commercialId||(curUserObj?curUserObj.id:'');
+    var mtHT=(r.lignes||[]).reduce(function(s,l){return s+(l.qte||0)*(l.pu||0);},0);
+    var caMois=_caMoisCommercial(accId);
+    var rate=_commRateFor(r.typeClient||'');var comm=Math.round(mtHT*rate/100);
+    showCelebration({icon:'🎉',title:'Vente conclue !',sub:(r.client||'')+' — '+fmtE(mtHT),stats:[{val:fmtE(caMois),lbl:'CA du mois',col:'#ffe576'},{val:fmtE(comm),lbl:'Commission estimée',col:'#4ade80'}]});
+  }
 }
 function eventReminderModal(){
   var accts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.status==='active'&&a.role!=='admin';});
@@ -5510,6 +5562,31 @@ function majTTC(htId,tvaId,ttcId){
   if(g(ttcId))g(ttcId).value=ttc?ttc.toFixed(2):'';
 }
 function callField(inputId){var v=(g(inputId)&&g(inputId).value)||'';if(!v){toast('Aucun numéro renseigné');return;}window.location.href='tel:'+v.replace(/[^0-9+]/g,'');}
+function _fillCommercialSelect(idVal){
+  var sel=g('mIcommercial');if(!sel)return;
+  var accts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.role==='commercial'&&a.status==='active';});
+  sel.innerHTML='<option value="">--</option>'+accts.map(function(a){return '<option value="'+a.id+'">'+_escR(a.name)+'</option>';}).join('');
+  if(idVal)sel.value=idVal;else if(!idVal&&curUserObj&&isCommercial())sel.value=curUserObj.id;
+}
+function _commRateFor(typeClient){if(!DB.commRate)DB.commRate={resid:5,pro:8};return typeClient==='Professionnel'?DB.commRate.pro:DB.commRate.resid;}
+function _caMoisCommercial(accId){
+  var now=new Date(),mois=now.getMonth(),an=now.getFullYear();
+  return (DB.devis||[]).filter(function(d){if(d.commercialId&&d.commercialId!==accId)return false;if(d.statut!=='Accepté')return false;var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;}).reduce(function(s,d){return s+(d.lignes||[]).reduce(function(s2,l){return s2+(l.qte||0)*(l.pu||0);},0);},0);
+}
+function showCelebration(opts){
+  var id='mCeleb_'+Date.now();
+  var statsHtml=(opts.stats||[]).map(function(st){return '<div style="flex:1;text-align:center"><div style="font-size:22px;font-weight:800;color:'+(st.col||'#ffe576')+'">'+st.val+'</div><div style="font-size:10.5px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.05em;margin-top:2px">'+st.lbl+'</div></div>';}).join('<div style="width:1px;background:rgba(255,255,255,.15)"></div>');
+  var confetti='';for(var i=0;i<24;i++){var left=Math.random()*100,delay=Math.random()*0.6,dur=1.8+Math.random()*1.2,col=['#ffe576','#c79732','#60a5fa','#4ade80','#f472b6'][i%5];confetti+='<div style="position:absolute;top:-20px;left:'+left+'%;width:8px;height:8px;background:'+col+';border-radius:2px;animation:celebFall '+dur+'s ease-in '+delay+'s forwards;opacity:0"></div>';}
+  var h='<div class="ov on" id="'+id+'" onclick="g(\''+id+'\').remove()" style="cursor:pointer"><div style="position:relative;max-width:380px;width:90vw;background:linear-gradient(160deg,#242a56,#171c3c);border-radius:24px;padding:32px 26px;text-align:center;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.5);animation:celebPop .5s cubic-bezier(.2,1.4,.4,1)">'+confetti
+    +'<div style="font-size:46px;margin-bottom:6px">'+(opts.icon||'🎉')+'</div>'
+    +'<div style="font-size:19px;font-weight:800;color:#fff;letter-spacing:-.3px">'+_escR(opts.title||'')+'</div>'
+    +(opts.sub?'<div style="font-size:13px;color:rgba(255,255,255,.65);margin-top:4px">'+_escR(opts.sub)+'</div>':'')
+    +(statsHtml?'<div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.07);border-radius:14px;padding:14px 10px;margin-top:20px">'+statsHtml+'</div>':'')
+    +'<div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:16px">Touche pour continuer</div>'
+    +'</div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+  setTimeout(function(){var el=g(id);if(el)el.remove();},6000);
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
