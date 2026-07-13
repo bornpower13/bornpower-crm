@@ -1900,7 +1900,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="fi"><label>Société</label><input id="mCsociete" placeholder="Société"></div>
       <div class="fi"><label>Poste</label><input id="mCposte" placeholder="Poste"></div>
       <div class="fi"><label>Email</label><input id="mCemail" type="email" placeholder="email@..."></div>
-      <div class="fi"><label>Téléphone</label><input id="mCtel" placeholder="06 00 00 00 00"></div>
+      <div class="fi"><label>Téléphone</label><div style="display:flex;gap:6px"><input id="mCtel" placeholder="06 00 00 00 00" style="flex:1"><button type="button" class="btn bGhost" style="padding:8px 12px" onclick="callField('mCtel')" title="Appeler">📞</button></div></div>
       <div class="fi"><label>Type</label><select id="mCtype"><option>Client</option><option>Prospect</option><option>Partenaire</option></select></div>
       <div class="fi"><label>Statut</label><select id="mCstat"><option>Actif</option><option>Inactif</option></select></div>
       <div class="fi full"><label>Adresse</label><input id="mCadresse" placeholder="Adresse complète"></div>
@@ -1909,7 +1909,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="fi"><label>Date de visite</label><input type="date" id="mCvisiteDate"></div>
       <div class="fi"><label>Heure</label><input type="time" id="mCvisiteHeure"></div>
       <div class="fi"><label>Statut visite</label><select id="mCvisiteStat"><option value="">--</option><option>À planifier</option><option>Planifiée</option><option>Réalisée</option><option>Annulée</option></select></div>
-      <div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">💡 Projet</div><div class="fi full"><label>🔌 Modèle de borne souhaité</label><select id="mCborne"><option value="">-- Choisir un modèle --</option></select></div>
+      <div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">💡 Projet</div><div class="fi"><label>Type de client</label><select id="mCTypeClient"><option value="">--</option><option value="Particulier">Particulier</option><option value="Professionnel">Professionnel</option></select></div><div class="fi full"><label>🔌 Modèle de borne souhaité</label><select id="mCborne"><option value="">-- Choisir un modèle --</option></select></div>
       <div class="fi full"><label>Notes</label><textarea id="mCnotes" placeholder="Notes..."></textarea></div>
     </div>
     <div class="mf"><button class="btn bGhost" onclick="closeContactModal()">Annuler</button><button class="btn bPrimary" onclick="saveContact()">Enregistrer</button></div>
@@ -1978,7 +1978,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="fi"><label>Nom du chantier *</label><input id="mIchantier" placeholder="Ex: Borne M. Dupont"></div>
       <div class="fi"><label>Client</label><input id="mIclient" placeholder="Nom du client"></div>
       <div class="fi"><label>Adresse <a onclick="itineraireInstall()" style="color:var(--gold);cursor:pointer;font-size:11px;font-weight:700">🧭 Itinéraire</a></label><input id="mIadresse" placeholder="Adresse du chantier"></div><div class="fi"><label>Ville / Code postal <a onclick="trouverVilleCP()" style="color:var(--gold);cursor:pointer;font-size:11px;font-weight:700">📍 Auto</a></label><div style="display:flex;gap:8px"><input id="mIville" placeholder="Ville" style="flex:2"><input id="mIcp" placeholder="CP" style="flex:1"></div></div><div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">⚙️ Détails techniques</div><div class="fi"><label>Raccordement électrique</label><select id="mIphase" onchange="majCableType()"><option value="">--</option><option value="Monophasé">Monophasé</option><option value="Triphasé">Triphasé</option></select></div><div class="fi"><label>Câble (auto)</label><input id="mIcableType" readonly placeholder="défini par le raccordement" style="background:#f6f8fd"></div>
-      <div class="fi"><label>Téléphone client</label><input id="mItel" placeholder="06 00 00 00 00"></div>
+      <div class="fi"><label>Téléphone client</label><div style="display:flex;gap:6px"><input id="mItel" placeholder="06 00 00 00 00" style="flex:1"><button type="button" class="btn bGhost" style="padding:8px 12px" onclick="callField('mItel')" title="Appeler">📞</button></div></div>
       <div class="fi"><label>Type de travaux</label>
         <select id="mItype"><option>Borne de recharge</option><option>Tableau électrique</option><option>Mise aux normes</option><option>Panneaux solaires</option><option>Autre</option></select>
       </div>
@@ -2007,7 +2007,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="fi"><label>Date début</label><input type="date" id="mIdebut"></div>
       <div class="fi"><label>Heure d'intervention</label><input type="time" id="mIheure"></div>
       <div class="fi"><label>Date fin</label><input type="date" id="mIfin"></div>
-      <div class="fi"><label>Montant HT (€)</label><input type="number" id="mImontant" placeholder="0"></div>
+      <div class="fi"><label>Type de client</label><select id="mITypeClient" onchange="majTVAClient('mITypeClient','mITva','mImontant','mIttc')"><option value="">--</option><option value="Particulier">Particulier (5,5%)</option><option value="Professionnel">Professionnel (20%)</option></select></div><div class="fi"><label>Montant HT (€)</label><input type="number" id="mImontant" placeholder="0" oninput="majTTC('mImontant','mITva','mIttc')"></div><div class="fi"><label>TVA (%)</label><input type="number" id="mITva" step="0.1" placeholder="20" oninput="majTTC('mImontant','mITva','mIttc')"></div><div class="fi"><label>Montant TTC (€)</label><input type="number" id="mIttc" placeholder="0" readonly style="background:#f6f8fd;font-weight:700;color:var(--navy)"></div>
       <div class="fi"><label>Acompte reçu (€)</label><input type="number" id="mIacompte" value="0"></div>
       <div class="fi"><label>💶 Rémunération installateur (€)</label><input type="number" id="mIremunInst" min="0" placeholder="Auto selon le taux"></div>
       <div class="fi"><label>Statut paiement</label>
@@ -3218,7 +3218,7 @@ function deduireStock(inst){
   inst.stockDeduit=true;
 }
 function openIM(idx){
-  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof _fillBorneSelect==='function')_fillBorneSelect('mIborne');if(g('mIborne'))g('mIborne').value=r.borneModele||'';if(typeof renderInstallPhotos==="function")renderInstallPhotos();if(typeof renderAuditInst==='function')renderAuditInst();if(typeof renderPointage==='function'&&idx>=0)renderPointage(idx);
+  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof _fillBorneSelect==='function')_fillBorneSelect('mIborne');if(g('mIborne'))g('mIborne').value=r.borneModele||'';if(g('mITypeClient'))g('mITypeClient').value=r.typeClient||'';if(g('mITva'))g('mITva').value=r.tva||'';setTimeout(function(){majTTC('mImontant','mITva','mIttc');},0);if(typeof renderInstallPhotos==="function")renderInstallPhotos();if(typeof renderAuditInst==='function')renderAuditInst();if(typeof renderPointage==='function'&&idx>=0)renderPointage(idx);
   g('mInstT').textContent=idx>=0?'Modifier installation':'Nouvelle installation';
   g('mIchantier').value=r.chantier||'';g('mIclient').value=r.client||'';
   g('mIadresse').value=r.adresse||'';if(typeof _renderQuickPills==='function')_renderQuickPills('mIpills',r.tel,'',([r.adresse,r.cp,r.ville].filter(Boolean).join(' ')));if(g('mIville'))g('mIville').value=r.ville||'';if(g('mIcp'))g('mIcp').value=r.cp||'';if(g('mIphase'))g('mIphase').value=r.phase||'';if(g('mIcableType'))g('mIcableType').value=r.cableType||'';g('mItel').value=r.tel||'';
@@ -3278,6 +3278,7 @@ function saveI(){
     type:g('mItype').value,typeBien:g('mIbien').value,
     raccordement:g('mIraccord')?g('mIraccord').value:'',
     cableM:g('mIcable')?parseInt(g('mIcable').value)||0:0,
+    typeClient:g('mITypeClient')?g('mITypeClient').value:'',tva:g('mITva')?parseFloat(g('mITva').value)||0:0,montantTTC:g('mIttc')?parseFloat(g('mIttc').value)||0:0,
     borneModele:g('mIborne')?g('mIborne').value:'',
     phase:g('mIphase')?g('mIphase').value:'',cableType:g('mIcableType')?g('mIcableType').value:'',ville:g('mIville')?g('mIville').value:'',cp:g('mIcp')?g('mIcp').value:'',
     visiteQui:g('mIvisiteQui')?g('mIvisiteQui').value:'',visiteDate:g('mIvisiteDate')?g('mIvisiteDate').value:'',visiteHeure:g('mIvisiteHeure')?g('mIvisiteHeure').value:'',
@@ -5498,6 +5499,17 @@ function _checkProspectDoublon(nom,societe,siret){
     return pn&&pn===q;
   });
 }
+function majTVAClient(sel,tvaId,htId,ttcId){
+  var typ=(g(sel)&&g(sel).value)||'';
+  if(g(tvaId))g(tvaId).value=typ==='Particulier'?5.5:(typ==='Professionnel'?20:g(tvaId).value);
+  majTTC(htId,tvaId,ttcId);
+}
+function majTTC(htId,tvaId,ttcId){
+  var ht=parseFloat(g(htId)&&g(htId).value)||0;var tva=parseFloat(g(tvaId)&&g(tvaId).value)||0;
+  var ttc=ht*(1+tva/100);
+  if(g(ttcId))g(ttcId).value=ttc?ttc.toFixed(2):'';
+}
+function callField(inputId){var v=(g(inputId)&&g(inputId).value)||'';if(!v){toast('Aucun numéro renseigné');return;}window.location.href='tel:'+v.replace(/[^0-9+]/g,'');}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
