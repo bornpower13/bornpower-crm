@@ -1222,7 +1222,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
             <button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('5530Z','')">⛺ Campings</button>
             <button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('4511Z','')">🚗 Concessions auto</button>
             <button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('4520A','')">🔧 Garages</button>
-            <button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('4110A','')">🏗️ Promoteurs</button><button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('4941B','')">🚚 Transport/flottes</button><button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('4932Z','')">🚕 Taxis/VTC</button><button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('8690A','')">🚑 Ambulances</button><button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('8010Z','')">🛡️ Sécurité</button><button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('8121Z','')">🧹 Nettoyage</button><select id="sireneRecentSel" onchange="setRecentFilter(this.value)" style="font-size:11px;padding:4px 8px;border-radius:8px;border:1px solid var(--gold);color:var(--navy);font-weight:600;background:#fff;font-family:inherit"><option value="0">🆕 Toutes dates</option><option value="1">🆕 Créées &lt; 1 mois</option><option value="3">🆕 Créées &lt; 3 mois</option><option value="6">🆕 Créées &lt; 6 mois</option><option value="12">🆕 Créées &lt; 12 mois</option></select>
+            <button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('4110A','')">🏗️ Promoteurs</button><button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('4941B','')">🚚 Transport/flottes</button><button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('4932Z','')">🚕 Taxis/VTC</button><button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('8690A','')">🚑 Ambulances</button><button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('8010Z','')">🛡️ Sécurité</button><button class="btn bGhost" style="font-size:11px;padding:4px 10px" onclick="sireneCible('8121Z','')">🧹 Nettoyage</button><button class="btn bGhost" style="font-size:11px;padding:4px 8px" onclick="nettoyerDoublonsProspects()">🧹 Doublons</button><select id="sireneRecentSel" onchange="setRecentFilter(this.value)" style="font-size:11px;padding:4px 8px;border-radius:8px;border:1px solid var(--gold);color:var(--navy);font-weight:600;background:#fff;font-family:inherit"><option value="0">🆕 Toutes dates</option><option value="1">🆕 Créées &lt; 1 mois</option><option value="3">🆕 Créées &lt; 3 mois</option><option value="6">🆕 Créées &lt; 6 mois</option><option value="12">🆕 Créées &lt; 12 mois</option></select>
           </div>
           <div id="sireneResults"></div>
         </div>
@@ -3114,6 +3114,7 @@ function openProspectModal(idx){
 function saveProspect(){
   var nom=g('mProsNom').value.trim();if(!nom){alert('Raison sociale requise');return;}
   var existing=eProspect>=0?DB.prospects[eProspect]:{};
+  if(eProspect<0){var _dup=_checkProspectDoublon(nom,nom,g('mProsSiret').value);if(_dup&&!confirm('⚠️ "'+nom+'" ressemble à un prospect déjà existant ("'+(_dup.nom||_dup.societe)+'"). Créer quand même un doublon ?')){return;}}
   var row={id:eProspect>=0?existing.id:DB.nextId++,nom:nom,societe:nom,siret:g('mProsSiret').value,naf:g('mProsNaf').value,formeJ:g('mProsFormeJ').value,adresse:g('mProsAdresse').value,ville:g('mProsVille').value,cp:g('mProsCP').value,effectif:g('mProsEffectif').value,dateCreationEnt:g('mProsCreation').value,statut:g('mProsStat').value,contactPrenom:g('mProsContactP').value,contactNom:g('mProsContactN').value,tel:g('mProsTel').value,email:g('mProsEmail').value,notes:g('mProsNotes').value,source:existing.source||'Prospection',visiteQui:g('mProsVisiteQui').value,visiteDate:g('mProsVisiteDate').value,visiteHeure:g('mProsVisiteHeure').value,visiteStat:g('mProsVisiteStat').value,lastContact:new Date().toISOString().slice(0,10)};
   if(eProspect>=0)DB.prospects[eProspect]=row;else DB.prospects.push(row);
   save();g('mProspect').classList.remove('on');renderProspects();toast('Prospect enregistré !');
@@ -3308,6 +3309,7 @@ function saveI(){
     addNotif('assign','Nouveau chantier assigné : '+row.chantier+(row.dateDebut?' le '+fmtD(row.dateDebut):''),'⚡',row.installateur,{kind:'install',id:row.id});
   }
   _logAudit(row,(eInst>=0?existing:null),_AUDIT_FIELDS_INST);
+  _deductStockForInstall(row,(eInst>=0&&existing?existing.statut:''));
   if(eInst>=0)DB.installations[eInst]=row;else DB.installations.push(row);
   ensureContact({nom:row.client,tel:row.tel,adresse:row.adresse,type:'Client',origine:'une installation'});
   addActivite('install',(eInst>=0?'Installation modifiée: ':'Nouvelle installation: ')+chantier);
@@ -5410,6 +5412,57 @@ function _runAutoProspection(manual){
   next();
 }
 try{window.addEventListener('load',function(){_runAfterLogin(function(){_runAutoProspection(false);},3200);});}catch(e){}
+function _deductStockForInstall(row,existingStatut){
+  try{
+    if(!row.borneModele)return;
+    if(row.statut!=='Terminée')return;
+    if(existingStatut==='Terminée')return; // déjà déduit une fois
+    if(!DB.materiel)DB.materiel=[];
+    var mat=DB.materiel.find(function(m){return (m.nom||'').trim().toLowerCase()===(row.borneModele||'').trim().toLowerCase();});
+    var qte=parseInt(row.nbBornes,10)||1;
+    if(mat){
+      mat.stock=(mat.stock||0)-qte;
+      if(mat.stock<=(mat.seuil||5)){addNotif('sav','📦 Stock bas : '+mat.nom+' ('+mat.stock+' restant(s))','📦','');}
+      toast('📦 Stock mis à jour : -'+qte+' '+mat.nom);
+    }
+  }catch(e){}
+}
+function nettoyerDoublonsProspects(){
+  if(!DB.prospects||!DB.prospects.length){toast('Aucun prospect à vérifier');return;}
+  if(!confirm('Rechercher et fusionner les prospects en double (même nom/SIRET) ? Le plus ancien de chaque groupe sera gardé.'))return;
+  var groups={};var order=[];
+  DB.prospects.forEach(function(p){
+    var key=(p.siret&&p.siret.trim())?('siret:'+p.siret.trim()):('nom:'+(p.nom||p.societe||'').trim().toLowerCase());
+    if(!key||key==='nom:')return;
+    if(!groups[key]){groups[key]=[];order.push(key);}
+    groups[key].push(p);
+  });
+  var toRemove=[];var merged=0;
+  order.forEach(function(key){
+    var g=groups[key];if(g.length<2)return;
+    g.sort(function(a,b){return (a.id||0)-(b.id||0);});
+    var keep=g[0];
+    for(var i=1;i<g.length;i++){
+      var dup=g[i];
+      // Compléter les champs vides du gardé avec ceux du doublon
+      ['email','tel','ville','cp','adresse','poste','notes'].forEach(function(f){if(!keep[f]&&dup[f])keep[f]=dup[f];});
+      if(dup.activites&&dup.activites.length){keep.activites=(keep.activites||[]).concat(dup.activites);}
+      toRemove.push(dup.id);merged++;
+    }
+  });
+  if(!merged){toast('Aucun doublon trouvé ✅');return;}
+  DB.prospects=DB.prospects.filter(function(p){return toRemove.indexOf(p.id)<0;});
+  save();if(typeof renderProspects==='function')renderProspects();
+  toast('✅ '+merged+' doublon(s) fusionné(s) et supprimé(s)');
+}
+function _checkProspectDoublon(nom,societe,siret){
+  var q=(nom||societe||'').trim().toLowerCase();if(!q&&!siret)return null;
+  return (DB.prospects||[]).find(function(p){
+    if(siret&&p.siret&&p.siret.trim()===siret.trim())return true;
+    var pn=(p.nom||p.societe||'').trim().toLowerCase();
+    return pn&&pn===q;
+  });
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
