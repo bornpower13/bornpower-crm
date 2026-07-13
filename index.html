@@ -2919,6 +2919,7 @@ function renderDevis(){
       +'<td class="acts">'
         +'<button class="act" onclick="exportDevisPDFById('+idx+')" title="PDF" style="color:var(--red)">📄</button>'
         +(d.signature?'<span class="act" title="Signé électroniquement" style="color:#166534">✅</span>':'<button class="act" onclick="signatureDevisModal('+idx+')" title="Faire signer" style="color:#166534">✍️</button>')
+        +(d.statut==='Accepté'?(d.installCreated?'<button class="act" onclick="nav(\'pgInst\');setTimeout(function(){var ix=DB.installations.findIndex(function(i){return i.id==='+d.installId+';});if(ix>=0)openIM(ix);},200)" title="Voir l\'installation" style="color:#2563eb">🏗️</button>':'<button class="act" onclick="creerInstallationDepuisDevis('+idx+')" title="Créer l\'installation" style="color:#d97706">🏗️</button>'):'')
         +'<button class="act" onclick="emailDevis('+idx+')" title="Envoyer par email" style="color:var(--blue)">✉️</button>'
         +'<button class="act" onclick="duplicateDevis('+idx+')" title="Dupliquer" style="color:var(--gold)">⧉</button>'
         +'<button class="act" onclick="openDM('+idx+')">✏️</button>'
@@ -5616,6 +5617,27 @@ function renderIStatutBadge(statut){
   }
   el.style.display='block';
   el.innerHTML='<div style="background:linear-gradient(135deg,'+col+'18,'+col+'08);border:1px solid '+col+'35;border-radius:14px;padding:12px 14px;margin-bottom:4px"><div style="display:flex;align-items:center;gap:8px"><div style="width:9px;height:9px;border-radius:50%;background:'+col+'"></div><div style="font-size:14px;font-weight:800;color:'+col+'">'+statut+'</div></div>'+track+'</div>';
+}
+function creerInstallationDepuisDevis(idx){
+  var d=DB.devis[idx];if(!d)return;
+  if(d.installCreated){toast('Une installation existe déjà pour ce devis');return;}
+  var ht=(d.lignes||[]).reduce(function(s,l){return s+(l.qte||0)*(l.pu||0);},0);
+  var tva=d.tva||5.5;var ttc=ht*(1+tva/100);
+  var typeClient=tva<=5.5?'Particulier':'Professionnel';
+  var borneModele='';
+  if(d.lignes&&d.lignes.length){
+    var noms=(DB.catalogue||[]).map(function(p){return p.nom;});
+    for(var i=0;i<d.lignes.length;i++){var m=noms.find(function(n){return d.lignes[i].desc&&d.lignes[i].desc.indexOf(n)>=0;});if(m){borneModele=m;break;}}
+  }
+  var row={id:DB.nextId++,chantier:d.client,client:d.client,tel:d.telClient||'',adresse:d.adresse||'',ville:d.ville||'',cp:'',type:'Borne de recharge',typeBien:'',montant:Math.round(ht*100)/100,montantTTC:Math.round(ttc*100)/100,tva:tva,typeClient:typeClient,borneModele:borneModele,commercialId:d.commercialId||'',devisId:d.id,statut:'Planifiée',dateDebut:'',creePar:(curUserObj?curUserObj.name:''),modifiedBy:(curUserObj?curUserObj.name:'')};
+  DB.installations.push(row);
+  d.installCreated=true;d.installId=row.id;
+  save();
+  ensureContact({nom:row.client,tel:row.tel,adresse:row.adresse,type:'Client',origine:'un devis signé'});
+  toast('🏗️ Installation créée à partir du devis');
+  if(typeof renderDevis==='function')renderDevis();
+  var idxInst=DB.installations.indexOf(row);
+  nav('pgInst');setTimeout(function(){openIM(idxInst);},200);
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
