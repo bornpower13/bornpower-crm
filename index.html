@@ -634,6 +634,19 @@ table thead tr{background:linear-gradient(180deg,#f7f8fd,#f1f3fa)}
 table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !important;text-transform:uppercase;letter-spacing:.05em}
 #mFicheTemp .modal{overflow:hidden;padding:0}
 
+#mInst .ttcHighlight{background:linear-gradient(135deg,#242a56,#171c3c);border-radius:14px;padding:12px 14px}
+#mInst .ttcHighlight label{color:#ffe576 !important;font-size:11px !important;text-transform:uppercase;letter-spacing:.05em}
+#mInst .ttcHighlight input{background:transparent !important;border:none !important;color:#fff !important;font-size:24px !important;font-weight:800;padding:2px 0 !important;letter-spacing:-.5px}
+#mInst .fi.full{background:#fafbff;border:1px solid #eef0f8;border-radius:14px;padding:14px}
+#mInst .fi.full label{margin-bottom:8px}
+#mInst #mIcableType,#mInst input[readonly]:not(#mIttc){background:#f6f8fd;color:#8990a8;font-style:italic}
+
+
+#mInst .fi label{font-size:11.5px;font-weight:700;color:#5b6178;margin-bottom:4px;display:block}
+#mInst .fi input,#mInst .fi select,#mInst .fi textarea{font-size:13.5px}
+#mInst .fgrid{gap:14px 12px}
+
+
 @keyframes celebFall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(420px) rotate(360deg);opacity:0}}
 @keyframes celebPop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
 
@@ -1981,7 +1994,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
     <div class="mh"><h2 id="mInstT">Installation</h2><button class="mcl" onclick="closeIM()">&#10005;</button><div id="mIpills" style="grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;width:100%"></div></div>
     <div id="mIcreatorInfo" style="margin-bottom:12px"></div>
     <div class="fgrid">
-      <div class="fi"><label>Nom du chantier *</label><input id="mIchantier" placeholder="Ex: Borne M. Dupont"></div>
+      <div id="mIstatutBadge" style="grid-column:1/-1;display:none"></div><div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">🏠 Chantier & client</div><div class="fi"><label>Nom du chantier *</label><input id="mIchantier" placeholder="Ex: Borne M. Dupont"></div>
       <div class="fi"><label>Client</label><input id="mIclient" placeholder="Nom du client"></div>
       <div class="fi"><label>Adresse <a onclick="itineraireInstall()" style="color:var(--gold);cursor:pointer;font-size:11px;font-weight:700">🧭 Itinéraire</a></label><input id="mIadresse" placeholder="Adresse du chantier"></div><div class="fi"><label>Ville / Code postal <a onclick="trouverVilleCP()" style="color:var(--gold);cursor:pointer;font-size:11px;font-weight:700">📍 Auto</a></label><div style="display:flex;gap:8px"><input id="mIville" placeholder="Ville" style="flex:2"><input id="mIcp" placeholder="CP" style="flex:1"></div></div><div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">⚙️ Détails techniques</div><div class="fi"><label>Raccordement électrique</label><select id="mIphase" onchange="majCableType()"><option value="">--</option><option value="Monophasé">Monophasé</option><option value="Triphasé">Triphasé</option></select></div><div class="fi"><label>Câble (auto)</label><input id="mIcableType" readonly placeholder="défini par le raccordement" style="background:#f6f8fd"></div>
       <div class="fi"><label>Téléphone client</label><div style="display:flex;gap:6px"><input id="mItel" placeholder="06 00 00 00 00" style="flex:1"><button type="button" class="btn bGhost" style="padding:8px 12px" onclick="callField('mItel')" title="Appeler">📞</button></div></div>
@@ -2006,14 +2019,14 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="fi"><label>Puissance</label>
         <select id="mIpuissance"><option>3.7 kW</option><option>7.4 kW</option><option>11 kW</option><option>22 kW</option><option>50 kW</option><option>150 kW</option></select>
       </div>
-      <div class="fi"><label>Installateur</label><select id="mIinst"></select></div>
+      <div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">👷 Équipe & planning</div><div class="fi"><label>Installateur</label><select id="mIinst"></select></div>
       <div class="fi"><label>Statut</label>
-        <select id="mIstat"><option>Planifiée</option><option>En cours</option><option>Terminée</option><option>En pause</option><option>Annulée</option></select>
+        <select id="mIstat" onchange="renderIStatutBadge(this.value)"><option>Planifiée</option><option>En cours</option><option>Terminée</option><option>En pause</option><option>Annulée</option></select>
       </div>
       <div class="fi"><label>Date début</label><input type="date" id="mIdebut"></div>
       <div class="fi"><label>Heure d'intervention</label><input type="time" id="mIheure"></div>
       <div class="fi"><label>Date fin</label><input type="date" id="mIfin"></div>
-      <div class="fi"><label>Type de client</label><select id="mITypeClient" onchange="majTVAClient('mITypeClient','mITva','mImontant','mIttc')"><option value="">--</option><option value="Particulier">Particulier (5,5%)</option><option value="Professionnel">Professionnel (20%)</option></select></div><div class="fi"><label>Commercial (vente)</label><select id="mIcommercial"><option value="">--</option></select></div><div class="fi"><label>Montant HT (€)</label><input type="number" id="mImontant" placeholder="0" oninput="majTTC('mImontant','mITva','mIttc')"></div><div class="fi"><label>TVA (%)</label><input type="number" id="mITva" step="0.1" placeholder="20" oninput="majTTC('mImontant','mITva','mIttc')"></div><div class="fi"><label>Montant TTC (€)</label><input type="number" id="mIttc" placeholder="0" readonly style="background:#f6f8fd;font-weight:700;color:var(--navy)"></div>
+      <div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">💶 Vente & paiement</div><div class="fi"><label>Type de client</label><select id="mITypeClient" onchange="majTVAClient('mITypeClient','mITva','mImontant','mIttc')"><option value="">--</option><option value="Particulier">Particulier (5,5%)</option><option value="Professionnel">Professionnel (20%)</option></select></div><div class="fi"><label>Commercial (vente)</label><select id="mIcommercial"><option value="">--</option></select></div><div class="fi"><label>Montant HT (€)</label><input type="number" id="mImontant" placeholder="0" oninput="majTTC('mImontant','mITva','mIttc')"></div><div class="fi"><label>TVA (%)</label><input type="number" id="mITva" step="0.1" placeholder="20" oninput="majTTC('mImontant','mITva','mIttc')"></div><div class="fi ttcHighlight"><label>💰 Montant TTC</label><input type="number" id="mIttc" placeholder="0" readonly></div>
       <div class="fi"><label>Acompte reçu (€)</label><input type="number" id="mIacompte" value="0"></div>
       <div class="fi"><label>💶 Rémunération installateur (€)</label><input type="number" id="mIremunInst" min="0" placeholder="Auto selon le taux"></div>
       <div class="fi"><label>Statut paiement</label>
@@ -3251,7 +3264,7 @@ function deduireStock(inst){
   inst.stockDeduit=true;
 }
 function openIM(idx){
-  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof _fillBorneSelect==='function')_fillBorneSelect('mIborne');if(g('mIborne'))g('mIborne').value=r.borneModele||'';if(g('mITypeClient'))g('mITypeClient').value=r.typeClient||'';if(g('mITva'))g('mITva').value=r.tva||'';if(typeof _fillCommercialSelect==='function')_fillCommercialSelect(r.commercialId||'');setTimeout(function(){majTTC('mImontant','mITva','mIttc');},0);if(typeof renderInstallPhotos==="function")renderInstallPhotos();if(typeof renderAuditInst==='function')renderAuditInst();if(typeof renderPointage==='function'&&idx>=0)renderPointage(idx);
+  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof _fillBorneSelect==='function')_fillBorneSelect('mIborne');if(g('mIborne'))g('mIborne').value=r.borneModele||'';if(g('mITypeClient'))g('mITypeClient').value=r.typeClient||'';if(g('mITva'))g('mITva').value=r.tva||'';if(typeof _fillCommercialSelect==='function')_fillCommercialSelect(r.commercialId||'');if(typeof renderIStatutBadge==='function')renderIStatutBadge(r.statut||'');setTimeout(function(){majTTC('mImontant','mITva','mIttc');},0);if(typeof renderInstallPhotos==="function")renderInstallPhotos();if(typeof renderAuditInst==='function')renderAuditInst();if(typeof renderPointage==='function'&&idx>=0)renderPointage(idx);
   g('mInstT').textContent=idx>=0?'Modifier installation':'Nouvelle installation';
   g('mIchantier').value=r.chantier||'';g('mIclient').value=r.client||'';
   g('mIadresse').value=r.adresse||'';if(typeof _renderQuickPills==='function')_renderQuickPills('mIpills',r.tel,'',([r.adresse,r.cp,r.ville].filter(Boolean).join(' ')));if(g('mIville'))g('mIville').value=r.ville||'';if(g('mIcp'))g('mIcp').value=r.cp||'';if(g('mIphase'))g('mIphase').value=r.phase||'';if(g('mIcableType'))g('mIcableType').value=r.cableType||'';g('mItel').value=r.tel||'';
@@ -5586,6 +5599,23 @@ function showCelebration(opts){
     +'</div></div>';
   document.body.insertAdjacentHTML('beforeend',h);
   setTimeout(function(){var el=g(id);if(el)el.remove();},6000);
+}
+function renderIStatutBadge(statut){
+  var el=g('mIstatutBadge');if(!el)return;
+  if(!statut){el.style.display='none';return;}
+  var steps=['Planifiée','En cours','Terminée'];
+  var col=SCOLS[statut]||'#888';
+  var stepIdx=steps.indexOf(statut);
+  var track='';
+  if(statut!=='Annulée'&&statut!=='En pause'){
+    track='<div style="display:flex;align-items:center;gap:6px;margin-top:10px">'+steps.map(function(st,i){
+      var done=i<=stepIdx;
+      return '<div style="flex:1;height:5px;border-radius:3px;background:'+(done?col:'#eceff7')+'"></div>';
+    }).join('')+'</div>'
+    +'<div style="display:flex;justify-content:space-between;margin-top:4px">'+steps.map(function(st,i){return '<div style="font-size:9.5px;color:'+(i<=stepIdx?col:'#c2c8dc')+';font-weight:'+(i===stepIdx?'800':'600')+'">'+st+'</div>';}).join('')+'</div>';
+  }
+  el.style.display='block';
+  el.innerHTML='<div style="background:linear-gradient(135deg,'+col+'18,'+col+'08);border:1px solid '+col+'35;border-radius:14px;padding:12px 14px;margin-bottom:4px"><div style="display:flex;align-items:center;gap:8px"><div style="width:9px;height:9px;border-radius:50%;background:'+col+'"></div><div style="font-size:14px;font-weight:800;color:'+col+'">'+statut+'</div></div>'+track+'</div>';
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
