@@ -916,6 +916,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
     <div class="pg" id="pgDashComm">
       <div class="pgHead"><div><h1>Mon tableau de bord</h1><p class="sub">Mes performances</p></div><div style="display:flex;gap:8px"><button class="btn bGhost" onclick="showTemplates()" style="color:var(--blue)">✉️ Modèles</button><button class="btn bGhost" onclick="simADVENIR()" style="color:var(--gold)">🧮 Simulateur aides</button><button class="btn bPrimary" onclick="openOppModal(-1)">+ Opportunité</button></div></div>
       <div class="kpis" id="dashCommKpis"></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>⚡ Mes ventes en cours d'installation</h3></div><div class="cardB" id="commInstallLink"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🎯 Objectif du mois</h3></div><div class="cardB" id="objectifBox"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🎯 À faire maintenant</h3></div><div class="cardB" id="commPriorites" style="padding:0"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>✅ Mes tâches du jour</h3></div><div class="cardB" id="commTasks" style="padding:0"></div></div>
@@ -2651,7 +2652,9 @@ function renderDash(){
   var relances=getProspectsEnRetard();
   if(relances.length>0)addNotif('prospects',relances.length+' prospect(s) sans contact depuis +7 jours','⚠️');
   var totalOpp=DB.opportunites.reduce(function(s,o){return s+o.montant;},0);
-  var totalGagne=DB.opportunites.filter(function(o){return o.etape==='Gagné';}).reduce(function(s,o){return s+o.montant;},0);
+  var totalGagneOpp=DB.opportunites.filter(function(o){return o.etape==='Gagné';}).reduce(function(s,o){return s+o.montant;},0);
+  var totalGagneDevis=(DB.devis||[]).filter(function(d){return d.statut==='Accepté';}).reduce(function(s,d){return s+(d.lignes||[]).reduce(function(s2,l){return s2+(l.qte||0)*(l.pu||0);},0);},0);
+  var totalGagne=totalGagneOpp+totalGagneDevis;
   var enCours=DB.installations.filter(function(i){return i.statut==='En cours';}).length;
   var stockAlert=DB.materiel.filter(function(m){return m.stock<=m.seuil;}).length;
   g('dashKpis').innerHTML=kpi('💰','Pipeline',fmtE(totalOpp),'blue')+kpi('🏆','CA gagné',fmtE(totalGagne),'green')+kpi('⚡','En cours',enCours,'orange')+kpi('📦','Alertes stock',stockAlert,'red');
@@ -2676,6 +2679,7 @@ function renderDash(){
 
 function renderDashComm(){
   var uid=curUserObj?curUserObj.id:'';
+  if(typeof renderCommInstallLink==='function')renderCommInstallLink();
   var myOpps=DB.opportunites.filter(function(o){return !o.commercialId||o.commercialId===uid;});
   var myDevis=DB.devis.filter(function(d){return !d.commercialId||d.commercialId===uid;});
   var caTotal=myDevis.filter(function(d){return d.statut==='Accepté';}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);
@@ -5638,6 +5642,17 @@ function creerInstallationDepuisDevis(idx){
   if(typeof renderDevis==='function')renderDevis();
   var idxInst=DB.installations.indexOf(row);
   nav('pgInst');setTimeout(function(){openIM(idxInst);},200);
+}
+function renderCommInstallLink(){
+  var el=g('commInstallLink');if(!el)return;
+  var uid=curUserObj?curUserObj.id:'';
+  var mine=(DB.installations||[]).filter(function(i){return i.commercialId===uid&&i.statut!=='Annulée';}).sort(function(a,b){return (a.statut==='Terminée'?1:0)-(b.statut==='Terminée'?1:0);});
+  if(!mine.length){el.innerHTML='<div style="font-size:12.5px;color:var(--muted);padding:6px 0">Aucune vente en cours d\'installation pour l\'instant.</div>';return;}
+  el.innerHTML=mine.slice(0,6).map(function(i){
+    var col=SCOLS[i.statut]||'#888';
+    var inst=i.installateur||'Non assigné';
+    return '<div class="finRow" style="padding:10px 2px"><div style="flex:1"><div style="font-size:13px;font-weight:600">'+_escR(i.chantier||i.client||'')+'</div><div style="font-size:11px;color:var(--muted)">👷 '+_escR(inst)+(i.dateDebut?(' · '+fmtD(i.dateDebut)):'')+'</div></div><span class="bdg" style="background:'+col+'18;color:'+col+';font-weight:700">'+i.statut+'</span></div>';
+  }).join('');
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
