@@ -1121,7 +1121,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="info" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;font-size:12.5px;color:#1e40af;margin-bottom:16px">ℹ️ Aucun envoi n'est automatisé (WhatsApp/LinkedIn interdisent ça et ça expose au ban). L'IA prépare le message, tu l'envoies toi-même en un clic.</div>
 
       <div class="card" style="margin-bottom:16px">
-        <div class="cardH"><h3>📅 File du jour</h3></div>
+        <div class="cardH" style="display:flex;justify-content:space-between;align-items:center"><h3>📅 File du jour</h3><button class="btn bPrimary" style="font-size:12px;padding:6px 12px" onclick="seqModeRapide()">⚡ Mode rapide</button></div>
         <div class="cardB" id="seqFileDuJour" style="padding:0"></div>
       </div>
 
@@ -6081,6 +6081,36 @@ function _seqVocalGenerer(){
     if(typeof renderSeqFileDuJour==='function')renderSeqFileDuJour();
   });
 }
+var _seqQueueIdx=0,_seqQueueList=[];
+function seqModeRapide(){
+  _seqQueueList=_seqDueList();_seqQueueIdx=0;
+  if(!_seqQueueList.length){toast('Rien à traiter aujourd\'hui 🎉');return;}
+  var h='<div class="ov on" id="mSeqQueueTemp" style="background:rgba(15,18,42,.6)"><div style="max-width:400px;width:92vw;margin:0 auto" id="seqQueueBody"></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+  _renderSeqQueueCard();
+}
+function _renderSeqQueueCard(){
+  var body=g('seqQueueBody');if(!body)return;
+  if(_seqQueueIdx>=_seqQueueList.length){
+    body.innerHTML='<div style="background:#fff;border-radius:20px;padding:36px 24px;text-align:center"><div style="font-size:44px;margin-bottom:10px">🎉</div><div style="font-size:17px;font-weight:800;color:var(--navy)">File terminée !</div><div style="font-size:13px;color:var(--muted);margin-top:6px">Tous les messages du jour sont partis.</div><button class="btn bPrimary" style="margin-top:16px" onclick="g(\'mSeqQueueTemp\').remove();renderSeqFileDuJour()">Fermer</button></div>';
+    return;
+  }
+  var item=_seqQueueList[_seqQueueIdx];var p=item.p,step=item.step;
+  var actionHtml='';
+  if(step.channel==='email'&&p.email){actionHtml='<a class="btn bPrimary" style="width:100%;text-align:center;display:block" href="mailto:'+encodeURIComponent(p.email)+'?subject='+encodeURIComponent(step.subject||'')+'&body='+encodeURIComponent(step.content||'')+'" onclick="_seqQueueNext('+item.idx+')">✉️ Envoyer l\'email</a>';}
+  else if(step.channel==='whatsapp'&&p.tel){actionHtml='<a class="btn bPrimary" style="width:100%;text-align:center;display:block" href="https://wa.me/'+_seqCleanTel(p.tel)+'?text='+encodeURIComponent(step.content||'')+'" target="_blank" rel="noopener" onclick="_seqQueueNext('+item.idx+')">💬 Ouvrir WhatsApp</a>';}
+  else{actionHtml='<button class="btn bPrimary" style="width:100%" onclick="_copySeqStep('+item.idx+');_seqQueueNext('+item.idx+')">📋 Copier pour LinkedIn</button>';}
+  body.innerHTML='<div style="background:#fff;border-radius:20px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.3)">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span style="font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase">'+(_seqQueueIdx+1)+' / '+_seqQueueList.length+'</span><span style="font-size:20px;cursor:pointer;color:var(--muted)" onclick="g(\'mSeqQueueTemp\').remove()">✕</span></div>'
+    +'<div style="font-size:16px;font-weight:800;color:#1f2438">'+_escR(p.nom||p.societe||'')+'</div>'
+    +'<div style="font-size:11.5px;color:var(--muted);margin-bottom:12px">'+_seqChannelLbl(step.channel)+(p.ville?(' · '+_escR(p.ville)):'')+'</div>'
+    +'<div style="background:#f8f9fd;border-radius:12px;padding:14px;font-size:13.5px;color:#2b3050;white-space:pre-wrap;max-height:220px;overflow:auto">'+_escR(step.content||'')+'</div>'
+    +'<div style="margin-top:16px">'+actionHtml+'</div>'
+    +'<button class="btn bGhost" style="width:100%;margin-top:8px" onclick="_seqQueueSkip()">Passer ⏭</button>'
+    +'</div>';
+}
+function _seqQueueNext(idx){setTimeout(function(){marquerEtapeEnvoyee(idx);_seqQueueIdx++;_renderSeqQueueCard();},400);}
+function _seqQueueSkip(){_seqQueueIdx++;_renderSeqQueueCard();}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
