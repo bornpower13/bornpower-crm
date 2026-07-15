@@ -1918,7 +1918,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
     <div class="fgrid">
       <div class="fi"><label>Prénom *</label><input id="mCprenom" placeholder="Prénom"></div>
       <div class="fi"><label>Nom *</label><input id="mCnom" placeholder="Nom"></div>
-      <div class="fi"><label>Société</label><input id="mCsociete" placeholder="Société"></div>
+      <div class="fi"><label>Société</label><input id="mCsociete" placeholder="Société"></div><div class="fi"><label>N° SIRET/SIREN (pro)</label><input id="mCSiret" placeholder="9 chiffres" maxlength="9"><div id="mCSiret_status" style="font-size:10.5px;color:var(--muted);margin-top:3px"></div></div>
       <div class="fi"><label>Poste</label><input id="mCposte" placeholder="Poste"></div>
       <div class="fi"><label>Email</label><input id="mCemail" type="email" placeholder="email@..."></div>
       <div class="fi"><label>Téléphone</label><div style="display:flex;gap:6px"><input id="mCtel" placeholder="06 00 00 00 00" style="flex:1"><button type="button" class="btn bGhost" style="padding:8px 12px" onclick="callField('mCtel')" title="Appeler">📞</button></div></div>
@@ -2028,7 +2028,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="fi"><label>Date début</label><input type="date" id="mIdebut"></div>
       <div class="fi"><label>Heure d'intervention</label><input type="time" id="mIheure"></div>
       <div class="fi"><label>Date fin</label><input type="date" id="mIfin"></div>
-      <div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">💶 Vente & paiement</div><div class="fi"><label>Type de client</label><select id="mITypeClient" onchange="majTVAClient('mITypeClient','mITva','mImontant','mIttc')"><option value="">--</option><option value="Particulier">Particulier (5,5%)</option><option value="Professionnel">Professionnel (20%)</option></select></div><div class="fi"><label>Commercial (vente)</label><select id="mIcommercial"><option value="">--</option></select></div><div class="fi"><label>Montant HT (€)</label><input type="number" id="mImontant" placeholder="0" oninput="majTTC('mImontant','mITva','mIttc')"></div><div class="fi"><label>TVA (%)</label><input type="number" id="mITva" step="0.1" placeholder="20" oninput="majTTC('mImontant','mITva','mIttc')"></div><div class="fi ttcHighlight"><label>💰 Montant TTC</label><input type="number" id="mIttc" placeholder="0" readonly></div>
+      <div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">💶 Vente & paiement</div><div class="fi"><label>Type de client</label><select id="mITypeClient" onchange="majTVAClient('mITypeClient','mITva','mImontant','mIttc')"><option value="">--</option><option value="Particulier">Particulier (5,5%)</option><option value="Professionnel">Professionnel (20%)</option></select></div><div class="fi"><label>N° SIRET/SIREN (pro)</label><input id="mISiret" placeholder="9 chiffres" maxlength="9"><div id="mISiret_status" style="font-size:10.5px;color:var(--muted);margin-top:3px"></div></div><div class="fi"><label>Commercial (vente)</label><select id="mIcommercial"><option value="">--</option></select></div><div class="fi"><label>Montant HT (€)</label><input type="number" id="mImontant" placeholder="0" oninput="majTTC('mImontant','mITva','mIttc')"></div><div class="fi"><label>TVA (%)</label><input type="number" id="mITva" step="0.1" placeholder="20" oninput="majTTC('mImontant','mITva','mIttc')"></div><div class="fi ttcHighlight"><label>💰 Montant TTC</label><input type="number" id="mIttc" placeholder="0" readonly></div>
       <div class="fi"><label>Acompte reçu (€)</label><input type="number" id="mIacompte" value="0"></div>
       <div class="fi"><label>💶 Rémunération installateur (€)</label><input type="number" id="mIremunInst" min="0" placeholder="Auto selon le taux"></div>
       <div class="fi"><label>Statut paiement</label>
@@ -2901,7 +2901,7 @@ function openContactModal(idx){
   g('mCsociete').value=r.societe||'';g('mCposte').value=r.poste||'';
   g('mCemail').value=r.email||'';g('mCtel').value=r.tel||'';
   g('mCtype').value=r.type||'Client';g('mCstat').value=r.statut||'Actif';
-  g('mCadresse').value=r.adresse||'';g('mCnotes').value=r.notes||'';if(typeof _renderQuickPills==='function')_renderQuickPills('mCpills',r.tel,r.email,r.adresse);if(typeof attachAddrAutocomplete==='function')attachAddrAutocomplete('mCadresse','','');if(typeof _fillBorneSelect==='function')_fillBorneSelect('mCborne');if(g('mCborne'))g('mCborne').value=r.borneModele||'';
+  g('mCadresse').value=r.adresse||'';g('mCnotes').value=r.notes||'';if(typeof _renderQuickPills==='function')_renderQuickPills('mCpills',r.tel,r.email,r.adresse);if(typeof attachAddrAutocomplete==='function')attachAddrAutocomplete('mCadresse','','');if(typeof attachSiretLookup==='function')attachSiretLookup('mCSiret',{nom:'mCsociete',adresse:'mCadresse'});if(typeof _fillBorneSelect==='function')_fillBorneSelect('mCborne');if(g('mCborne'))g('mCborne').value=r.borneModele||'';
   fillVisiteQui('mCvisiteQui',r.visiteQui||'');
   g('mCvisiteDate').value=r.visiteDate||'';g('mCvisiteHeure').value=r.visiteHeure||'';
   g('mCvisiteStat').value=r.visiteStat||'';
@@ -3287,7 +3287,7 @@ function deduireStock(inst){
   inst.stockDeduit=true;
 }
 function openIM(idx){
-  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof _fillBorneSelect==='function')_fillBorneSelect('mIborne');if(g('mIborne'))g('mIborne').value=r.borneModele||'';if(g('mITypeClient'))g('mITypeClient').value=r.typeClient||'';if(g('mITva'))g('mITva').value=r.tva||'';if(typeof _fillCommercialSelect==='function')_fillCommercialSelect(r.commercialId||'');if(typeof renderIStatutBadge==='function')renderIStatutBadge(r.statut||'');setTimeout(function(){majTTC('mImontant','mITva','mIttc');},0);if(typeof renderInstallPhotos==="function")renderInstallPhotos();if(typeof renderAuditInst==='function')renderAuditInst();if(typeof attachAddrAutocomplete==='function')attachAddrAutocomplete('mIadresse','mIville','mIcp');if(typeof renderPointage==='function'&&idx>=0)renderPointage(idx);
+  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof _fillBorneSelect==='function')_fillBorneSelect('mIborne');if(g('mIborne'))g('mIborne').value=r.borneModele||'';if(g('mITypeClient'))g('mITypeClient').value=r.typeClient||'';if(g('mITva'))g('mITva').value=r.tva||'';if(typeof _fillCommercialSelect==='function')_fillCommercialSelect(r.commercialId||'');if(typeof renderIStatutBadge==='function')renderIStatutBadge(r.statut||'');setTimeout(function(){majTTC('mImontant','mITva','mIttc');},0);if(typeof renderInstallPhotos==="function")renderInstallPhotos();if(typeof renderAuditInst==='function')renderAuditInst();if(typeof attachAddrAutocomplete==='function')attachAddrAutocomplete('mIadresse','mIville','mIcp');if(typeof attachSiretLookup==='function')attachSiretLookup('mISiret',{nom:'mIclient',adresse:'mIadresse',ville:'mIville',cp:'mIcp'});if(typeof renderPointage==='function'&&idx>=0)renderPointage(idx);
   g('mInstT').textContent=idx>=0?'Modifier installation':'Nouvelle installation';
   g('mIchantier').value=r.chantier||'';g('mIclient').value=r.client||'';
   g('mIadresse').value=r.adresse||'';if(typeof _renderQuickPills==='function')_renderQuickPills('mIpills',r.tel,'',([r.adresse,r.cp,r.ville].filter(Boolean).join(' ')));if(g('mIville'))g('mIville').value=r.ville||'';if(g('mIcp'))g('mIcp').value=r.cp||'';if(g('mIphase'))g('mIphase').value=r.phase||'';if(g('mIcableType'))g('mIcableType').value=r.cableType||'';g('mItel').value=r.tel||'';
@@ -5189,6 +5189,13 @@ function validerSignature(idx){
     var rate=_commRateFor(r.typeClient||'');var comm=Math.round(mtHT*rate/100);
     showCelebration({icon:'🎉',title:'Vente conclue !',sub:(r.client||'')+' — '+fmtE(mtHT),stats:[{val:fmtE(caMois),lbl:'CA du mois',col:'#ffe576'},{val:fmtE(comm),lbl:'Commission estimée',col:'#4ade80'}]});
   }
+  if(!r.installCreated){
+    setTimeout(function(){
+      if(confirm('🏗️ Créer l\'installation correspondante maintenant ?\n\nElle sera pré-remplie avec les infos du devis.')){
+        creerInstallationDepuisDevis(idx);
+      }
+    },900);
+  }
 }
 function eventReminderModal(){
   var accts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.status==='active'&&a.role!=='admin';});
@@ -5731,6 +5738,45 @@ function itineraire(addr){
     +'</div></div></div>';
   document.body.insertAdjacentHTML('beforeend',h);
 }
+function attachSiretLookup(siretId,targets){
+  var inp=g(siretId);if(!inp||inp._siretAttached)return;inp._siretAttached=true;
+  inp.addEventListener('input',function(){
+    var digits=inp.value.replace(/\D/g,'');
+    if(digits.length!==9)return;
+    var statusEl=g(siretId+'_status');if(statusEl)statusEl.textContent='🔍 Recherche...';
+    fetch('https://recherche-entreprises.api.gouv.fr/search?q='+digits+'&per_page=1').then(function(r){return r.json();}).then(function(data){
+      var e=data&&data.results&&data.results[0];
+      if(!e||e.siren!==digits){if(statusEl)statusEl.textContent='❌ Entreprise introuvable';return;}
+      var siege=e.siege||{};
+      var nom=e.nom_complet||e.nom_raison_sociale||'';
+      var adr=[siege.numero_voie,siege.type_voie,siege.libelle_voie].filter(Boolean).join(' ');
+      if(targets.nom&&g(targets.nom))g(targets.nom).value=nom;
+      if(targets.adresse&&g(targets.adresse))g(targets.adresse).value=adr;
+      if(targets.ville&&g(targets.ville))g(targets.ville).value=siege.libelle_commune||'';
+      if(targets.cp&&g(targets.cp))g(targets.cp).value=siege.code_postal||'';
+      if(statusEl)statusEl.textContent='✅ '+nom;
+      toast('✅ Entreprise trouvée : '+nom);
+    }).catch(function(){if(statusEl)statusEl.textContent='❌ Erreur de recherche';});
+  });
+}
+function _seedStockFromCatalogue(){
+  try{
+    if(!DB.catalogue||!DB.catalogue.length)return;
+    if(!DB.materiel)DB.materiel=[];
+    if(DB._stockSeeded)return;
+    var noms=DB.materiel.map(function(m){return (m.nom||'').trim().toLowerCase();});
+    var changed=false;
+    DB.catalogue.filter(function(p){return p.cat==='Borne';}).forEach(function(p){
+      if(noms.indexOf(p.nom.trim().toLowerCase())<0){
+        DB.materiel.push({id:DB.nextId++,nom:p.nom,cat:'Borne',ref:'',unite:'unité',stock:5,seuil:2});
+        changed=true;
+      }
+    });
+    DB._stockSeeded=true;
+    if(changed&&typeof save==='function')save();
+  }catch(e){}
+}
+try{window.addEventListener('load',function(){_runAfterLogin(_seedStockFromCatalogue,900);});}catch(e){}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
