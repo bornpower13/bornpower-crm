@@ -898,6 +898,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
     <div class="pg" id="pgDash">
       <div class="pgHead"><div><h1>Tableau de bord</h1><p class="sub">Vue d'ensemble</p></div><button class="btn bPrimary" onclick="openIM(-1)">+ Installation</button></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>💰 Chiffre d'affaires</h3></div><div class="cardB" id="dashCABlock" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px"></div></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>⚡ Installations du jour</h3></div><div class="cardB" id="dashInstJour" style="padding:0"></div></div>
       <div class="kpis" id="dashKpis"></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📈 Analytics</h3></div><div class="cardB" id="analyticsBox"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📢 Message à l'équipe</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Envoie un message qui apparaît en bandeau + notification chez tes commerciaux et installateurs.</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn bPrimary" onclick="broadcastModal()">📢 Envoyer un message</button><button class="btn bGhost" onclick="eventReminderModal()">🔔 Programmer un rappel</button><button class="btn bGhost" onclick="openMissionControl()">📺 Mode Mission Control</button></div></div></div>
@@ -2647,8 +2648,24 @@ function renderDashCA(){
     +box('📅','CA à installer',aInstallerSemaine,'#d97706','cette semaine')
     +box('🗓️','CA à installer',aInstallerMois,'#2563eb','ce mois-ci');
 }
+function renderInstJour(){
+  var el=g('dashInstJour');if(!el)return;
+  var todayKey=new Date().toISOString().slice(0,10);
+  var list=(DB.installations||[]).filter(function(i){return i.dateDebut&&i.dateDebut.slice(0,10)===todayKey&&i.statut!=='Annulée';});
+  list.sort(function(a,b){return (a.heure||'99:99').localeCompare(b.heure||'99:99');});
+  if(!list.length){el.innerHTML='<div class="emptyState"><div class="emptyIco">📅</div><div class="emptyTitle">Aucune installation aujourd\'hui</div></div>';return;}
+  el.innerHTML=list.map(function(i){
+    var idx=DB.installations.indexOf(i);var col=SCOLS[i.statut]||'#888';
+    return '<div class="finRow" style="padding:11px 16px;cursor:pointer" onclick="openIM('+idx+')">'
+      +'<div style="width:4px;height:34px;border-radius:3px;background:'+col+';margin-right:12px;flex-shrink:0"></div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:#1f2438">'+(i.heure?('<span style="color:'+col+'">'+i.heure+'</span> · '):'')+_escR(i.chantier||i.client||'')+'</div><div style="font-size:11.5px;color:#8990a8">👷 '+_escR(i.installateur||'Non assigné')+(i.ville?(' · 📍 '+_escR(i.ville)):'')+'</div></div>'
+      +'<span class="bdg" style="background:'+col+'18;color:'+col+';font-weight:700;flex-shrink:0">'+i.statut+'</span>'
+      +'</div>';
+  }).join('');
+}
 function renderDash(){
   renderDashCA();
+  if(typeof renderInstJour==="function")renderInstJour();
   var relances=getProspectsEnRetard();
   if(relances.length>0)addNotif('prospects',relances.length+' prospect(s) sans contact depuis +7 jours','⚠️');
   var totalOpp=DB.opportunites.reduce(function(s,o){return s+o.montant;},0);
@@ -2884,7 +2901,7 @@ function openContactModal(idx){
   g('mCsociete').value=r.societe||'';g('mCposte').value=r.poste||'';
   g('mCemail').value=r.email||'';g('mCtel').value=r.tel||'';
   g('mCtype').value=r.type||'Client';g('mCstat').value=r.statut||'Actif';
-  g('mCadresse').value=r.adresse||'';g('mCnotes').value=r.notes||'';if(typeof _renderQuickPills==='function')_renderQuickPills('mCpills',r.tel,r.email,r.adresse);if(typeof _fillBorneSelect==='function')_fillBorneSelect('mCborne');if(g('mCborne'))g('mCborne').value=r.borneModele||'';
+  g('mCadresse').value=r.adresse||'';g('mCnotes').value=r.notes||'';if(typeof _renderQuickPills==='function')_renderQuickPills('mCpills',r.tel,r.email,r.adresse);if(typeof attachAddrAutocomplete==='function')attachAddrAutocomplete('mCadresse','','');if(typeof _fillBorneSelect==='function')_fillBorneSelect('mCborne');if(g('mCborne'))g('mCborne').value=r.borneModele||'';
   fillVisiteQui('mCvisiteQui',r.visiteQui||'');
   g('mCvisiteDate').value=r.visiteDate||'';g('mCvisiteHeure').value=r.visiteHeure||'';
   g('mCvisiteStat').value=r.visiteStat||'';
@@ -3157,6 +3174,7 @@ function fillVisiteQui(selectId,selected){
   sel.innerHTML=opts;
 }
 function openProspectModal(idx){
+  setTimeout(function(){if(typeof attachAddrAutocomplete==='function')attachAddrAutocomplete('mProsAdresse','mProsVille','mProsCP');},50);
   eProspect=idx;var r=idx>=0?DB.prospects[idx]:{};
   if(g('mProspectT'))g('mProspectT').textContent=idx>=0?'Modifier prospect':'Nouveau prospect';
   g('mProsNom').value=r.nom||'';g('mProsSiret').value=r.siret||'';g('mProsNaf').value=r.naf||'';
@@ -3269,7 +3287,7 @@ function deduireStock(inst){
   inst.stockDeduit=true;
 }
 function openIM(idx){
-  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof _fillBorneSelect==='function')_fillBorneSelect('mIborne');if(g('mIborne'))g('mIborne').value=r.borneModele||'';if(g('mITypeClient'))g('mITypeClient').value=r.typeClient||'';if(g('mITva'))g('mITva').value=r.tva||'';if(typeof _fillCommercialSelect==='function')_fillCommercialSelect(r.commercialId||'');if(typeof renderIStatutBadge==='function')renderIStatutBadge(r.statut||'');setTimeout(function(){majTTC('mImontant','mITva','mIttc');},0);if(typeof renderInstallPhotos==="function")renderInstallPhotos();if(typeof renderAuditInst==='function')renderAuditInst();if(typeof renderPointage==='function'&&idx>=0)renderPointage(idx);
+  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof _fillBorneSelect==='function')_fillBorneSelect('mIborne');if(g('mIborne'))g('mIborne').value=r.borneModele||'';if(g('mITypeClient'))g('mITypeClient').value=r.typeClient||'';if(g('mITva'))g('mITva').value=r.tva||'';if(typeof _fillCommercialSelect==='function')_fillCommercialSelect(r.commercialId||'');if(typeof renderIStatutBadge==='function')renderIStatutBadge(r.statut||'');setTimeout(function(){majTTC('mImontant','mITva','mIttc');},0);if(typeof renderInstallPhotos==="function")renderInstallPhotos();if(typeof renderAuditInst==='function')renderAuditInst();if(typeof attachAddrAutocomplete==='function')attachAddrAutocomplete('mIadresse','mIville','mIcp');if(typeof renderPointage==='function'&&idx>=0)renderPointage(idx);
   g('mInstT').textContent=idx>=0?'Modifier installation':'Nouvelle installation';
   g('mIchantier').value=r.chantier||'';g('mIclient').value=r.client||'';
   g('mIadresse').value=r.adresse||'';if(typeof _renderQuickPills==='function')_renderQuickPills('mIpills',r.tel,'',([r.adresse,r.cp,r.ville].filter(Boolean).join(' ')));if(g('mIville'))g('mIville').value=r.ville||'';if(g('mIcp'))g('mIcp').value=r.cp||'';if(g('mIphase'))g('mIphase').value=r.phase||'';if(g('mIcableType'))g('mIcableType').value=r.cableType||'';g('mItel').value=r.tel||'';
@@ -5026,7 +5044,6 @@ function openFicheProspect(idx){
     +'</div></div></div>';
   document.body.insertAdjacentHTML('beforeend',h);
 }
-function itineraire(addr){addr=(addr||'').trim();if(!addr){toast('Aucune adresse renseignée');return;}window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(addr),'_blank','noopener');}
 function itineraireInstall(){var a=((g('mIadresse')&&g('mIadresse').value)||'').trim();var c=((g('mIclient')&&g('mIclient').value)||'').trim();itineraire(a||c);}
 function itineraireFiche(idx){var p=DB.prospects[idx];if(!p)return;itineraire([p.societe||p.nom,p.ville].filter(Boolean).join(' '));}
 function _syncInstallateurs(){
@@ -5654,6 +5671,66 @@ function renderCommInstallLink(){
     return '<div class="finRow" style="padding:10px 2px"><div style="flex:1"><div style="font-size:13px;font-weight:600">'+_escR(i.chantier||i.client||'')+'</div><div style="font-size:11px;color:var(--muted)">👷 '+_escR(inst)+(i.dateDebut?(' · '+fmtD(i.dateDebut)):'')+'</div></div><span class="bdg" style="background:'+col+'18;color:'+col+';font-weight:700">'+i.statut+'</span></div>';
   }).join('');
 }
+function changerRoleModal(idx){
+  var accounts=loadAccounts();var a=accounts[idx];if(!a)return;
+  var roles=['commercial','installer','dirtech','cm'];
+  var opts=roles.map(function(r){return '<option value="'+r+'"'+(a.role===r?' selected':'')+'>'+(ROLE_LABELS[r]||r)+'</option>';}).join('');
+  var h='<div class="ov on" id="mRoleTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>Changer le rôle</h2><button class="mcl" onclick="g(\'mRoleTemp\').remove()">✕</button></div><div style="padding:16px">'
+    +'<div style="font-size:13px;color:var(--muted);margin-bottom:12px">'+_escR(a.name)+' ('+_escR(a.email||'')+')</div>'
+    +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Nouveau rôle</label><select id="roleSelectNew" style="width:100%;margin:6px 0 14px">'+opts+'</select>'
+    +'<button class="btn bPrimary" style="width:100%" onclick="changerRole('+idx+')">Enregistrer</button>'
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function changerRole(idx){
+  var accounts=loadAccounts();var a=accounts[idx];if(!a)return;
+  var newRole=(g('roleSelectNew')&&g('roleSelectNew').value)||a.role;
+  if(newRole===a.role){var m=g('mRoleTemp');if(m)m.remove();return;}
+  var oldLabel=ROLE_LABELS[a.role]||a.role;var newLabel=ROLE_LABELS[newRole]||newRole;
+  a.role=newRole;saveAccounts(accounts);
+  var m=g('mRoleTemp');if(m)m.remove();
+  toast('✅ '+a.name+' est maintenant '+newLabel);
+  renderUsers();buildNav();
+}
+var _addrTimer=null;
+function attachAddrAutocomplete(inputId,villeId,cpId){
+  var inp=g(inputId);if(!inp||inp._autocompleteAttached)return;inp._autocompleteAttached=true;
+  var wrap=document.createElement('div');wrap.style.position='relative';
+  inp.parentNode.insertBefore(wrap,inp);wrap.appendChild(inp);
+  var dd=document.createElement('div');dd.id=inputId+'_dd';dd.style.cssText='position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #e3e7f1;border-radius:10px;box-shadow:0 8px 24px rgba(20,25,60,.14);z-index:60;max-height:220px;overflow-y:auto;display:none;margin-top:4px';
+  wrap.appendChild(dd);
+  inp.addEventListener('input',function(){
+    var q=inp.value.trim();
+    if(_addrTimer)clearTimeout(_addrTimer);
+    if(q.length<4){dd.style.display='none';return;}
+    _addrTimer=setTimeout(function(){
+      fetch('https://api-adresse.data.gouv.fr/search/?limit=5&q='+encodeURIComponent(q)).then(function(r){return r.json();}).then(function(data){
+        var feats=(data&&data.features)||[];
+        if(!feats.length){dd.style.display='none';return;}
+        dd.innerHTML=feats.map(function(ft,i){var p=ft.properties||{};return '<div data-i="'+i+'" style="padding:9px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid #f0f2f8" onmousedown="event.preventDefault()">📍 '+_escR(p.label||'')+'</div>';}).join('');
+        dd.style.display='block';
+        Array.prototype.forEach.call(dd.children,function(el,i){el.onclick=function(){
+          var p=feats[i].properties||{};
+          inp.value=(p.name||p.label||'');
+          if(g(villeId))g(villeId).value=p.city||'';
+          if(g(cpId))g(cpId).value=p.postcode||'';
+          dd.style.display='none';
+        };});
+      }).catch(function(){});
+    },300);
+  });
+  inp.addEventListener('blur',function(){setTimeout(function(){dd.style.display='none';},150);});
+}
+function itineraire(addr){
+  addr=(addr||'').trim();if(!addr){toast('Aucune adresse renseignée');return;}
+  var q=encodeURIComponent(addr);
+  var h='<div class="ov on" id="mNavTemp" onclick="if(event.target===this)this.remove()"><div class="modal" style="max-width:320px"><div class="mh"><h2>🧭 Itinéraire</h2><button class="mcl" onclick="g(\'mNavTemp\').remove()">✕</button></div><div style="padding:14px">'
+    +'<a href="https://www.google.com/maps/dir/?api=1&destination='+q+'" target="_blank" rel="noopener" onclick="g(\'mNavTemp\').remove()" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid #eceff7;border-radius:12px;margin-bottom:8px;color:#1f2438"><span style="font-size:22px">🗺️</span><span style="font-weight:700;font-size:14px">Google Maps</span></a>'
+    +'<a href="https://waze.com/ul?q='+q+'&navigate=yes" target="_blank" rel="noopener" onclick="g(\'mNavTemp\').remove()" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid #eceff7;border-radius:12px;margin-bottom:8px;color:#1f2438"><span style="font-size:22px">🚗</span><span style="font-weight:700;font-size:14px">Waze</span></a>'
+    +'<a href="https://maps.apple.com/?daddr='+q+'" target="_blank" rel="noopener" onclick="g(\'mNavTemp\').remove()" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid #eceff7;border-radius:12px;color:#1f2438"><span style="font-size:22px">📍</span><span style="font-weight:700;font-size:14px">Plans (Apple)</span></a>'
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
@@ -5874,7 +5951,7 @@ function renderUsers(){
         +(a.status==='pending'?'<button class="btn bPrimary" style="padding:6px 14px;font-size:13px" onclick="validateUser('+realIdx+')">✓ Valider</button>':'')
         +(a.status==='active'?'<button class="btn bGhost" style="padding:6px 12px;font-size:13px" onclick="blockUser('+realIdx+')">🚫 Bloquer</button>':'')
         +(a.status==='blocked'?'<button class="btn bGhost" style="padding:6px 12px;font-size:13px;color:var(--green)" onclick="unblockUser('+realIdx+')">✓ Réactiver</button>':'')
-        +'<button class="btn bGhost" style="padding:6px 10px;font-size:13px;color:var(--red)" onclick="deleteUser('+realIdx+')">🗑</button>'
+        +'<button class="btn bGhost" style="padding:6px 10px;font-size:13px" onclick="changerRoleModal('+realIdx+')">✏️ Rôle</button>'+'<button class="btn bGhost" style="padding:6px 10px;font-size:13px;color:var(--red)" onclick="deleteUser('+realIdx+')">🗑</button>'
       +'</div></div>';
   }).join('');
 }
