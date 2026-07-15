@@ -962,7 +962,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
 
     <!-- DEVIS -->
     <div class="pg" id="pgDevis">
-      <div class="pgHead"><div><h1>Devis</h1><p class="sub">Propositions commerciales</p></div><button class="btn bPrimary" onclick="openDM(-1)">+ Devis</button></div>
+      <div class="pgHead"><div><h1>Devis</h1><p class="sub">Propositions commerciales</p></div><div style="display:flex;gap:8px"><button class="btn bGhost" onclick="devisVocalModal()">🎙️ Devis vocal</button><button class="btn bPrimary" onclick="openDM(-1)">+ Devis</button></div></div>
       <div class="tbar">
         <div class="srch"><input id="devisSearch" oninput="renderDevis()" placeholder="Rechercher..."></div>
         <select class="fsl" id="devisStatF" onchange="renderDevis()"><option value="">Tous statuts</option><option>Brouillon</option><option>Envoyé</option><option>Accepté</option><option>Refusé</option><option>Expiré</option></select>
@@ -1009,7 +1009,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
         </div>
       </div>
       <div class="tw"><table>
-        <thead><tr><th>ID</th><th>Chantier</th><th>Client</th><th>Installateur</th><th>Type</th><th>Statut</th><th>Début</th><th>Fin</th><th>Signature</th><th>Actions</th></tr></thead>
+        <thead><tr><th></th><th>Chantier</th><th>Type & borne</th><th>Installateur</th><th>Statut</th><th>Date début</th><th>Montant</th><th>Actions</th></tr></thead>
         <tbody id="instTable"></tbody>
       </table></div>
     </div>
@@ -2037,7 +2037,8 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">📝 Suivi</div><div class="fi full"><label>Notes</label><textarea id="mInotes" placeholder="Notes internes..."></textarea></div>
       <div class="fi full"><label>📷 Photos / Ordre de mission</label><div id="mIphotos" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div><input type="file" accept="image/*" capture="environment" multiple onchange="addInstallPhoto(this)" style="font-size:12px"></div>
       <div class="fi full"><label>⏱️ Pointage du chantier</label><div id="mIpointage"></div></div>
-      <div class="fi full"><button class="btn bGhost" style="width:100%;color:#dc2626;border-color:#fecaca" onclick="if(typeof eInst!=='undefined'&&eInst>=0)signalerProblemeModal(eInst);else toast('Enregistre d\'abord l\'installation')">⚠️ Signaler un problème</button></div>
+      <div class="fi full" id="mIpayBtn" style="display:none;margin-bottom:8px"></div>
+      <div class="fi full"><button class="btn bPrimary" style="width:100%;margin-bottom:8px" onclick="if(typeof eInst!=='undefined'&&eInst>=0)guideInstallModal(eInst);else toast('Enregistre d\'abord l\'installation')">🧭 Guide d'installation (IA)</button><button class="btn bGhost" style="width:100%;color:#dc2626;border-color:#fecaca" onclick="if(typeof eInst!=='undefined'&&eInst>=0)signalerProblemeModal(eInst);else toast('Enregistre d\'abord l\'installation')">⚠️ Signaler un problème</button></div>
       <div class="fi full"><label>🕓 Historique des modifications</label><div id="mIaudit" style="max-height:220px;overflow:auto;background:#f8f9fd;border:1px solid var(--border);border-radius:10px;padding:8px 10px"></div></div>
       <div class="fi full">
         <label>Devis Tiime (PDF, max 5MB)</label>
@@ -3242,21 +3243,21 @@ function renderT(){
   var instSel=g('instInstF');if(instSel&&instSel.options.length<=1){DB.installateurs.forEach(function(i){var o=document.createElement('option');o.value=instName(i.prenom,i.nom);o.textContent=instName(i.prenom,i.nom);instSel.appendChild(o);});}
   g('instTable').innerHTML=list.length?list.map(function(r){
     var idx=DB.installations.indexOf(r);
-    return '<tr style="cursor:pointer" onclick="if(!event.target.closest(\'button,a,input,select\'))openIM('+idx+')"><td><strong>'+r.chantier+'</strong><br><span style="font-size:11px;color:var(--muted)">'+r.client+'</span></td>'
-      +'<td><div>'+r.type+'</div>'+(r.borneModele?'<div style="font-size:11px;color:#166534;font-weight:600">🔌 '+r.borneModele+'</div>':'')+(r.typeBien?'<div style="font-size:11px;color:var(--muted)">'+r.typeBien+(r.nbBornes?' &middot; '+r.nbBornes+' borne(s)':'')+'</div>':'')+'</td>'
-      +'<td>'+(r.installateur||'<span style="color:var(--muted)">Non assigné</span>')+'</td>'
-      +'<td><span class="bdg '+(BDGS[r.statut]||'')+'">'+r.statut+'</span></td>'
-      +'<td>'+(r.dateDebut?fmtD(r.dateDebut):'--')+'</td>'
-      +'<td>'+(r.montant?fmtE(r.montant):'--')+'</td>'
+    var col=SCOLS[r.statut]||'#888';
+    return '<tr style="cursor:pointer" onclick="if(!event.target.closest(\'button,a,input,select\'))openIM('+idx+')">'
+      +'<td style="padding:0;width:4px"><div style="width:4px;height:100%;min-height:44px;background:'+col+'"></div></td>'
+      +'<td><strong style="color:#1f2438">'+r.chantier+'</strong><br><span style="font-size:11.5px;color:var(--muted)">'+r.client+'</span></td>'
+      +'<td><div style="font-size:12.5px">'+r.type+'</div>'+(r.borneModele?'<div style="font-size:11px;color:#166534;font-weight:600">🔌 '+r.borneModele+'</div>':'<div style="font-size:11px;color:#c2c8dc">Borne non choisie</div>')+'</td>'
+      +'<td style="font-size:12.5px">'+(r.installateur||'<span style="color:var(--muted)">Non assigné</span>')+'</td>'
+      +'<td><span class="bdg" style="background:'+col+'18;color:'+col+';font-weight:700">'+r.statut+'</span></td>'
+      +'<td style="font-size:12.5px">'+(r.dateDebut?fmtD(r.dateDebut):'<span style="color:#c2c8dc">--</span>')+(r.heure?(' · '+r.heure):'')+'</td>'
+      +'<td style="font-weight:700;color:var(--navy)">'+((r.montantTTC||r.montant)?fmtE(r.montantTTC||r.montant):'<span style="color:#c2c8dc;font-weight:400">--</span>')+'</td>'
       +'<td class="acts">'
-        +'<button class="act" onclick="openFiche('+idx+')" title="Fiche">👁</button>'
-        +'<button class="act" onclick="addToCalendar('+idx+')" title="Calendrier" style="color:var(--blue)">📅</button>'
-        +'<button class="act" onclick="openChecklist('+idx+')" title="Checklist">☑️</button>'
-        +'<button class="act" onclick="openPhotos('+idx+')" title="Photos">📷</button>'
+        +'<button class="act" onclick="openFiche('+idx+')" title="Fiche détaillée">👁</button>'
         +(!isInstaller()?'<button class="act" onclick="openIM('+idx+')" title="Modifier">✏️</button>':'')
         +(isAdmin()?'<button class="act dl" onclick="delI('+idx+')" title="Supprimer">🗑</button>':'')
       +'</td></tr>';
-  }).join(''):_emptyRow(10,'⚡','Aucune installation','Planifie ta première installation');
+  }).join(''):_emptyRow(8,'⚡','Aucune installation','Planifie ta première installation');
 }
 var matUtiliseTmp=[];
 function fillMatSelect(){
@@ -3287,7 +3288,7 @@ function deduireStock(inst){
   inst.stockDeduit=true;
 }
 function openIM(idx){
-  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof _fillBorneSelect==='function')_fillBorneSelect('mIborne');if(g('mIborne'))g('mIborne').value=r.borneModele||'';if(g('mITypeClient'))g('mITypeClient').value=r.typeClient||'';if(g('mITva'))g('mITva').value=r.tva||'';if(typeof _fillCommercialSelect==='function')_fillCommercialSelect(r.commercialId||'');if(typeof renderIStatutBadge==='function')renderIStatutBadge(r.statut||'');setTimeout(function(){majTTC('mImontant','mITva','mIttc');},0);if(typeof renderInstallPhotos==="function")renderInstallPhotos();if(typeof renderAuditInst==='function')renderAuditInst();if(typeof attachAddrAutocomplete==='function')attachAddrAutocomplete('mIadresse','mIville','mIcp');if(typeof attachSiretLookup==='function')attachSiretLookup('mISiret',{nom:'mIclient',adresse:'mIadresse',ville:'mIville',cp:'mIcp'});if(typeof renderPointage==='function'&&idx>=0)renderPointage(idx);
+  eInst=idx;var r=idx>=0?DB.installations[idx]:{};if(typeof _fillBorneSelect==='function')_fillBorneSelect('mIborne');if(g('mIborne'))g('mIborne').value=r.borneModele||'';if(g('mITypeClient'))g('mITypeClient').value=r.typeClient||'';if(g('mITva'))g('mITva').value=r.tva||'';if(typeof _fillCommercialSelect==='function')_fillCommercialSelect(r.commercialId||'');if(typeof renderIStatutBadge==='function')renderIStatutBadge(r.statut||'');setTimeout(function(){majTTC('mImontant','mITva','mIttc');},0);if(typeof renderInstallPhotos==="function")renderInstallPhotos();if(typeof renderAuditInst==='function')renderAuditInst();if(typeof attachAddrAutocomplete==='function')attachAddrAutocomplete('mIadresse','mIville','mIcp');if(typeof attachSiretLookup==='function')attachSiretLookup('mISiret',{nom:'mIclient',adresse:'mIadresse',ville:'mIville',cp:'mIcp'});if(typeof renderPointage==='function'&&idx>=0)renderPointage(idx);if(typeof renderPayBtn==='function'&&idx>=0)renderPayBtn(idx);
   g('mInstT').textContent=idx>=0?'Modifier installation':'Nouvelle installation';
   g('mIchantier').value=r.chantier||'';g('mIclient').value=r.client||'';
   g('mIadresse').value=r.adresse||'';if(typeof _renderQuickPills==='function')_renderQuickPills('mIpills',r.tel,'',([r.adresse,r.cp,r.ville].filter(Boolean).join(' ')));if(g('mIville'))g('mIville').value=r.ville||'';if(g('mIcp'))g('mIcp').value=r.cp||'';if(g('mIphase'))g('mIphase').value=r.phase||'';if(g('mIcableType'))g('mIcableType').value=r.cableType||'';g('mItel').value=r.tel||'';
@@ -5777,6 +5778,119 @@ function _seedStockFromCatalogue(){
   }catch(e){}
 }
 try{window.addEventListener('load',function(){_runAfterLogin(_seedStockFromCatalogue,900);});}catch(e){}
+var _voiceDevisRecog=null,_voiceDevisTranscript='';
+function devisVocalModal(){
+  var h='<div class="ov on" id="mVoiceDTemp" onclick="if(event.target===this)this.remove()"><div class="modal" style="max-width:420px"><div class="mh"><h2>🎙️ Devis vocal</h2><button class="mcl" onclick="stopVoiceDevis();g(\'mVoiceDTemp\').remove()">✕</button></div><div style="padding:18px;text-align:center">'
+    +'<div style="font-size:12.5px;color:var(--muted);margin-bottom:16px">Décris la vente à voix haute : client, produit, prix, TVA... L\'IA rédige le devis pour toi.</div>'
+    +'<button id="voiceDBtn" onclick="toggleVoiceDevis()" style="width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#242a56,#171c3c);border:none;color:#fff;font-size:32px;cursor:pointer;box-shadow:0 8px 24px rgba(36,42,86,.3)">🎙️</button>'
+    +'<div id="voiceDStatus" style="font-size:12px;color:var(--muted);margin-top:12px">Touche pour parler</div>'
+    +'<div id="voiceDTranscript" style="text-align:left;background:#f8f9fd;border-radius:10px;padding:12px;margin-top:14px;font-size:13px;min-height:40px;display:none"></div>'
+    +'<button id="voiceDGenBtn" onclick="genererDevisVocal()" class="btn bPrimary" style="width:100%;margin-top:14px;display:none">✨ Générer le devis</button>'
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function toggleVoiceDevis(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('Reconnaissance vocale non disponible sur ce navigateur');return;}
+  if(_voiceDevisRecog){stopVoiceDevis();return;}
+  _voiceDevisTranscript='';
+  _voiceDevisRecog=new SR();_voiceDevisRecog.lang='fr-FR';_voiceDevisRecog.continuous=true;_voiceDevisRecog.interimResults=true;
+  var btn=g('voiceDBtn');if(btn)btn.style.background='linear-gradient(135deg,#dc2626,#991b1b)';
+  var st=g('voiceDStatus');if(st)st.textContent='🔴 Écoute en cours... touche pour arrêter';
+  var tr=g('voiceDTranscript');if(tr)tr.style.display='block';
+  _voiceDevisRecog.onresult=function(e){
+    var txt='';for(var i=0;i<e.results.length;i++){txt+=e.results[i][0].transcript+' ';}
+    _voiceDevisTranscript=txt.trim();
+    if(tr)tr.textContent=_voiceDevisTranscript;
+  };
+  _voiceDevisRecog.onerror=function(){stopVoiceDevis();};
+  _voiceDevisRecog.start();
+}
+function stopVoiceDevis(){
+  if(_voiceDevisRecog){try{_voiceDevisRecog.stop();}catch(e){}_voiceDevisRecog=null;}
+  var btn=g('voiceDBtn');if(btn)btn.style.background='linear-gradient(135deg,#242a56,#171c3c)';
+  var st=g('voiceDStatus');if(st)st.textContent=_voiceDevisTranscript?'✅ Prêt à générer':'Touche pour parler';
+  var gb=g('voiceDGenBtn');if(gb&&_voiceDevisTranscript)gb.style.display='block';
+}
+function genererDevisVocal(){
+  if(!_voiceDevisTranscript){toast('Aucun texte capturé');return;}
+  var st=g('voiceDStatus');if(st)st.textContent='⏳ Rédaction du devis...';
+  var sys='Tu es un assistant qui transforme une description orale de vente en devis structuré pour BORN POWER (bornes de recharge). Réponds UNIQUEMENT en JSON valide, sans texte autour, format exact : {"client":"nom du client","tva":5.5,"lignes":[{"desc":"description ligne","qte":1,"pu":0}],"notes":""}. Déduis la TVA (5.5 pour particulier, 20 pour professionnel) si mentionné, sinon 5.5 par défaut. Si un prix est mentionné, mets-le en pu (HT).';
+  askClaudeProspect(sys,'Transcription : "'+_voiceDevisTranscript+'"',function(txt,err){
+    if(err){toast('⚠️ '+err);if(st)st.textContent='Erreur';return;}
+    try{
+      var clean=txt.replace(/```json|```/g,'').trim();
+      var d=JSON.parse(clean);
+      var row={id:DB.nextId++,numero:genDevisNum(),client:d.client||'',societe:'',adresse:'',ville:'',emailClient:'',telClient:'',date:new Date().toISOString().slice(0,10),validite:30,tva:d.tva||5.5,statut:'Brouillon',lignes:(d.lignes||[]).map(function(l){return {desc:l.desc||'',qte:l.qte||1,pu:l.pu||0};}),notes:(d.notes||'')+' (généré par dictée vocale)',advenir:'',commercialId:(curUserObj?curUserObj.id:'')};
+      DB.devis.push(row);save();
+      var idx=DB.devis.indexOf(row);
+      var m=g('mVoiceDTemp');if(m)m.remove();
+      toast('✨ Devis généré, vérifie et ajuste avant envoi');
+      nav('pgDevis');setTimeout(function(){openDM(idx);},200);
+    }catch(e){toast('⚠️ Réponse IA illisible, réessaie');if(st)st.textContent='Erreur de format';}
+  });
+}
+function guideInstallModal(idx){
+  var r=DB.installations[idx];if(!r)return;
+  var h='<div class="ov on" id="mGuideTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>🧭 Guide d\'installation</h2><button class="mcl" onclick="g(\'mGuideTemp\').remove()">✕</button></div><div style="padding:16px" id="guideBody"></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+  if(r.guideSteps&&r.guideSteps.length){renderGuideSteps(idx);}
+  else{genererGuideInstall(idx);}
+}
+function genererGuideInstall(idx){
+  var r=DB.installations[idx];if(!r)return;
+  var body=g('guideBody');if(body)body.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">⏳ Génération du guide pour ce chantier...</div>';
+  var sys='Tu es un expert IRVE (installateur de bornes de recharge véhicule électrique) pour BORN POWER. Réponds UNIQUEMENT en JSON valide, sans texte autour, format exact : {"etapes":[{"txt":"description courte de l\'étape","photo":true}]}. Le champ photo est true seulement pour les étapes où une photo est utile (avant/après travaux, tableau électrique, plaque signalétique). Génère entre 6 et 10 étapes concrètes et dans l\'ordre logique.';
+  var prompt='Chantier : '+(r.type||'Installation borne')+'. Modèle de borne : '+(r.borneModele||'non précisé')+'. Raccordement : '+(r.phase||'non précisé')+' ('+(r.cableType||'')+'). Type de bien : '+(r.typeBien||'non précisé')+(r.raccordement?(' — copropriété : '+r.raccordement):'')+'.';
+  askClaudeProspect(sys,prompt,function(txt,err){
+    var body=g('guideBody');if(!body)return;
+    if(err){body.innerHTML='<div style="color:#dc2626;font-size:13px;padding:10px">⚠️ '+err+'</div>';return;}
+    try{
+      var clean=txt.replace(/```json|```/g,'').trim();
+      var d=JSON.parse(clean);
+      r.guideSteps=(d.etapes||[]).map(function(e){return {txt:e.txt||'',photo:!!e.photo,done:false};});
+      save();renderGuideSteps(idx);
+    }catch(e){body.innerHTML='<div style="color:#dc2626;font-size:13px;padding:10px">⚠️ Réponse IA illisible, réessaie.</div><button class="btn bGhost" style="margin-top:8px" onclick="genererGuideInstall('+idx+')">Réessayer</button>';}
+  });
+}
+function renderGuideSteps(idx){
+  var r=DB.installations[idx];if(!r)return;var body=g('guideBody');if(!body)return;
+  var steps=r.guideSteps||[];var doneCount=steps.filter(function(s){return s.done;}).length;
+  var pct=steps.length?Math.round(doneCount/steps.length*100):0;
+  var html='<div style="background:#f8f9fd;border-radius:10px;padding:10px 12px;margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px"><span>Progression</span><span>'+doneCount+'/'+steps.length+'</span></div><div style="height:7px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#c79732,#ffe576);border-radius:4px"></div></div></div>';
+  html+=steps.map(function(st,i){
+    return '<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 2px;border-bottom:1px solid #f0f2f8">'
+      +'<input type="checkbox" '+(st.done?'checked':'')+' onchange="toggleGuideStep('+idx+','+i+')" style="width:19px;height:19px;margin-top:2px;flex-shrink:0">'
+      +'<div style="flex:1"><div style="font-size:13.5px;'+(st.done?'text-decoration:line-through;color:var(--muted)':'color:#1f2438;font-weight:600')+'">'+_escR(st.txt)+'</div>'+(st.photo?'<div style="font-size:11px;color:#d97706;margin-top:2px">📸 Photo recommandée</div>':'')+'</div>'
+    +'</div>';
+  }).join('');
+  html+='<button class="btn bGhost" style="width:100%;margin-top:12px;font-size:12px" onclick="genererGuideInstall('+idx+')">🔄 Régénérer le guide</button>';
+  body.innerHTML=html;
+}
+function toggleGuideStep(idx,i){
+  var r=DB.installations[idx];if(!r||!r.guideSteps||!r.guideSteps[i])return;
+  r.guideSteps[i].done=!r.guideSteps[i].done;save();renderGuideSteps(idx);
+}
+function demanderPaiementInstall(idx){
+  var r=DB.installations[idx];if(!r)return;
+  if(r.statut!=='Terminée'){toast('Le chantier doit être marqué "Terminée" pour demander le paiement');return;}
+  if(!confirm('Envoyer une demande de paiement pour « '+(r.chantier||r.client||'')+' » ?'))return;
+  var montant=r.remunInstallateur?fmtE(r.remunInstallateur):'montant non défini';
+  var qui=curUserObj?curUserObj.name:'Un installateur';
+  var accts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return (a.role==='admin'||a.role==='dirtech')&&a.status==='active';});
+  accts.forEach(function(a){addNotif('pay','💰 '+qui+' demande le paiement de « '+(r.chantier||r.client||'')+' » — '+montant,'💰',a.name,{kind:'install',id:r.id});});
+  r.paiementDemande=new Date().toISOString();r.paiementDemandePar=qui;
+  save();
+  toast('✅ Demande envoyée à l\'équipe');
+  if(g('mIpayBtn'))renderPayBtn(idx);
+}
+function renderPayBtn(idx){
+  var r=DB.installations[idx];var el=g('mIpayBtn');if(!el||!r)return;
+  if(r.statut!=='Terminée'){el.style.display='none';return;}
+  el.style.display='block';
+  if(r.paiementDemande){el.innerHTML='<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 12px;font-size:12.5px;color:#166534;text-align:center">✅ Paiement demandé le '+new Date(r.paiementDemande).toLocaleDateString('fr-FR')+'</div>';}
+  else{el.innerHTML='<button class="btn bPrimary" style="width:100%" onclick="demanderPaiementInstall('+idx+')">💰 Demander le paiement</button>';}
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
