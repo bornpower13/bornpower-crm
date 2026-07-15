@@ -1116,6 +1116,35 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
         </div>
       </div>
     </div>
+    <div class="pg" id="pgSequences">
+      <div class="pgHead"><div><h1>🚀 Prospection multicanal</h1><p class="sub">Séquences email / WhatsApp / LinkedIn préparées par l'IA</p></div></div>
+      <div class="info" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;font-size:12.5px;color:#1e40af;margin-bottom:16px">ℹ️ Aucun envoi n'est automatisé (WhatsApp/LinkedIn interdisent ça et ça expose au ban). L'IA prépare le message, tu l'envoies toi-même en un clic.</div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="cardH"><h3>📅 File du jour</h3></div>
+        <div class="cardB" id="seqFileDuJour" style="padding:0"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="cardH"><h3>🚀 Lancer une séquence</h3></div>
+        <div class="cardB">
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Choisis un prospect : l'IA prépare 2 à 3 étapes (email, WhatsApp, LinkedIn) selon ses coordonnées disponibles.</div>
+          <select id="seqProspectSelect" style="width:100%;margin-bottom:10px"><option value="">-- Choisir un prospect --</option></select>
+          <div style="display:flex;gap:8px"><button class="btn bPrimary" style="flex:1" onclick="genererSequenceIA()">✨ Générer la séquence</button><button class="btn bGhost" onclick="seqVocalModal()" title="Lancer à la voix">🎙️</button></div>
+          <div id="seqGenRes" style="margin-top:12px"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cardH"><h3>💬 Message WhatsApp rapide</h3></div>
+        <div class="cardB">
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Un message ponctuel, hors séquence — pour relancer vite un contact.</div>
+          <select id="waProspectSelect" style="width:100%;margin-bottom:10px"><option value="">-- Choisir un prospect --</option></select>
+          <button class="btn bGhost" onclick="genererMsgWhatsAppRapide()">💬 Générer le message</button>
+          <div id="waMsgRes" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </div>
     <div class="pg" id="pgConquete">
       <div style="background:linear-gradient(135deg,#242a56,#171c3c);border-radius:20px;padding:24px;color:#fff;margin-bottom:18px;box-shadow:var(--shadow-lg)">
         <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:#ffe576;text-transform:uppercase;margin-bottom:6px">Conquête client · IA</div>
@@ -1128,7 +1157,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Vos outils de conquête</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px">
         <div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--purple-bg)">🎯</div><div class="conqT">Où prospecter</div><div class="conqD">L'IA propose des secteurs</div></div>
-        <div class="conqCard" onclick="nav('pgProspects')"><div class="conqIco" style="background:var(--blue-bg)">🔍</div><div class="conqT">Trouver des entreprises</div><div class="conqD">Base INSEE + contact</div></div><div class="conqCard" onclick="nav('pgLinkedIn')"><div class="conqIco" style="background:#e0e7ff">💼</div><div class="conqT">LinkedIn</div><div class="conqD">Leads + messages IA</div></div><div class="conqCard" onclick="simulateurModal()"><div class="conqIco" style="background:#fef3c7">💶</div><div class="conqT">Simulateur d'aides</div><div class="conqD">Prix après ADVENIR</div></div><div class="conqCard" onclick="rechargeModal()"><div class="conqIco" style="background:#dcfce7">🔌</div><div class="conqT">Temps de recharge</div><div class="conqD">Calcul pour le client</div></div><div class="conqCard" onclick="autoProspectionModal()"><div class="conqIco" style="background:#f3e8ff">🤖</div><div class="conqT">Prospection automatique</div><div class="conqD">Trouve des leads sans y penser</div></div><div class="conqCard" onclick="coutRechargeModal()"><div class="conqIco" style="background:#dbeafe">🔋</div><div class="conqT">Coût de recharge</div><div class="conqD">Économies vs essence</div></div><div class="conqCard" onclick="recommandeurModal()"><div class="conqIco" style="background:#ede9fe">💡</div><div class="conqT">Recommandeur de borne</div><div class="conqD">Guide le client</div></div><div class="conqCard" onclick="rentabiliteModal()"><div class="conqIco" style="background:#dcfce7">📈</div><div class="conqT">Rentabilité pro (ROI)</div><div class="conqD">Argument B2B</div></div>
+        <div class="conqCard" onclick="nav('pgProspects')"><div class="conqIco" style="background:var(--blue-bg)">🔍</div><div class="conqT">Trouver des entreprises</div><div class="conqD">Base INSEE + contact</div></div><div class="conqCard" onclick="nav('pgLinkedIn')"><div class="conqIco" style="background:#e0e7ff">💼</div><div class="conqT">LinkedIn</div><div class="conqD">Leads + messages IA</div></div><div class="conqCard" onclick="simulateurModal()"><div class="conqIco" style="background:#fef3c7">💶</div><div class="conqT">Simulateur d'aides</div><div class="conqD">Prix après ADVENIR</div></div><div class="conqCard" onclick="rechargeModal()"><div class="conqIco" style="background:#dcfce7">🔌</div><div class="conqT">Temps de recharge</div><div class="conqD">Calcul pour le client</div></div><div class="conqCard" onclick="autoProspectionModal()"><div class="conqIco" style="background:#f3e8ff">🤖</div><div class="conqT">Prospection automatique</div><div class="conqD">Trouve des leads sans y penser</div></div><div class="conqCard" onclick="nav('pgSequences')"><div class="conqIco" style="background:#dcfce7">📡</div><div class="conqT">Prospection multicanal</div><div class="conqD">Email / WhatsApp / LinkedIn</div></div><div class="conqCard" onclick="coutRechargeModal()"><div class="conqIco" style="background:#dbeafe">🔋</div><div class="conqT">Coût de recharge</div><div class="conqD">Économies vs essence</div></div><div class="conqCard" onclick="recommandeurModal()"><div class="conqIco" style="background:#ede9fe">💡</div><div class="conqT">Recommandeur de borne</div><div class="conqD">Guide le client</div></div><div class="conqCard" onclick="rentabiliteModal()"><div class="conqIco" style="background:#dcfce7">📈</div><div class="conqT">Rentabilité pro (ROI)</div><div class="conqD">Argument B2B</div></div>
         <div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--green-bg)">✍️</div><div class="conqT">Rédiger une campagne</div><div class="conqD">Email · appel · LinkedIn</div></div>
         <div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--orange-bg)">🤝</div><div class="conqT">Parrainage</div><div class="conqD">Bouche-à-oreille</div></div>
         <div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--gold3)">🔄</div><div class="conqT">Prospects dormants</div><div class="conqD">Réactiver avec l'IA</div></div>
@@ -1846,7 +1875,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       </div>
       <div class="fi"><label>Client</label><input id="mSAVclient" placeholder="Nom du client"></div>
       <div class="fi"><label>Téléphone</label><input id="mSAVtel" placeholder="06 00 00 00 00"></div>
-      <div class="fi"><label>Assigné à</label><select id="mSAVassign"><option value="">Non assigné</option></select></div>
+      <div class="fi"><label>Assigné à</label><select id="mSAVassign"><option value="">Non assigné</option></select></div><div class="fi"><label>Date d'intervention</label><input type="date" id="mSAVdate"></div><div class="fi"><label>Heure</label><input type="time" id="mSAVheure"></div>
       <hr class="sep"><div class="seclbl">Description</div>
       <div class="fi full"><textarea id="mSAVdesc" placeholder="Décrivez le problème en détail..." style="min-height:80px"></textarea></div>
     </div>
@@ -2265,7 +2294,7 @@ function fmtNotifTime(ts){
 var NAV_MAP={
   admin:[
     {s:'Pilotage'},{id:'pgDash',ico:'📊',lbl:'Tableau de bord'},{id:'pgRapports',ico:'📈',lbl:'Rapports'},{id:'pgObjectifs',ico:'🎯',lbl:'Objectifs CA'},{id:'pgFinance',ico:'💰',lbl:'Finance'},
-    {s:'Ventes'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgPipeline',ico:'📊',lbl:'Pipeline'},{id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
+    {s:'Ventes'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgSequences',ico:'📡',lbl:'Prospection multicanal'},{id:'pgPipeline',ico:'📊',lbl:'Pipeline'},{id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
     {s:'Installations'},{id:'pgInst',ico:'⚡',lbl:'Installations'},{id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},{id:'pgSAV',ico:'🔧',lbl:'SAV'},{id:'pgStock',ico:'📦',lbl:'Stock'},
     {s:'Équipe'},{id:'pgCommerciaux',ico:'💼',lbl:'Commerciaux'},{id:'pgProfils',ico:'👷',lbl:'Installateurs'},{id:'pgRH',ico:'👥',lbl:'RH'},{id:'pgRecrutement',ico:'🎓',lbl:'Recrutement'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
@@ -2281,7 +2310,7 @@ var NAV_MAP={
   ],
   commercial:[
     {s:'Mon espace'},{id:'pgDashComm',ico:'📊',lbl:'Tableau de bord'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
-    {s:'Vendre'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},{id:'pgContacts',ico:'👥',lbl:'Mes contacts'},
+    {s:'Vendre'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgSequences',ico:'📡',lbl:'Prospection multicanal'},{id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},{id:'pgContacts',ico:'👥',lbl:'Mes contacts'},
     {s:'Outils'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
     {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
@@ -2335,7 +2364,7 @@ function nav(id){
   if(id==='pgMaJournee'){renderMaJournee();renderRappels('rappelsJournee');}
   if(id==='pgCatalogue')renderCatalogue();
   if(id==='pgProfils'){if(fbReady&&db){loadFromFirebase(function(){renderProfils();});}else{renderProfils();}}
-  if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgLinkedIn')renderLinkedIn();
+  if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgSequences'){setTimeout(renderSequences,50);}if(id==='pgLinkedIn')renderLinkedIn();
   if(id==='pgSAV')renderSAV();
   if(id==='pgChat')renderChat();
   if(id==='pgMonCA')renderMonCA();
@@ -3193,7 +3222,8 @@ function saveProspect(){
   var nom=g('mProsNom').value.trim();if(!nom){alert('Raison sociale requise');return;}
   var existing=eProspect>=0?DB.prospects[eProspect]:{};
   if(eProspect<0){var _dup=_checkProspectDoublon(nom,nom,g('mProsSiret').value);if(_dup&&!confirm('⚠️ "'+nom+'" ressemble à un prospect déjà existant ("'+(_dup.nom||_dup.societe)+'"). Créer quand même un doublon ?')){return;}}
-  var row={id:eProspect>=0?existing.id:DB.nextId++,nom:nom,societe:nom,siret:g('mProsSiret').value,naf:g('mProsNaf').value,formeJ:g('mProsFormeJ').value,adresse:g('mProsAdresse').value,ville:g('mProsVille').value,cp:g('mProsCP').value,effectif:g('mProsEffectif').value,dateCreationEnt:g('mProsCreation').value,statut:g('mProsStat').value,contactPrenom:g('mProsContactP').value,contactNom:g('mProsContactN').value,tel:g('mProsTel').value,email:g('mProsEmail').value,notes:g('mProsNotes').value,source:existing.source||'Prospection',visiteQui:g('mProsVisiteQui').value,visiteDate:g('mProsVisiteDate').value,visiteHeure:g('mProsVisiteHeure').value,visiteStat:g('mProsVisiteStat').value,lastContact:new Date().toISOString().slice(0,10)};
+  var row={id:eProspect>=0?existing.id:DB.nextId++,nom:nom,societe:nom,siret:g('mProsSiret').value,naf:g('mProsNaf').value,formeJ:g('mProsFormeJ').value,adresse:g('mProsAdresse').value,ville:g('mProsVille').value,cp:g('mProsCP').value,effectif:g('mProsEffectif').value,dateCreationEnt:g('mProsCreation').value,statut:g('mProsStat').value,contactPrenom:g('mProsContactP').value,contactNom:g('mProsContactN').value,tel:g('mProsTel').value,email:g('mProsEmail').value,notes:g('mProsNotes').value,source:existing.source||'Prospection',visiteQui:g('mProsVisiteQui').value,visiteDate:g('mProsVisiteDate').value,visiteHeure:g('mProsVisiteHeure').value,visiteStat:g('mProsVisiteStat').value,lastContact:new Date().toISOString().slice(0,10),sequence:existing.sequence,ownerId:existing.ownerId||'',ownerName:existing.ownerName||'',assignedAt:existing.assignedAt||'',activites:existing.activites||[],geoLat:existing.geoLat,geoLng:existing.geoLng};
+  if(typeof _pauseSequenceIfConverted==='function')_pauseSequenceIfConverted(row,existing.statut);
   if(eProspect>=0)DB.prospects[eProspect]=row;else DB.prospects.push(row);
   save();g('mProspect').classList.remove('on');renderProspects();toast('Prospect enregistré !');
 }
@@ -3653,9 +3683,9 @@ function renderSAV(){
       +'</div>';
   }).join('');
 }
-function openSAVModal(idx){eSAV=idx;var r=idx>=0?DB.savTickets[idx]:{};g('mSAVT').textContent=idx>=0?'Modifier le ticket':'Nouveau ticket SAV';g('mSAVtitle').value=r.title||'';g('mSAVcat').value=r.categorie||'Panne';g('mSAVprio').value=r.priorite||'Normal';g('mSAVstat').value=r.statut||'Ouvert';g('mSAVclient').value=r.client||'';g('mSAVtel').value=r.tel||'';g('mSAVdesc').value=r.description||'';var iSel=g('mSAVinst');iSel.innerHTML='<option value="">Aucune</option>';DB.installations.forEach(function(i){var o=document.createElement('option');o.value=i.chantier;o.textContent=i.chantier;if(i.chantier===r.installation)o.selected=true;iSel.appendChild(o);});var aSel=g('mSAVassign');aSel.innerHTML='<option value="">Non assigné</option>';DB.installateurs.forEach(function(i){var nm=instName(i.prenom,i.nom);var o=document.createElement('option');o.value=nm;o.textContent=nm;if(nm===r.assignedTo)o.selected=true;aSel.appendChild(o);});g('mSAV').classList.add('on');}
+function openSAVModal(idx){eSAV=idx;var r=idx>=0?DB.savTickets[idx]:{};g('mSAVT').textContent=idx>=0?'Modifier le ticket':'Nouveau ticket SAV';g('mSAVtitle').value=r.title||'';g('mSAVcat').value=r.categorie||'Panne';g('mSAVprio').value=r.priorite||'Normal';g('mSAVstat').value=r.statut||'Ouvert';g('mSAVclient').value=r.client||'';g('mSAVtel').value=r.tel||'';g('mSAVdesc').value=r.description||'';var iSel=g('mSAVinst');iSel.innerHTML='<option value="">Aucune</option>';DB.installations.forEach(function(i){var o=document.createElement('option');o.value=i.chantier;o.textContent=i.chantier;if(i.chantier===r.installation)o.selected=true;iSel.appendChild(o);});var aSel=g('mSAVassign');aSel.innerHTML='<option value="">Non assigné</option>';DB.installateurs.forEach(function(i){var nm=instName(i.prenom,i.nom);var o=document.createElement('option');o.value=nm;o.textContent=nm;if(nm===r.assignedTo)o.selected=true;aSel.appendChild(o);});g('mSAVdate').value=r.dateIntervention||'';g('mSAVheure').value=r.heureIntervention||'';g('mSAV').classList.add('on');}
 function closeSAVModal(){g('mSAV').classList.remove('on');}
-function saveSAV(){var title=g('mSAVtitle').value.trim();if(!title){alert('Titre requis');return;}var row={id:eSAV>=0?DB.savTickets[eSAV].id:DB.nextId++,title:title,categorie:g('mSAVcat').value,priorite:g('mSAVprio').value,statut:g('mSAVstat').value,client:g('mSAVclient').value,tel:g('mSAVtel').value,installation:g('mSAVinst').value,assignedTo:g('mSAVassign').value,description:g('mSAVdesc').value,comments:eSAV>=0?(DB.savTickets[eSAV].comments||[]):[],createdAt:eSAV>=0?DB.savTickets[eSAV].createdAt:new Date().toLocaleDateString('fr-FR'),createdBy:curUserObj?curUserObj.name:''};var _prevSAVassign=eSAV>=0&&DB.savTickets[eSAV]?DB.savTickets[eSAV].assignedTo:'';if(eSAV>=0)DB.savTickets[eSAV]=row;else DB.savTickets.push(row);if(eSAV<0){addNotif('sav','🛠️ Nouveau SAV : '+title+(row.client?' ('+row.client+')':'')+' • par '+(curUserObj?curUserObj.name:'?'),'🛠️','@admin',{kind:'sav',id:row.id});}if(row.assignedTo&&row.assignedTo!==_prevSAVassign&&row.assignedTo!==(curUserObj?curUserObj.name:'')){addNotif('sav','🛠️ SAV assigné : '+title,'🛠️',row.assignedTo,{kind:'sav',id:row.id});}addActivite('sav','Ticket SAV "'+title+'" '+(eSAV>=0?'modifié':'créé'));save();closeSAVModal();renderSAV();toast('Ticket SAV enregistré !');}
+function saveSAV(){var title=g('mSAVtitle').value.trim();if(!title){alert('Titre requis');return;}var row={id:eSAV>=0?DB.savTickets[eSAV].id:DB.nextId++,title:title,categorie:g('mSAVcat').value,priorite:g('mSAVprio').value,statut:g('mSAVstat').value,client:g('mSAVclient').value,tel:g('mSAVtel').value,installation:g('mSAVinst').value,assignedTo:g('mSAVassign').value,dateIntervention:g('mSAVdate').value,heureIntervention:g('mSAVheure').value,description:g('mSAVdesc').value,comments:eSAV>=0?(DB.savTickets[eSAV].comments||[]):[],createdAt:eSAV>=0?DB.savTickets[eSAV].createdAt:new Date().toLocaleDateString('fr-FR'),createdBy:curUserObj?curUserObj.name:''};var _prevSAVassign=eSAV>=0&&DB.savTickets[eSAV]?DB.savTickets[eSAV].assignedTo:'';if(eSAV>=0)DB.savTickets[eSAV]=row;else DB.savTickets.push(row);if(eSAV<0){addNotif('sav','🛠️ Nouveau SAV : '+title+(row.client?' ('+row.client+')':'')+' • par '+(curUserObj?curUserObj.name:'?'),'🛠️','@admin',{kind:'sav',id:row.id});}if(row.assignedTo&&row.assignedTo!==_prevSAVassign&&row.assignedTo!==(curUserObj?curUserObj.name:'')){addNotif('sav','🛠️ SAV assigné : '+title+(row.dateIntervention?(' — '+fmtD(row.dateIntervention)+(row.heureIntervention?(' à '+row.heureIntervention):'')):''),'🛠️',row.assignedTo,{kind:'sav',id:row.id});}addActivite('sav','Ticket SAV "'+title+'" '+(eSAV>=0?'modifié':'créé'));save();closeSAVModal();renderSAV();toast('Ticket SAV enregistré !');}
 function delSAV(i){if(confirm('Supprimer ?')){DB.savTickets.splice(i,1);save();renderSAV();}}
 function openSAVDetail(idx){curSAVIdx=idx;var t=DB.savTickets[idx];if(!t)return;g('mSAVDetailT').textContent='Ticket #'+t.id+' — '+t.title;var sc={Ouvert:'savStatOpen','En cours':'savStatProgress',Résolu:'savStatResolved',Urgent:'savStatUrgent'}[t.statut]||'savStatOpen';var html='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"><span class="bdg '+sc+'">'+t.statut+'</span><span class="bdg bContact">'+t.categorie+'</span><span class="bdg bPause">'+t.priorite+'</span></div>'+'<div style="background:var(--bg);border-radius:8px;padding:12px;margin-bottom:14px"><div class="frow"><span>Client</span><span>'+(t.client||'—')+'</span></div><div class="frow"><span>Installation</span><span>'+(t.installation||'—')+'</span></div><div class="frow"><span>Assigné à</span><span>'+(t.assignedTo||'Non assigné')+'</span></div><div class="frow"><span>Créé le</span><span>'+t.createdAt+' par '+(t.createdBy||'—')+'</span></div></div>'+(t.description?'<div style="font-size:13px;background:var(--bg);border-radius:8px;padding:10px;margin-bottom:14px">'+t.description+'</div>':'')+'<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Historique ('+( t.comments||[]).length+')</div>';(t.comments||[]).forEach(function(c){html+='<div class="savComment"><div class="savCommentMeta">'+c.author+' &middot; '+c.date+'</div><div class="savCommentBody">'+c.text+'</div></div>';});g('mSAVDetailBody').innerHTML=html;g('savCommentInput').value='';g('mSAVDetail').classList.add('on');}
 function addSAVComment(){var txt=g('savCommentInput').value.trim();if(!txt)return;if(!DB.savTickets[curSAVIdx].comments)DB.savTickets[curSAVIdx].comments=[];DB.savTickets[curSAVIdx].comments.push({text:txt,author:curUserObj?curUserObj.name:'',date:new Date().toLocaleDateString('fr-FR')});save();openSAVDetail(curSAVIdx);toast('Commentaire ajouté !');}
@@ -5040,6 +5070,13 @@ function openFicheProspect(idx){
     +'</div><div style="padding:16px">'
     +ownerHtml
     +'<div style="display:flex;gap:8px;margin:14px 0;flex-wrap:wrap"><button class="btn bPrimary" onclick="logAppelFiche('+idx+')">📞 Journaliser un appel</button><button class="btn bGhost" onclick="ajouterRappelFiche('+idx+')">🔔 Demander un rappel</button><button class="btn bGhost" onclick="itineraireFiche('+idx+')">🧭 Itinéraire</button></div>'
+    +(function(){
+      if(p.sequence&&p.sequence.active&&p.sequence.steps){
+        var seq=p.sequence;var step=seq.steps[seq.currentStep];
+        return '<div style="background:linear-gradient(135deg,#dcfce7,#f0fdf4);border:1px solid #bbf7d0;border-radius:12px;padding:12px 14px;margin-bottom:14px"><div style="font-size:11px;font-weight:800;color:#166534;text-transform:uppercase;letter-spacing:.05em">📡 Séquence en cours</div><div style="font-size:13px;color:#166534;margin-top:4px">Étape '+(seq.currentStep+1)+'/'+seq.steps.length+' — '+_seqChannelLbl(step?step.channel:'')+'</div><button class="btn bGhost" style="margin-top:8px;font-size:11.5px;padding:5px 10px" onclick="g(\'mFicheTemp\').remove();nav(\'pgSequences\')">Voir dans Prospection multicanal</button></div>';
+      }
+      return '<div style="margin-bottom:14px"><button class="btn bGhost" style="width:100%;font-size:12.5px" onclick="g(\'mFicheTemp\').remove();nav(\'pgSequences\')">📡 Démarrer une séquence multicanal</button></div>';
+    })()
     +'<div style="font-size:11.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Historique</div>'
     +'<div style="max-height:40vh;overflow:auto">'+acts+'</div>'
     +'</div></div></div>';
@@ -5890,6 +5927,159 @@ function renderPayBtn(idx){
   el.style.display='block';
   if(r.paiementDemande){el.innerHTML='<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 12px;font-size:12.5px;color:#166534;text-align:center">✅ Paiement demandé le '+new Date(r.paiementDemande).toLocaleDateString('fr-FR')+'</div>';}
   else{el.innerHTML='<button class="btn bPrimary" style="width:100%" onclick="demanderPaiementInstall('+idx+')">💰 Demander le paiement</button>';}
+}
+function _seqCleanTel(tel){return (tel||'').replace(/[^0-9+]/g,'');}
+function _seqChannelLbl(ch){return {email:'✉️ Email',whatsapp:'💬 WhatsApp',linkedin:'💼 LinkedIn'}[ch]||ch;}
+function renderSeqProspectSelect(){
+  ['seqProspectSelect','waProspectSelect'].forEach(function(selId){
+    var sel=g(selId);if(!sel)return;var cur=sel.value;
+    sel.innerHTML='<option value="">-- Choisir un prospect --</option>'+(DB.prospects||[]).map(function(p,idx){return '<option value="'+idx+'">'+_escR(p.nom||p.societe||'?')+(p.ville?(' — '+_escR(p.ville)):'')+'</option>';}).join('');
+    if(cur)sel.value=cur;
+  });
+}
+function _seqDueList(){
+  var today=new Date();today.setHours(0,0,0,0);
+  var out=[];
+  (DB.prospects||[]).forEach(function(p,idx){
+    var seq=p.sequence;if(!seq||!seq.active||!seq.steps)return;
+    var step=seq.steps[seq.currentStep];if(!step||step.status==='envoyée')return;
+    var due=new Date(seq.startedAt);due.setDate(due.getDate()+(step.delayDays||0));due.setHours(0,0,0,0);
+    if(due<=today)out.push({p:p,idx:idx,step:step,stepIdx:seq.currentStep});
+  });
+  return out;
+}
+function renderSeqFileDuJour(){
+  var el=g('seqFileDuJour');if(!el)return;
+  var due=_seqDueList();
+  if(!due.length){el.innerHTML='<div class="emptyState"><div class="emptyIco">📬</div><div class="emptyTitle">Rien à envoyer aujourd\'hui</div><div class="emptySub">Les prochaines étapes de séquence apparaîtront ici</div></div>';return;}
+  el.innerHTML=due.map(function(item){
+    var p=item.p,step=item.step;
+    var actionBtn='';
+    if(step.channel==='email'&&p.email){actionBtn='<a class="btn bPrimary" style="font-size:12px;padding:7px 12px" href="mailto:'+encodeURIComponent(p.email)+'?subject='+encodeURIComponent(step.subject||'')+'&body='+encodeURIComponent(step.content||'')+'" onclick="marquerEtapeEnvoyee('+item.idx+')">✉️ Envoyer</a>';}
+    else if(step.channel==='whatsapp'&&p.tel){actionBtn='<a class="btn bPrimary" style="font-size:12px;padding:7px 12px" href="https://wa.me/'+_seqCleanTel(p.tel)+'?text='+encodeURIComponent(step.content||'')+'" target="_blank" rel="noopener" onclick="marquerEtapeEnvoyee('+item.idx+')">💬 WhatsApp</a>';}
+    else{actionBtn='<button class="btn bGhost" style="font-size:12px;padding:7px 12px" onclick="_copySeqStep('+item.idx+');marquerEtapeEnvoyee('+item.idx+')">📋 Copier</button>';}
+    return '<div style="padding:13px 16px;border-bottom:1px solid #f0f2f8"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:#1f2438">'+_escR(p.nom||p.societe||'')+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px">'+_seqChannelLbl(step.channel)+' · étape '+(item.stepIdx+1)+'</div></div>'+actionBtn+'</div>'
+      +'<div style="background:#f8f9fd;border-radius:9px;padding:9px 11px;margin-top:8px;font-size:12.5px;color:#2b3050;white-space:pre-wrap">'+_escR(step.content||'')+'</div></div>';
+  }).join('');
+}
+function genererSequenceIA(){
+  var idx=parseInt((g('seqProspectSelect')&&g('seqProspectSelect').value)||'',10);
+  if(isNaN(idx)){toast('Choisis un prospect');return;}
+  var p=DB.prospects[idx];if(!p)return;
+  var res=g('seqGenRes');res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ Génération de la séquence...</div>';
+  var canaux=[];if(p.email)canaux.push('email');if(p.tel)canaux.push('whatsapp');canaux.push('linkedin');
+  var sys='Tu es un assistant de prospection pour BORN POWER (bornes de recharge véhicule électrique, PACA). Réponds UNIQUEMENT en JSON valide, sans texte autour, format exact : {"etapes":[{"canal":"email","delai":0,"objet":"objet si email sinon vide","message":"contenu du message"}]}. Canaux disponibles pour ce prospect : '+canaux.join(', ')+'. Génère 2 à 3 étapes progressives (par exemple J0 email, J+3 whatsapp, J+7 linkedin), ton pro et humain, jamais insistant.';
+  var prompt='Prospect : '+(p.nom||p.societe||'')+', ville : '+(p.ville||'non précisé')+', secteur : '+(p.naf||p.notes||'non précisé')+'.';
+  askClaudeProspect(sys,prompt,function(txt,err){
+    if(err){res.innerHTML='<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>';return;}
+    var steps=_parseSequenceIA(txt);
+    if(!steps){res.innerHTML='<div style="color:#dc2626;font-size:13px">⚠️ Réponse IA illisible, réessaie.</div>';return;}
+    p.sequence={active:true,startedAt:new Date().toISOString(),currentStep:0,steps:steps};
+    save();renderSeqFileDuJour();
+    res.innerHTML='<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px;font-size:12.5px;color:#166534">✅ Séquence lancée : '+steps.length+' étape(s). Retrouve-la dans la « File du jour » à mesure qu\'elle avance.</div>';
+    toast('✨ Séquence générée pour '+(p.nom||p.societe||''));
+  });
+}
+function _parseSequenceIA(txt){
+  try{
+    var clean=(txt||'').replace(/```json|```/g,'').trim();
+    var d=JSON.parse(clean);
+    return (d.etapes||[]).map(function(e,i){return {n:i+1,channel:(e.canal||'email'),delayDays:e.delai||0,subject:e.objet||'',content:e.message||'',status:'à faire'};});
+  }catch(e){return null;}
+}
+function marquerEtapeEnvoyee(idx){
+  var p=DB.prospects[idx];if(!p||!p.sequence)return;
+  var seq=p.sequence;var step=seq.steps[seq.currentStep];if(!step)return;
+  step.status='envoyée';step.sentAt=new Date().toISOString();
+  if(!p.activites)p.activites=[];
+  p.activites.unshift({type:'sequence',txt:_seqChannelLbl(step.channel)+' envoyé (séquence)',date:new Date().toISOString(),by:(curUserObj?curUserObj.name:'')});
+  if(seq.currentStep+1<seq.steps.length){seq.currentStep++;}else{seq.active=false;}
+  save();renderSeqFileDuJour();
+  toast('✅ Étape marquée envoyée');
+}
+function _copySeqStep(idx){
+  var p=DB.prospects[idx];if(!p||!p.sequence)return;
+  var step=p.sequence.steps[p.sequence.currentStep];if(!step)return;
+  if(navigator.clipboard)navigator.clipboard.writeText(step.content||'');
+  toast('📋 Message copié — colle-le sur LinkedIn');
+}
+function genererMsgWhatsAppRapide(){
+  var idx=parseInt((g('waProspectSelect')&&g('waProspectSelect').value)||'',10);
+  if(isNaN(idx)){toast('Choisis un prospect');return;}
+  var p=DB.prospects[idx];if(!p)return;
+  var res=g('waMsgRes');res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ Rédaction...</div>';
+  askClaudeProspect(VENTE_SYS,'Rédige un message WhatsApp court, chaleureux et non insistant pour relancer ce prospect BORN POWER : "'+(p.nom||p.societe||'')+'" ('+(p.ville||'')+'). 3-4 lignes max, avec une question ouverte à la fin.',function(txt,err){
+    if(err){res.innerHTML='<div style="color:#dc2626;font-size:13px">⚠️ '+err+'</div>';return;}
+    _waMsgCache=txt;
+    var waLink=p.tel?('https://wa.me/'+_seqCleanTel(p.tel)+'?text='+encodeURIComponent(txt)):'';
+    res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;white-space:pre-wrap">'+_escR(txt)+'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:10px">'+(waLink?'<a class="btn bPrimary" href="'+waLink+'" target="_blank" rel="noopener">💬 Ouvrir WhatsApp</a>':'<span style="font-size:11.5px;color:var(--muted)">Pas de téléphone renseigné</span>')+'<button class="btn bGhost" onclick="_copyWaMsg()">📋 Copier</button></div>';
+  });
+}
+var _waMsgCache='';
+function _copyWaMsg(){if(navigator.clipboard&&_waMsgCache)navigator.clipboard.writeText(_waMsgCache);toast('Copié ✅');}
+function renderSequences(){
+  renderSeqProspectSelect();
+  renderSeqFileDuJour();
+}
+function _pauseSequenceIfConverted(p,oldStatut){
+  try{
+    if(!p.sequence||!p.sequence.active)return;
+    var convertedStatuts=['Gagné','Client','Qualifié'];
+    if(convertedStatuts.indexOf(p.statut)>=0&&p.statut!==oldStatut){
+      p.sequence.active=false;p.sequence.pausedReason='Prospect converti ('+p.statut+')';
+      toast('📡 Séquence mise en pause automatiquement — prospect converti');
+    }
+  }catch(e){}
+}
+function _seqVocalStart(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('Reconnaissance vocale non disponible sur ce navigateur');return;}
+  if(_voiceDevisRecog){stopVoiceDevis();}
+  _voiceDevisTranscript='';
+  var recog=new SR();recog.lang='fr-FR';recog.continuous=true;recog.interimResults=true;
+  var btn=g('seqVocalBtn');if(btn)btn.style.background='linear-gradient(135deg,#dc2626,#991b1b)';
+  var st=g('seqVocalStatus');if(st)st.textContent='🔴 Écoute en cours... touche pour arrêter';
+  var tr=g('seqVocalTranscript');if(tr){tr.style.display='block';}
+  recog.onresult=function(e){var txt='';for(var i=0;i<e.results.length;i++){txt+=e.results[i][0].transcript+' ';}_voiceDevisTranscript=txt.trim();if(tr)tr.textContent=_voiceDevisTranscript;};
+  recog.onerror=function(){_seqVocalStop();};
+  recog.start();_voiceDevisRecog=recog;
+}
+function _seqVocalStop(){
+  if(_voiceDevisRecog){try{_voiceDevisRecog.stop();}catch(e){}_voiceDevisRecog=null;}
+  var btn=g('seqVocalBtn');if(btn)btn.style.background='linear-gradient(135deg,#242a56,#171c3c)';
+  var st=g('seqVocalStatus');if(st)st.textContent=_voiceDevisTranscript?'✅ Prêt — précise le prospect ci-dessous':'Touche pour parler';
+  var gb=g('seqVocalGenBtn');if(gb&&_voiceDevisTranscript)gb.style.display='block';
+}
+function seqVocalModal(){
+  var h='<div class="ov on" id="mSeqVocalTemp" onclick="if(event.target===this)this.remove()"><div class="modal" style="max-width:420px"><div class="mh"><h2>🎙️ Séquence à la voix</h2><button class="mcl" onclick="_seqVocalStop();g(\'mSeqVocalTemp\').remove()">✕</button></div><div style="padding:18px;text-align:center">'
+    +'<div style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Choisis le prospect, puis décris-le à voix haute (secteur, besoin, contexte). L\'IA construit toute la séquence.</div>'
+    +'<select id="seqVocalProspect" style="width:100%;margin-bottom:14px"><option value="">-- Choisir un prospect --</option></select>'
+    +'<button id="seqVocalBtn" onclick="if(_voiceDevisRecog)_seqVocalStop();else _seqVocalStart()" style="width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#242a56,#171c3c);border:none;color:#fff;font-size:28px;cursor:pointer;box-shadow:0 8px 24px rgba(36,42,86,.3)">🎙️</button>'
+    +'<div id="seqVocalStatus" style="font-size:12px;color:var(--muted);margin-top:10px">Touche pour parler</div>'
+    +'<div id="seqVocalTranscript" style="text-align:left;background:#f8f9fd;border-radius:10px;padding:12px;margin-top:12px;font-size:13px;min-height:36px;display:none"></div>'
+    +'<button id="seqVocalGenBtn" onclick="_seqVocalGenerer()" class="btn bPrimary" style="width:100%;margin-top:14px;display:none">✨ Générer la séquence</button>'
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+  var sel=g('seqVocalProspect');if(sel)sel.innerHTML='<option value="">-- Choisir un prospect --</option>'+(DB.prospects||[]).map(function(p,idx){return '<option value="'+idx+'">'+_escR(p.nom||p.societe||'?')+'</option>';}).join('');
+}
+function _seqVocalGenerer(){
+  var idx=parseInt((g('seqVocalProspect')&&g('seqVocalProspect').value)||'',10);
+  if(isNaN(idx)){toast('Choisis un prospect');return;}
+  if(!_voiceDevisTranscript){toast('Aucune description capturée');return;}
+  var p=DB.prospects[idx];if(!p)return;
+  var st=g('seqVocalStatus');if(st)st.textContent='⏳ Génération...';
+  var canaux=[];if(p.email)canaux.push('email');if(p.tel)canaux.push('whatsapp');canaux.push('linkedin');
+  var sys='Tu es un assistant de prospection pour BORN POWER (bornes de recharge véhicule électrique, PACA). Réponds UNIQUEMENT en JSON valide, sans texte autour, format exact : {"etapes":[{"canal":"email","delai":0,"objet":"objet si email sinon vide","message":"contenu du message"}]}. Canaux disponibles : '+canaux.join(', ')+'. Génère 2 à 3 étapes progressives, ton pro et humain.';
+  askClaudeProspect(sys,'Prospect : '+(p.nom||p.societe||'')+'. Contexte donné à voix haute par le commercial : "'+_voiceDevisTranscript+'"',function(txt,err){
+    if(err){toast('⚠️ '+err);return;}
+    var steps=_parseSequenceIA(txt);
+    if(!steps){toast('⚠️ Réponse IA illisible, réessaie');return;}
+    p.sequence={active:true,startedAt:new Date().toISOString(),currentStep:0,steps:steps};
+    save();var m=g('mSeqVocalTemp');if(m)m.remove();
+    toast('✨ Séquence vocale lancée pour '+(p.nom||p.societe||''));
+    if(typeof renderSeqFileDuJour==='function')renderSeqFileDuJour();
+  });
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
