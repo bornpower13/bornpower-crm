@@ -1874,7 +1874,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
         <select id="mSAVstat"><option>Ouvert</option><option>En cours</option><option>Résolu</option><option>Urgent</option></select>
       </div>
       <div class="fi"><label>Client</label><input id="mSAVclient" placeholder="Nom du client"></div>
-      <div class="fi"><label>Téléphone</label><input id="mSAVtel" placeholder="06 00 00 00 00"></div>
+      <div class="fi"><label>Téléphone</label><div style="display:flex;gap:6px"><input id="mSAVtel" placeholder="06 00 00 00 00" style="flex:1"><button type="button" class="btn bGhost" style="padding:8px 12px" onclick="callField('mSAVtel')" title="Appeler">📞</button></div></div><div class="fi full"><label>Adresse <a onclick="itineraire(g('mSAVadresse')&&g('mSAVadresse').value)" style="color:var(--gold);cursor:pointer;font-size:11px;font-weight:700">🧭 Itinéraire</a></label><input id="mSAVadresse" placeholder="Adresse du client"></div>
       <div class="fi"><label>Assigné à</label><select id="mSAVassign"><option value="">Non assigné</option></select></div><div class="fi"><label>Date d'intervention</label><input type="date" id="mSAVdate"></div><div class="fi"><label>Heure</label><input type="time" id="mSAVheure"></div>
       <hr class="sep"><div class="seclbl">Description</div>
       <div class="fi full"><textarea id="mSAVdesc" placeholder="Décrivez le problème en détail..." style="min-height:80px"></textarea></div>
@@ -2294,7 +2294,7 @@ function fmtNotifTime(ts){
 var NAV_MAP={
   admin:[
     {s:'Pilotage'},{id:'pgDash',ico:'📊',lbl:'Tableau de bord'},{id:'pgRapports',ico:'📈',lbl:'Rapports'},{id:'pgObjectifs',ico:'🎯',lbl:'Objectifs CA'},{id:'pgFinance',ico:'💰',lbl:'Finance'},
-    {s:'Ventes'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgSequences',ico:'📡',lbl:'Prospection multicanal'},{id:'pgPipeline',ico:'📊',lbl:'Pipeline'},{id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
+    {s:'Ventes'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgPipeline',ico:'📊',lbl:'Pipeline'},{id:'pgDevis',ico:'📋',lbl:'Devis'},{id:'pgContacts',ico:'👥',lbl:'Contacts'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},
     {s:'Installations'},{id:'pgInst',ico:'⚡',lbl:'Installations'},{id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},{id:'pgSAV',ico:'🔧',lbl:'SAV'},{id:'pgStock',ico:'📦',lbl:'Stock'},
     {s:'Équipe'},{id:'pgCommerciaux',ico:'💼',lbl:'Commerciaux'},{id:'pgProfils',ico:'👷',lbl:'Installateurs'},{id:'pgRH',ico:'👥',lbl:'RH'},{id:'pgRecrutement',ico:'🎓',lbl:'Recrutement'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
@@ -2310,7 +2310,7 @@ var NAV_MAP={
   ],
   commercial:[
     {s:'Mon espace'},{id:'pgDashComm',ico:'📊',lbl:'Tableau de bord'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
-    {s:'Vendre'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgSequences',ico:'📡',lbl:'Prospection multicanal'},{id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},{id:'pgContacts',ico:'👥',lbl:'Mes contacts'},
+    {s:'Vendre'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},{id:'pgContacts',ico:'👥',lbl:'Mes contacts'},
     {s:'Outils'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
     {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
@@ -3683,9 +3683,9 @@ function renderSAV(){
       +'</div>';
   }).join('');
 }
-function openSAVModal(idx){eSAV=idx;var r=idx>=0?DB.savTickets[idx]:{};g('mSAVT').textContent=idx>=0?'Modifier le ticket':'Nouveau ticket SAV';g('mSAVtitle').value=r.title||'';g('mSAVcat').value=r.categorie||'Panne';g('mSAVprio').value=r.priorite||'Normal';g('mSAVstat').value=r.statut||'Ouvert';g('mSAVclient').value=r.client||'';g('mSAVtel').value=r.tel||'';g('mSAVdesc').value=r.description||'';var iSel=g('mSAVinst');iSel.innerHTML='<option value="">Aucune</option>';DB.installations.forEach(function(i){var o=document.createElement('option');o.value=i.chantier;o.textContent=i.chantier;if(i.chantier===r.installation)o.selected=true;iSel.appendChild(o);});var aSel=g('mSAVassign');aSel.innerHTML='<option value="">Non assigné</option>';DB.installateurs.forEach(function(i){var nm=instName(i.prenom,i.nom);var o=document.createElement('option');o.value=nm;o.textContent=nm;if(nm===r.assignedTo)o.selected=true;aSel.appendChild(o);});g('mSAVdate').value=r.dateIntervention||'';g('mSAVheure').value=r.heureIntervention||'';g('mSAV').classList.add('on');}
+function openSAVModal(idx){eSAV=idx;var r=idx>=0?DB.savTickets[idx]:{};g('mSAVT').textContent=idx>=0?'Modifier le ticket':'Nouveau ticket SAV';g('mSAVtitle').value=r.title||'';g('mSAVcat').value=r.categorie||'Panne';g('mSAVprio').value=r.priorite||'Normal';g('mSAVstat').value=r.statut||'Ouvert';g('mSAVclient').value=r.client||'';g('mSAVtel').value=r.tel||'';g('mSAVadresse').value=r.adresse||'';g('mSAVdesc').value=r.description||'';var iSel=g('mSAVinst');iSel.innerHTML='<option value="">Aucune</option>';DB.installations.forEach(function(i){var o=document.createElement('option');o.value=i.chantier;o.textContent=i.chantier;if(i.chantier===r.installation)o.selected=true;iSel.appendChild(o);});iSel.onchange=function(){var inst=DB.installations.find(function(x){return x.chantier===iSel.value;});if(inst){if(!g('mSAVclient').value)g('mSAVclient').value=inst.client||'';if(!g('mSAVtel').value)g('mSAVtel').value=inst.tel||'';if(!g('mSAVadresse').value)g('mSAVadresse').value=inst.adresse||'';}};var aSel=g('mSAVassign');aSel.innerHTML='<option value="">Non assigné</option>';DB.installateurs.forEach(function(i){var nm=instName(i.prenom,i.nom);var o=document.createElement('option');o.value=nm;o.textContent=nm;if(nm===r.assignedTo)o.selected=true;aSel.appendChild(o);});g('mSAVdate').value=r.dateIntervention||'';g('mSAVheure').value=r.heureIntervention||'';g('mSAV').classList.add('on');}
 function closeSAVModal(){g('mSAV').classList.remove('on');}
-function saveSAV(){var title=g('mSAVtitle').value.trim();if(!title){alert('Titre requis');return;}var row={id:eSAV>=0?DB.savTickets[eSAV].id:DB.nextId++,title:title,categorie:g('mSAVcat').value,priorite:g('mSAVprio').value,statut:g('mSAVstat').value,client:g('mSAVclient').value,tel:g('mSAVtel').value,installation:g('mSAVinst').value,assignedTo:g('mSAVassign').value,dateIntervention:g('mSAVdate').value,heureIntervention:g('mSAVheure').value,description:g('mSAVdesc').value,comments:eSAV>=0?(DB.savTickets[eSAV].comments||[]):[],createdAt:eSAV>=0?DB.savTickets[eSAV].createdAt:new Date().toLocaleDateString('fr-FR'),createdBy:curUserObj?curUserObj.name:''};var _prevSAVassign=eSAV>=0&&DB.savTickets[eSAV]?DB.savTickets[eSAV].assignedTo:'';if(eSAV>=0)DB.savTickets[eSAV]=row;else DB.savTickets.push(row);if(eSAV<0){addNotif('sav','🛠️ Nouveau SAV : '+title+(row.client?' ('+row.client+')':'')+' • par '+(curUserObj?curUserObj.name:'?'),'🛠️','@admin',{kind:'sav',id:row.id});}if(row.assignedTo&&row.assignedTo!==_prevSAVassign&&row.assignedTo!==(curUserObj?curUserObj.name:'')){addNotif('sav','🛠️ SAV assigné : '+title+(row.dateIntervention?(' — '+fmtD(row.dateIntervention)+(row.heureIntervention?(' à '+row.heureIntervention):'')):''),'🛠️',row.assignedTo,{kind:'sav',id:row.id});}addActivite('sav','Ticket SAV "'+title+'" '+(eSAV>=0?'modifié':'créé'));save();closeSAVModal();renderSAV();toast('Ticket SAV enregistré !');}
+function saveSAV(){var title=g('mSAVtitle').value.trim();if(!title){alert('Titre requis');return;}var row={id:eSAV>=0?DB.savTickets[eSAV].id:DB.nextId++,title:title,categorie:g('mSAVcat').value,priorite:g('mSAVprio').value,statut:g('mSAVstat').value,client:g('mSAVclient').value,tel:g('mSAVtel').value,adresse:g('mSAVadresse').value,installation:g('mSAVinst').value,assignedTo:g('mSAVassign').value,dateIntervention:g('mSAVdate').value,heureIntervention:g('mSAVheure').value,description:g('mSAVdesc').value,comments:eSAV>=0?(DB.savTickets[eSAV].comments||[]):[],createdAt:eSAV>=0?DB.savTickets[eSAV].createdAt:new Date().toLocaleDateString('fr-FR'),createdBy:curUserObj?curUserObj.name:''};var _prevSAVassign=eSAV>=0&&DB.savTickets[eSAV]?DB.savTickets[eSAV].assignedTo:'';if(eSAV>=0)DB.savTickets[eSAV]=row;else DB.savTickets.push(row);if(eSAV<0){addNotif('sav','🛠️ Nouveau SAV : '+title+(row.client?' ('+row.client+')':'')+' • par '+(curUserObj?curUserObj.name:'?'),'🛠️','@admin',{kind:'sav',id:row.id});}if(row.assignedTo&&row.assignedTo!==_prevSAVassign&&row.assignedTo!==(curUserObj?curUserObj.name:'')){addNotif('sav','🛠️ SAV assigné : '+title+(row.dateIntervention?(' — '+fmtD(row.dateIntervention)+(row.heureIntervention?(' à '+row.heureIntervention):'')):''),'🛠️',row.assignedTo,{kind:'sav',id:row.id});}addActivite('sav','Ticket SAV "'+title+'" '+(eSAV>=0?'modifié':'créé'));save();closeSAVModal();renderSAV();toast('Ticket SAV enregistré !');}
 function delSAV(i){if(confirm('Supprimer ?')){DB.savTickets.splice(i,1);save();renderSAV();}}
 function openSAVDetail(idx){curSAVIdx=idx;var t=DB.savTickets[idx];if(!t)return;g('mSAVDetailT').textContent='Ticket #'+t.id+' — '+t.title;var sc={Ouvert:'savStatOpen','En cours':'savStatProgress',Résolu:'savStatResolved',Urgent:'savStatUrgent'}[t.statut]||'savStatOpen';var html='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"><span class="bdg '+sc+'">'+t.statut+'</span><span class="bdg bContact">'+t.categorie+'</span><span class="bdg bPause">'+t.priorite+'</span></div>'+'<div style="background:var(--bg);border-radius:8px;padding:12px;margin-bottom:14px"><div class="frow"><span>Client</span><span>'+(t.client||'—')+'</span></div><div class="frow"><span>Installation</span><span>'+(t.installation||'—')+'</span></div><div class="frow"><span>Assigné à</span><span>'+(t.assignedTo||'Non assigné')+'</span></div><div class="frow"><span>Créé le</span><span>'+t.createdAt+' par '+(t.createdBy||'—')+'</span></div></div>'+(t.description?'<div style="font-size:13px;background:var(--bg);border-radius:8px;padding:10px;margin-bottom:14px">'+t.description+'</div>':'')+'<div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Historique ('+( t.comments||[]).length+')</div>';(t.comments||[]).forEach(function(c){html+='<div class="savComment"><div class="savCommentMeta">'+c.author+' &middot; '+c.date+'</div><div class="savCommentBody">'+c.text+'</div></div>';});g('mSAVDetailBody').innerHTML=html;g('savCommentInput').value='';g('mSAVDetail').classList.add('on');}
 function addSAVComment(){var txt=g('savCommentInput').value.trim();if(!txt)return;if(!DB.savTickets[curSAVIdx].comments)DB.savTickets[curSAVIdx].comments=[];DB.savTickets[curSAVIdx].comments.push({text:txt,author:curUserObj?curUserObj.name:'',date:new Date().toLocaleDateString('fr-FR')});save();openSAVDetail(curSAVIdx);toast('Commentaire ajouté !');}
@@ -7132,7 +7132,8 @@ var jarvisSpeaking = false;
 
 // ── VOIX JARVIS ──
 function jarvisSpeak(key, callback) {
-  var text = JARVIS_PHRASES[key] || key;
+  var raw = JARVIS_PHRASES[key] || key;
+  var text = Array.isArray(raw) ? raw[Math.floor(Math.random()*raw.length)] : raw;
   jarvisSpeakText(text, callback);
 }
 
@@ -7177,11 +7178,15 @@ function jarvisSpeakText(text, callback) {
   })
   .catch(function(e){
     console.log('Jarvis TTS error:', e);
+    if(!window._jarvisVoiceWarned){window._jarvisVoiceWarned=true;toast('🔇 Voix premium indisponible (clé/quota ElevenLabs) — voix de secours activée');}
     // Voix de secours : synthese vocale integree au navigateur (marche sur iPhone)
     try{
       if(window.speechSynthesis){
-        var u=new SpeechSynthesisUtterance(text);u.lang='fr-FR';u.rate=1;
-        var vs=window.speechSynthesis.getVoices();for(var vi=0;vi<vs.length;vi++){if(vs[vi].lang&&vs[vi].lang.indexOf('fr')===0){u.voice=vs[vi];break;}}
+        var u=new SpeechSynthesisUtterance(text);u.lang='fr-FR';u.rate=0.95;u.pitch=0.85;
+        var vs=window.speechSynthesis.getVoices();
+        var frVoices=vs.filter(function(v){return v.lang&&v.lang.indexOf('fr')===0;});
+        var maleVoice=frVoices.find(function(v){return /male|homme|thomas|daniel/i.test(v.name);});
+        u.voice=maleVoice||frVoices[0];
         jarvisSpeaking=true;updateJarvisUI('speaking', text);
         u.onend=function(){jarvisSpeaking=false;updateJarvisUI(jarvisListening?'listening':'idle','');if(callback)callback();};
         u.onerror=function(){jarvisSpeaking=false;if(callback)callback();};
@@ -7200,7 +7205,7 @@ var JARVIS_PHRASES = {
   boot_aprem:   "Bon apres-midi, Monsieur. Tous les systemes sont operationnels.",
   boot_soir:    "Bonsoir, Monsieur. Je suis neanmoins a votre service.",
   boot_nuit:    "Monsieur, il est assez tard. Cela dit, je suis la.",
-  ready:        "Je vous ecoute, Monsieur.",
+  ready:        ["Je vous ecoute, Monsieur.","A votre disposition, Monsieur.","Je vous en prie, Monsieur.","Oui, Monsieur ?"],
   nav_dash:     "Voila votre empire en un coup d'oeil, Monsieur.",
   nav_pipe:     "Permettez-moi d'afficher vos opportunites en cours.",
   nav_devis:    "Module devis active, Monsieur.",
@@ -7218,10 +7223,10 @@ var JARVIS_PHRASES = {
   new_opp:      "Nouvelle opportunite. Je vous souhaite bonne chance, Monsieur.",
   new_sav:      "Ticket SAV cree, Monsieur.",
   stats:        "Analyse des performances, Monsieur.",
-  unknown:      "Je n'ai pas saisi, Monsieur. Pourriez-vous reformuler ?",
+  unknown:      ["Je n'ai pas saisi, Monsieur. Pourriez-vous reformuler ?","Toutes mes excuses, Monsieur, je n'ai pas compris.","Pourriez-vous repeter, Monsieur ?"],
   stop:         "Mise en veille. Je reste disponible, Monsieur.",
-  merci:        "De rien, Monsieur. C'est pour cela que je suis la.",
-  comment_va:   "Je fonctionne de maniere optimale, Monsieur. Merci de votre sollicitude.",
+  merci:        ["De rien, Monsieur. C'est pour cela que je suis la.","Tout le plaisir est pour moi, Monsieur.","Je vous en prie, Monsieur."],
+  comment_va:   ["Je fonctionne de maniere optimale, Monsieur. Merci de votre sollicitude.","Tous les systemes sont au vert, Monsieur.","Parfaitement operationnel, Monsieur. Et vous-meme ?"],
   briefing_intro: "Permettez-moi de faire un point rapide, Monsieur."
 };
 
