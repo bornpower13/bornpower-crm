@@ -1479,6 +1479,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
     <div class="pg" id="pgMonProfil">
       <div class="pgHead"><div><h1>Mon profil</h1><p class="sub">Informations et sécurité</p></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>💾 Sauvegarde des données</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Télécharge une sauvegarde de tout ton CRM (à faire régulièrement !). En cas de souci tu pourras tout restaurer.</div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn bPrimary" onclick="exporterDonnees()">💾 Télécharger une sauvegarde</button><input type="file" id="backupFile" accept=".json" style="font-size:12px"><button class="btn bGhost" onclick="importerDonnees()">♻️ Restaurer</button></div></div></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🛡️ Sauvegardes automatiques</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Une copie de sécurité est créée automatiquement chaque jour (cloud, séparée de tes données actives, + un fichier téléchargé sur ton appareil). Tu n'as rien à faire.</div><div id="backupsCloudList"></div><button class="btn bGhost" style="margin-top:10px;font-size:12px" onclick="renderBackupsCloud()">🔄 Actualiser la liste</button></div></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:800px;">
         <div class="card"><div class="cardH"><h3>Informations</h3></div><div class="cardB" id="profilInfos"></div></div>
         <div class="card"><div class="cardH"><h3>Mot de passe</h3></div><div class="cardB">
@@ -2174,6 +2175,7 @@ function save(){
     try{
       db.collection('crm_data').doc('main').set(cleanPayload).then(function(){
         window._lastSaveOk=Date.now();
+        _autoBackupCloud(cleanPayload);
       }).catch(function(e){
         console.log('save error:',e);
         toast('⚠️ Sauvegarde cloud échouée: '+(e.code||e.message||'inconnue')+' — données gardées en local');
@@ -2374,7 +2376,7 @@ function nav(id){
   if(id==='pgPlanning')renderP();
   if(id==='pgRapports')renderRapports();
   if(id==='pgUsers'){if(fbReady&&db){loadAccountsFromFirebase(function(){renderUsers();});}else{renderUsers();}}
-  if(id==='pgMonProfil')renderMonProfil();
+  if(id==='pgMonProfil'){renderMonProfil();setTimeout(renderBackupsCloud,100);}
   if(id==='pgDashCM')renderDashCM();
   if(id==='pgEditorial')renderEditorial();
   if(id==='pgMedia')renderMedia();
@@ -4776,9 +4778,21 @@ function exporterDonnees(){
 }
 function importerDonnees(){
   var inp=g('backupFile');if(!inp||!inp.files||!inp.files[0]){toast('Choisis un fichier de sauvegarde');return;}
-  if(!confirm('⚠️ Restaurer va REMPLACER toutes les données actuelles. Continuer ?'))return;
   var reader=new FileReader();
-  reader.onload=function(e){try{var d=JSON.parse(e.target.result);if(!d||typeof d!=='object'){toast('Fichier invalide');return;}DB=d;save();toast('✅ Données restaurées');setTimeout(function(){location.reload();},800);}catch(err){toast('Fichier illisible');}};
+  reader.onload=function(e){
+    try{
+      var d=JSON.parse(e.target.result);
+      if(!d||typeof d!=='object'){toast('Fichier invalide');return;}
+      var champs=['installations','prospects','contacts','devis','installateurs','catalogue'];
+      var actuel=champs.map(function(c){return (DB[c]||[]).length;}).reduce(function(a,b){return a+b;},0);
+      var nouveau=champs.map(function(c){return (d[c]||[]).length;}).reduce(function(a,b){return a+b;},0);
+      var detail=champs.map(function(c){return c+': '+(d[c]||[]).length;}).join(', ');
+      if(nouveau===0&&actuel>0){alert('🛑 SAUVEGARDE REFUSÉE\n\nCe fichier semble vide (0 installation, 0 prospect...) alors que tu as actuellement '+actuel+' élément(s) en base.\n\nPour éviter d\'effacer tes données par erreur, cette restauration est bloquée. Si tu es CERTAIN que ce fichier est le bon, contacte-moi.');return;}
+      if(nouveau<actuel*0.5&&actuel>5){if(!confirm('⚠️ ATTENTION : ce fichier contient beaucoup MOINS de données ('+detail+') que ce que tu as actuellement ('+actuel+' éléments au total).\n\nEs-tu CERTAIN de vouloir remplacer tes données actuelles par ce fichier plus ancien/incomplet ?'))return;}
+      else{if(!confirm('⚠️ Restaurer va REMPLACER toutes les données actuelles par ce fichier ('+detail+'). Continuer ?'))return;}
+      DB=d;save();toast('✅ Données restaurées');setTimeout(function(){location.reload();},800);
+    }catch(err){toast('Fichier illisible');}
+  };
   reader.readAsText(inp.files[0]);
 }
 function openGlobalSearch(){
@@ -6109,6 +6123,55 @@ function _renderSeqQueueCard(){
 }
 function _seqQueueNext(idx){setTimeout(function(){marquerEtapeEnvoyee(idx);_seqQueueIdx++;_renderSeqQueueCard();},400);}
 function _seqQueueSkip(){_seqQueueIdx++;_renderSeqQueueCard();}
+function _autoBackupCloud(payload){
+  try{
+    var today=new Date().toISOString().slice(0,10);
+    if(DB._lastCloudBackupDate===today)return;
+    DB._lastCloudBackupDate=today;
+    db.collection('crm_backups').doc(today).set(Object.assign({},payload,{_backupDate:today,_backupAt:new Date().toISOString()})).then(function(){
+      console.log('Sauvegarde cloud auto OK:',today);
+    }).catch(function(e){console.log('Sauvegarde cloud auto échouée:',e);});
+  }catch(e){}
+}
+function _autoBackupLocal(){
+  try{
+    if(!isAdmin())return;
+    var today=new Date().toISOString().slice(0,10);
+    var lastLocal=localStorage.getItem('bp_last_local_backup');
+    if(lastLocal===today)return;
+    localStorage.setItem('bp_last_local_backup',today);
+    var blob=new Blob([JSON.stringify(DB)],{type:'application/json'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url;a.download='bornpower_auto_'+today+'.json';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('🛡️ Sauvegarde automatique téléchargée ('+today+')');
+  }catch(e){}
+}
+function renderBackupsCloud(){
+  var el=g('backupsCloudList');if(!el||!fbReady||!db)return;
+  el.innerHTML='<div style="font-size:12px;color:var(--muted)">Chargement...</div>';
+  db.collection('crm_backups').orderBy('_backupDate','desc').limit(14).get().then(function(snap){
+    if(snap.empty){el.innerHTML='<div style="font-size:12px;color:var(--muted)">Aucune sauvegarde automatique pour l\'instant — la première sera créée aujourd\'hui.</div>';return;}
+    var rows='';
+    snap.forEach(function(doc){
+      var d=doc.data();
+      rows+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:12.5px">📅 '+doc.id+'</span><button class="btn bGhost" style="font-size:11px;padding:5px 10px" onclick="restaurerBackupCloud(\''+doc.id+'\')">♻️ Restaurer</button></div>';
+    });
+    el.innerHTML=rows;
+  }).catch(function(e){el.innerHTML='<div style="font-size:12px;color:#dc2626">Erreur de chargement</div>';});
+}
+function restaurerBackupCloud(dateId){
+  if(!confirm('⚠️ Restaurer la sauvegarde automatique du '+dateId+' ? Ça va REMPLACER toutes les données actuelles.'))return;
+  db.collection('crm_backups').doc(dateId).get().then(function(doc){
+    if(!doc.exists){toast('Sauvegarde introuvable');return;}
+    var d=doc.data();
+    DB=d;save();toast('✅ Restauré depuis la sauvegarde du '+dateId);
+    setTimeout(function(){location.reload();},800);
+  }).catch(function(e){toast('Erreur de restauration');});
+}
+try{window.addEventListener('load',function(){_runAfterLogin(_autoBackupLocal,4000);});}catch(e){}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
