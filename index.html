@@ -1323,6 +1323,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       </div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🔔 Mes rappels</h3></div><div class="cardB" id="rappelsJournee" style="padding:8px 0"></div></div>
       <div style="margin-bottom:16px"><button class="btn bPrimary" onclick="nouvelleInstallInstallateur()">+ Créer une installation</button></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🎒 Matériel à charger aujourd'hui</h3></div><div class="cardB" id="materielJournee" style="padding:8px 0"></div></div>
       <div id="maJourneeList"></div>
     </div>
 
@@ -2068,7 +2069,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="fi full"><label>📷 Photos / Ordre de mission</label><div id="mIphotos" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div><input type="file" accept="image/*" capture="environment" multiple onchange="addInstallPhoto(this)" style="font-size:12px"></div>
       <div class="fi full"><label>⏱️ Pointage du chantier</label><div id="mIpointage"></div></div>
       <div class="fi full" id="mIpayBtn" style="display:none;margin-bottom:8px"></div>
-      <div class="fi full"><button class="btn bPrimary" style="width:100%;margin-bottom:8px" onclick="if(typeof eInst!=='undefined'&&eInst>=0)guideInstallModal(eInst);else toast('Enregistre d\'abord l\'installation')">🧭 Guide d'installation (IA)</button><button class="btn bGhost" style="width:100%;color:#dc2626;border-color:#fecaca" onclick="if(typeof eInst!=='undefined'&&eInst>=0)signalerProblemeModal(eInst);else toast('Enregistre d\'abord l\'installation')">⚠️ Signaler un problème</button></div>
+      <div class="fi full"><button class="btn bPrimary" style="width:100%;margin-bottom:8px" onclick="if(typeof eInst!=='undefined'&&eInst>=0)guideInstallModal(eInst);else toast('Enregistre d\'abord l\'installation')">🧭 Guide d'installation (IA)</button><button class="btn bGhost" style="width:100%;margin-bottom:8px" onclick="if(typeof eInst!=='undefined'&&eInst>=0)signatureChantierModal(eInst);else toast('Enregistre d\'abord l\'installation')">✍️ Signature de fin de chantier</button><button class="btn bGhost" style="width:100%;margin-bottom:8px" onclick="if(typeof eInst!=='undefined'&&eInst>=0)genererRapportChantier(eInst);else toast('Enregistre d\'abord l\'installation')">📄 Générer le rapport de chantier</button><button class="btn bGhost" style="width:100%;color:#dc2626;border-color:#fecaca" onclick="if(typeof eInst!=='undefined'&&eInst>=0)signalerProblemeModal(eInst);else toast('Enregistre d\'abord l\'installation')">⚠️ Signaler un problème</button></div>
       <div class="fi full"><label>🕓 Historique des modifications</label><div id="mIaudit" style="max-height:220px;overflow:auto;background:#f8f9fd;border:1px solid var(--border);border-radius:10px;padding:8px 10px"></div></div>
       <div class="fi full">
         <label>Devis Tiime (PDF, max 5MB)</label>
@@ -3835,6 +3836,7 @@ function journeeToday(){journeeDay=new Date();renderMaJournee();}
 function changeJourneeDay(d){journeeDay.setDate(journeeDay.getDate()+d);renderMaJournee();}
 function renderMaJournee(){
   var nm=curUserObj?curUserObj.name:'';var mineNames=_myPossibleNames();
+  if(typeof renderMaterielJournee==='function')renderMaterielJournee();
   var jour=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][journeeDay.getDay()];
   var d0=new Date(journeeDay);d0.setHours(0,0,0,0);
   var today=new Date();today.setHours(0,0,0,0);
@@ -6189,6 +6191,139 @@ function restaurerBackupCloud(dateId){
   }).catch(function(e){toast('Erreur de restauration');});
 }
 try{window.addEventListener('load',function(){_runAfterLogin(_autoBackupLocal,4000);});}catch(e){}
+function signatureChantierModal(idx){
+  var r=DB.installations[idx];if(!r)return;_sigInstIdx=idx;
+  var already=r.clientSignatureInstall;
+  var h='<div class="ov on" id="mSigInstTemp" onclick="if(event.target===this)this.remove()"><div class="modal" style="max-width:480px">'
+    +'<div class="mh"><h2>✍️ Signature de fin de chantier</h2><button class="mcl" onclick="g(\'mSigInstTemp\').remove()">✕</button></div>'
+    +'<div style="padding:18px">'
+    +'<div style="background:linear-gradient(135deg,#242a56,#171c3c);border-radius:14px;padding:14px 16px;color:#fff;margin-bottom:16px"><div style="font-size:11px;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.05em">Chantier</div><div style="font-size:15px;font-weight:700;margin-top:2px">'+_escR(r.chantier||r.client||'')+'</div></div>'
+    +(already
+      ?('<div style="text-align:center"><img src="'+already.data+'" style="max-width:100%;border:1px solid var(--border);border-radius:10px;background:#fff;padding:8px"><div style="font-size:12.5px;color:var(--muted);margin-top:8px">Signé par <b style="color:var(--navy)">'+_escR(already.nom||'')+'</b><br>le '+new Date(already.date).toLocaleString('fr-FR')+'</div><button class="btn bGhost" style="margin-top:12px" onclick="delete DB.installations['+idx+'].clientSignatureInstall;save();g(\'mSigInstTemp\').remove();signatureChantierModal('+idx+')">Refaire la signature</button></div>')
+      :('<div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Le client confirme que l\'installation a bien été réalisée. Cette signature te protège en cas de désaccord ultérieur.</div>'
+        +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Nom du signataire</label><input id="sigNom" value="'+_escR(r.client||'')+'" style="width:100%;margin:6px 0 12px">'
+        +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Signature (dessiner ci-dessous)</label>'
+        +'<div style="border:2px dashed #d8dceb;border-radius:12px;margin-top:6px;background:#fbfcff"><canvas id="sigCanvas" width="440" height="180" style="width:100%;height:180px;touch-action:none;cursor:crosshair;border-radius:10px"></canvas></div>'
+        +'<div style="display:flex;gap:8px;margin-top:10px"><button class="btn bGhost" onclick="clearSignaturePad()">🗑 Effacer</button><button class="btn bPrimary" style="flex:1" onclick="validerSignatureChantier('+idx+')">✅ Valider</button></div>')
+    )
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+  if(!already)setTimeout(_initSigPad,60);
+}
+function validerSignatureChantier(idx){
+  var cv=g('sigCanvas');if(!cv||!_sigHasStroke){toast('Fais signer le client dans le cadre');return;}
+  var nom=(g('sigNom')&&g('sigNom').value.trim())||'';if(!nom){toast('Indique le nom du signataire');return;}
+  var r=DB.installations[idx];if(!r)return;
+  r.clientSignatureInstall={data:cv.toDataURL('image/png'),nom:nom,date:new Date().toISOString(),by:(curUserObj?curUserObj.name:'')};
+  save();var m=g('mSigInstTemp');if(m)m.remove();
+  toast('✅ Signature enregistrée');
+  if(typeof openIM==='function')openIM(idx);
+}
+var _sigInstIdx=-1;
+function genererRapportChantier(idx){
+  var r=DB.installations[idx];if(!r)return;
+  var win=window.open('','_blank');
+  var photosHTML=(r.photos&&r.photos.length)?('<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px">'+r.photos.map(function(p){return '<img src="'+p+'" style="width:100%;height:110px;object-fit:cover;border-radius:8px;border:1px solid #ddd">';}).join('')+'</div>'):'<div style="color:#888;font-size:12px">Aucune photo jointe</div>';
+  var sigHTML=r.clientSignatureInstall?('<img src="'+r.clientSignatureInstall.data+'" style="max-width:280px;border:1px solid #ddd;border-radius:8px;padding:6px;background:#fff"><div style="font-size:11px;color:#666;margin-top:4px">Signé par '+(r.clientSignatureInstall.nom||'')+' le '+new Date(r.clientSignatureInstall.date).toLocaleDateString('fr-FR')+'</div>'):'<div style="color:#888;font-size:12px">Non signé</div>';
+  win.document.write('<html><head><meta charset="utf-8"><title>Rapport de chantier</title><style>'
+    +'body{font-family:Arial,sans-serif;padding:40px;color:#1f2438;max-width:700px;margin:0 auto}'
+    +'.hd{background:#222651;color:#fff;padding:20px 24px;border-radius:12px;margin-bottom:20px}'
+    +'.hd h1{font-size:20px;margin-bottom:4px}.hd p{font-size:12px;color:rgba(255,255,255,.7)}'
+    +'.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:13px}'
+    +'.row b{color:#222651}.sec{font-size:11px;font-weight:800;color:#c79732;text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px}'
+    +'.footer{margin-top:30px;font-size:10px;color:#888;border-top:1px solid #ddd;padding-top:10px}'
+    +'</style></head><body>'
+    +'<div class="hd"><h1>Rapport de fin de chantier</h1><p>BORN POWER — Installation certifiée IRVE</p></div>'
+    +'<div class="row"><span>Chantier</span><b>'+_escR(r.chantier||'')+'</b></div>'
+    +'<div class="row"><span>Client</span><b>'+_escR(r.client||'')+'</b></div>'
+    +'<div class="row"><span>Adresse</span><b>'+_escR(r.adresse||'')+' '+_escR(r.ville||'')+'</b></div>'
+    +'<div class="row"><span>Borne installée</span><b>'+_escR(r.borneModele||'Non renseignée')+'</b></div>'
+    +'<div class="row"><span>Installateur</span><b>'+_escR(r.installateur||'')+'</b></div>'
+    +'<div class="row"><span>Date de fin</span><b>'+(r.dateFin?fmtD(r.dateFin):new Date().toLocaleDateString('fr-FR'))+'</b></div>'
+    +'<div class="sec">Notes du chantier</div><div style="font-size:12.5px;color:#444">'+_escR(r.notes||'Aucune note')+'</div>'
+    +'<div class="sec">Photos</div>'+photosHTML
+    +'<div class="sec">Validation client</div>'+sigHTML
+    +'<div class="footer">SAS au capital de 5 000 euros &bull; SIREN 934437153 &bull; RCS MARSEILLE &bull; 137 rue Breteuil, 13006 Marseille</div>'
+    +'</body></html>');
+  win.document.close();setTimeout(function(){win.print();},600);
+}
+function renderMaterielJournee(){
+  var el=g('materielJournee');if(!el)return;
+  var todayKey=journeeDay.toISOString().slice(0,10);
+  var nm=curUserObj?curUserObj.name:'';var mine=(typeof _myPossibleNames==='function')?_myPossibleNames():[];
+  var mesChantiers=(DB.installations||[]).filter(function(i){
+    if(!i.dateDebut||i.dateDebut.slice(0,10)!==todayKey)return false;
+    if(getRole()==='installer')return mine.indexOf((i.installateur||'').trim().toLowerCase())>=0;
+    return true;
+  });
+  if(!mesChantiers.length){el.innerHTML='<div style="font-size:12.5px;color:var(--muted)">Aucun chantier aujourd\'hui — rien à préparer.</div>';return;}
+  var bornes={};var cableTotal=0;var typesRacc={};
+  mesChantiers.forEach(function(i){
+    var nomBorne=i.borneModele||'Borne non précisée';
+    var qte=parseInt(i.nbBornes,10)||1;
+    bornes[nomBorne]=(bornes[nomBorne]||0)+qte;
+    if(i.cableM)cableTotal+=parseFloat(i.cableM)||0;
+    if(i.cableType)typesRacc[i.cableType]=(typesRacc[i.cableType]||0)+1;
+  });
+  var html='<div style="font-size:11.5px;color:var(--muted);margin-bottom:8px">Pour '+mesChantiers.length+' chantier(s) aujourd\'hui :</div>';
+  Object.keys(bornes).forEach(function(nom){
+    html+='<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f0f2f8"><span style="font-size:13px">🔌</span><span style="font-size:13px;font-weight:600;flex:1">'+_escR(nom)+'</span><span style="font-size:13px;font-weight:800;color:var(--navy)">x'+bornes[nom]+'</span></div>';
+  });
+  Object.keys(typesRacc).forEach(function(t){
+    html+='<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f0f2f8"><span style="font-size:13px">🔗</span><span style="font-size:13px;font-weight:600;flex:1">Câble '+_escR(t)+'</span><span style="font-size:13px;font-weight:800;color:var(--navy)">x'+typesRacc[t]+'</span></div>';
+  });
+  if(cableTotal>0){
+    html+='<div style="display:flex;align-items:center;gap:8px;padding:7px 0"><span style="font-size:13px">📏</span><span style="font-size:13px;font-weight:600;flex:1">Métrage total de câble</span><span style="font-size:13px;font-weight:800;color:var(--navy)">~'+Math.round(cableTotal)+'m</span></div>';
+  }
+  el.innerHTML=html;
+}
+var FLEET_SECTEURS=[
+  {q:'transport routier de marchandises',raison:'Flotte de camions/utilitaires quasi certaine'},
+  {q:'déménagement',raison:'Camions de déménagement = flotte véhicules'},
+  {q:'nettoyage',raison:'Agents mobiles multi-sites = véhicules de service'},
+  {q:'sécurité',raison:'Rondes et interventions = flotte de véhicules'},
+  {q:'plomberie',raison:'Artisan mobile = camionnette(s) à recharger'},
+  {q:'électricité générale',raison:'Artisan mobile = camionnette(s) à recharger'},
+  {q:'location de véhicules',raison:'Métier du véhicule par définition'},
+  {q:'taxi',raison:'Flotte de véhicules par définition'},
+  {q:'ambulance',raison:'Flotte de véhicules sanitaires'},
+  {q:'livraison',raison:'Flotte de véhicules de livraison'},
+  {q:'aide à domicile',raison:'Intervenants mobiles = véhicules multiples'},
+  {q:'travaux de maçonnerie',raison:'Camions de chantier = flotte probable'}
+];
+var PACA_DEPTS_ROT=['13','83','84','06','04','05'];
+function _fleetPickSecteur(offset){var d=new Date();var idx=(d.getDate()+offset)%FLEET_SECTEURS.length;return FLEET_SECTEURS[idx];}
+function _runFleetProspectionDaily(){
+  var today=new Date().toISOString().slice(0,10);
+  if(DB._lastFleetProspectionDate===today)return;
+  var commerciaux=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.role==='commercial'&&a.status==='active';});
+  if(!commerciaux.length){DB._lastFleetProspectionDate=today;save();return;}
+  var usedKeys={};
+  (DB.prospects||[]).forEach(function(p){if(p.siret)usedKeys[p.siret]=true;});
+  function processCommercial(i){
+    if(i>=commerciaux.length){DB._lastFleetProspectionDate=today;save();return;}
+    var com=commerciaux[i];
+    var secteur=_fleetPickSecteur(i);
+    var dept=PACA_DEPTS_ROT[i%PACA_DEPTS_ROT.length];
+    var url='https://recherche-entreprises.api.gouv.fr/search?per_page=25&etat_administratif=A&q='+encodeURIComponent(secteur.q)+'&departement='+dept;
+    fetch(url).then(function(r){return r.json();}).then(function(data){
+      var added=0;
+      (data.results||[]).forEach(function(e){
+        if(added>=10)return;
+        var nom=e.nom_complet||e.nom_raison_sociale||'';var siege=e.siege||{};
+        if(!nom||usedKeys[e.siren])return;
+        var adr=[siege.numero_voie,siege.type_voie,siege.libelle_voie].filter(Boolean).join(' ');
+        DB.prospects.push({id:DB.nextId++,nom:nom,societe:nom,siret:e.siren||'',naf:e.activite_principale||'',formeJ:e.nature_juridique||'',adresse:adr,ville:siege.libelle_commune||'',cp:siege.code_postal||'',effectif:e.tranche_effectif_salarie||'',dateCreationEnt:e.date_creation||'',statut:'Nouveau',contactPrenom:'',contactNom:'',tel:'',email:'',notes:'🚚 Prospection flotte auto — secteur « '+secteur.q+' ». '+secteur.raison,source:'Flottes auto',ownerId:com.id,ownerName:com.name,assignedAt:new Date().toISOString(),lastContact:new Date().toISOString().slice(0,10)});
+        usedKeys[e.siren]=true;added++;
+      });
+      if(added>0){addNotif('prospects','🚚 '+added+' nouveau(x) prospect(s) « flotte véhicules » ajouté(s) pour toi — secteur '+secteur.q,'🚚',com.name);}
+      save();
+      setTimeout(function(){processCommercial(i+1);},500);
+    }).catch(function(){setTimeout(function(){processCommercial(i+1);},500);});
+  }
+  processCommercial(0);
+}
+try{window.addEventListener('load',function(){_runAfterLogin(_runFleetProspectionDaily,3600);});}catch(e){}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
