@@ -1024,9 +1024,11 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
           <button class="planViewBtn on" data-view="list" onclick="setPlanView('list')">📋 Agenda</button>
           <button class="planViewBtn" data-view="gantt" onclick="setPlanView('gantt')">📊 Gantt</button>
         </div>
-        <button class="btn bGhost" onclick="changeMonth(-1)">&#8249;</button>
-        <strong id="planMonthLbl" style="min-width:150px;text-align:center;font-size:15px;font-weight:700;color:var(--navy);"></strong>
-        <button class="btn bGhost" onclick="changeMonth(1)">&#8250;</button>
+        <button class="btn bGhost" id="planMonthPrev" onclick="changeMonth(-1)">&#8249;</button>
+        <button class="btn bGhost" id="planWeekPrev" onclick="changeWeek(-1)" style="display:none">&#8249;</button>
+        <strong id="planMonthLbl" style="min-width:170px;text-align:center;font-size:15px;font-weight:700;color:var(--navy);"></strong>
+        <button class="btn bGhost" id="planMonthNext" onclick="changeMonth(1)">&#8250;</button>
+        <button class="btn bGhost" id="planWeekNext" onclick="changeWeek(1)" style="display:none">&#8250;</button>
         <button class="btn bGhost" onclick="planToday()" style="font-size:12px">Aujourd'hui</button>
         <div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;" id="planLegend"></div>
       </div>
@@ -3691,13 +3693,28 @@ function openSAVDetail(idx){curSAVIdx=idx;var t=DB.savTickets[idx];if(!t)return;
 function addSAVComment(){var txt=g('savCommentInput').value.trim();if(!txt)return;if(!DB.savTickets[curSAVIdx].comments)DB.savTickets[curSAVIdx].comments=[];DB.savTickets[curSAVIdx].comments.push({text:txt,author:curUserObj?curUserObj.name:'',date:new Date().toLocaleDateString('fr-FR')});save();openSAVDetail(curSAVIdx);toast('Commentaire ajouté !');}
 
 // ── PLANNING ──
-var planMonth=new Date();var planView='list';
+var planMonth=new Date();
+var planWeekAnchor=new Date();var planView='list';
 function changeMonth(d){planMonth.setMonth(planMonth.getMonth()+d);renderP();}
+function changeWeek(d){planWeekAnchor.setDate(planWeekAnchor.getDate()+d*7);renderP();}
 function setPlanView(v){planView=v;document.querySelectorAll('.planViewBtn').forEach(function(b){b.classList.toggle('on',b.dataset.view===v);});renderP();}
 function renderPLegend(){var el=g('planLegend');if(!el)return;el.innerHTML=Object.entries(SCOLS).map(function(e){return '<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:3px;background:'+e[1]+'"></div>'+e[0]+'</div>';}).join('');}
 function renderP(){
   var y=planMonth.getFullYear(),m=planMonth.getMonth();
-  g('planMonthLbl').textContent=MO[m]+' '+y;
+  var isWeek=(planView==='week');
+  if(g('planMonthPrev'))g('planMonthPrev').style.display=isWeek?'none':'';
+  if(g('planMonthNext'))g('planMonthNext').style.display=isWeek?'none':'';
+  if(g('planWeekPrev'))g('planWeekPrev').style.display=isWeek?'':'none';
+  if(g('planWeekNext'))g('planWeekNext').style.display=isWeek?'':'none';
+  if(isWeek){
+    var dow=(planWeekAnchor.getDay()+6)%7;
+    var ws=new Date(planWeekAnchor);ws.setDate(planWeekAnchor.getDate()-dow);
+    var we=new Date(ws);we.setDate(ws.getDate()+6);
+    var lbl=ws.getDate()+(ws.getMonth()!==we.getMonth()?(' '+MO[ws.getMonth()].slice(0,3)):'')+' - '+we.getDate()+' '+MO[we.getMonth()]+' '+we.getFullYear();
+    g('planMonthLbl').textContent=lbl;
+  } else {
+    g('planMonthLbl').textContent=MO[m]+' '+y;
+  }
   renderPLegend();
   renderPlanSummary();
   if(planView==='list')renderPList(y,m);
@@ -3705,7 +3722,7 @@ function renderP(){
   else renderPGantt(y,m);
 }
 
-function planToday(){planMonth=new Date();renderP();}
+function planToday(){planMonth=new Date();planWeekAnchor=new Date();renderP();}
 
 function ficheIdxFor(inst){return DB.installations.indexOf(inst);}
 
@@ -4001,7 +4018,7 @@ function _weekVisiteBlock(v){
 function renderPWeek(){
   var today=new Date();today.setHours(0,0,0,0);
   var allVisites=getVisitesTechniques();
-  var ref=(today.getMonth()===planMonth.getMonth()&&today.getFullYear()===planMonth.getFullYear())?today:new Date(planMonth.getFullYear(),planMonth.getMonth(),1);
+  var ref=new Date(planWeekAnchor);ref.setHours(0,0,0,0);
   var dow=(ref.getDay()+6)%7;
   var weekStart=new Date(ref);weekStart.setDate(ref.getDate()-dow);weekStart.setHours(0,0,0,0);
   var all=getVisibleInst();
