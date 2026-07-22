@@ -6633,8 +6633,11 @@ document.addEventListener('DOMContentLoaded',function(){
       DB.catalogue=data.catalogue||DB.catalogue;DB.pushTokens=data.pushTokens||DB.pushTokens;
       DB.nextId=data.nextId||DB.nextId;
       try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}
-      var ap=document.querySelector('.pg.on');
-      if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgLinkedIn')renderLinkedIn();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgMaJournee')renderMaJournee();}
+      if(window._fbListenDebounce)clearTimeout(window._fbListenDebounce);
+      window._fbListenDebounce=setTimeout(function(){
+        var ap=document.querySelector('.pg.on');
+        if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgLinkedIn')renderLinkedIn();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgMaJournee')renderMaJournee();}
+      },800);
     });
     fbListen(FIREBASE_ACCOUNTS_COLLECTION,function(data){
       if(data&&data.accounts){
