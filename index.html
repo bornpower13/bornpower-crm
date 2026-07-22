@@ -1481,6 +1481,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
     <!-- MON PROFIL -->
     <div class="pg" id="pgMonProfil">
       <div class="pgHead"><div><h1>Mon profil</h1><p class="sub">Informations et sécurité</p></div></div>
+      <div class="card" style="margin-bottom:16px" id="stockInstallerCard"><div class="cardH"><h3>📦 État du stock</h3></div><div class="cardB" id="stockInstallerList" style="padding:8px 0"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>💾 Sauvegarde des données</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Télécharge une sauvegarde de tout ton CRM (à faire régulièrement !). En cas de souci tu pourras tout restaurer.</div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn bPrimary" onclick="exporterDonnees()">💾 Télécharger une sauvegarde</button><input type="file" id="backupFile" accept=".json" style="font-size:12px"><button class="btn bGhost" onclick="importerDonnees()">♻️ Restaurer</button></div></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🛡️ Sauvegardes automatiques</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Une copie de sécurité est créée automatiquement chaque jour (cloud, séparée de tes données actives, + un fichier téléchargé sur ton appareil). Tu n'as rien à faire.</div><div id="backupsCloudList"></div><button class="btn bGhost" style="margin-top:10px;font-size:12px" onclick="renderBackupsCloud()">🔄 Actualiser la liste</button></div></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:800px;">
@@ -2379,7 +2380,7 @@ function nav(id){
   if(id==='pgPlanning')renderP();
   if(id==='pgRapports')renderRapports();
   if(id==='pgUsers'){if(fbReady&&db){loadAccountsFromFirebase(function(){renderUsers();});}else{renderUsers();}}
-  if(id==='pgMonProfil'){renderMonProfil();setTimeout(renderBackupsCloud,100);}
+  if(id==='pgMonProfil'){renderMonProfil();setTimeout(renderBackupsCloud,100);if(typeof renderStockInstaller==='function')renderStockInstaller();}
   if(id==='pgDashCM')renderDashCM();
   if(id==='pgEditorial')renderEditorial();
   if(id==='pgMedia')renderMedia();
@@ -5621,7 +5622,11 @@ function _deductStockForInstall(row,existingStatut){
     var qte=parseInt(row.nbBornes,10)||1;
     if(mat){
       mat.stock=(mat.stock||0)-qte;
-      if(mat.stock<=(mat.seuil||5)){addNotif('sav','📦 Stock bas : '+mat.nom+' ('+mat.stock+' restant(s))','📦','');}
+      if(mat.stock<=(mat.seuil||5)){
+        var _installers=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.role==='installer'&&a.status==='active';});
+        _installers.forEach(function(a){addNotif('sav','📦 Stock bas : '+mat.nom+' ('+mat.stock+' restant(s))','📦',a.name);});
+        addNotif('sav','📦 Stock bas : '+mat.nom+' ('+mat.stock+' restant(s))','📦','@admin');
+      }
       toast('📦 Stock mis à jour : -'+qte+' '+mat.nom);
     }
   }catch(e){}
@@ -6324,6 +6329,19 @@ function _runFleetProspectionDaily(){
   processCommercial(0);
 }
 try{window.addEventListener('load',function(){_runAfterLogin(_runFleetProspectionDaily,3600);});}catch(e){}
+function renderStockInstaller(){
+  var card=g('stockInstallerCard');if(!card)return;
+  if(getRole()!=='installer'){card.style.display='none';return;}
+  card.style.display='block';
+  var el=g('stockInstallerList');if(!el)return;
+  var items=(DB.materiel||[]).slice().sort(function(a,b){return (a.stock<=(a.seuil||5)?0:1)-(b.stock<=(b.seuil||5)?0:1);});
+  if(!items.length){el.innerHTML='<div style="font-size:12.5px;color:var(--muted)">Aucun article de stock renseigné.</div>';return;}
+  el.innerHTML=items.map(function(m){
+    var bas=m.stock<=(m.seuil||5);
+    var col=bas?'#dc2626':'#166534';
+    return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f0f2f8"><span style="font-size:13px;flex:1">'+_escR(m.nom)+'</span>'+(bas?'<span style="font-size:10.5px;font-weight:700;color:#dc2626;background:#fee2e2;padding:2px 8px;border-radius:10px">BAS</span>':'')+'<span style="font-size:13px;font-weight:800;color:'+col+'">'+m.stock+' '+_escR(m.unite||'')+'</span></div>';
+  }).join('');
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
