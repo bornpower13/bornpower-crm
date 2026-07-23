@@ -1,8 +1,13 @@
 // BornPower CRM Service Worker
-const CACHE_NAME = 'bornpower-v3';
+const CACHE_NAME = 'bornpower-v4';
+const APP_SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-180.png'];
 
 self.addEventListener('install', function(e) {
-  self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(function(cache) {
+      return cache.addAll(APP_SHELL).catch(function(){ /* fichier optionnel manquant, on continue */ });
+    }).then(function(){ self.skipWaiting(); })
+  );
 });
 
 self.addEventListener('activate', function(e) {
@@ -11,15 +16,32 @@ self.addEventListener('activate', function(e) {
       return Promise.all(keys.map(function(key) {
         if (key !== CACHE_NAME) return caches.delete(key);
       }));
-    })
+    }).then(function(){ return self.clients.claim(); })
   );
 });
 
 self.addEventListener('fetch', function(e) {
   if (e.request.method !== 'GET') return;
+  var url = e.request.url;
+  // Jamais de cache pour Firebase/Firestore : on ne veut RISQUER AUCUNE donnée périmée
+  // à la place des vraies données synchronisées. Ces requêtes suivent leur cours normal.
+  if (url.indexOf('firestore.googleapis.com') !== -1 ||
+      url.indexOf('firebaseio.com') !== -1 ||
+      url.indexOf('googleapis.com') !== -1 ||
+      url.indexOf('gstatic.com') !== -1) {
+    return;
+  }
   e.respondWith(
-    fetch(e.request).catch(function() {
-      return caches.match(e.request);
+    fetch(e.request).then(function(response){
+      if (response && response.status === 200) {
+        var copy = response.clone();
+        caches.open(CACHE_NAME).then(function(cache){ cache.put(e.request, copy); });
+      }
+      return response;
+    }).catch(function() {
+      return caches.match(e.request).then(function(cached){
+        return cached || caches.match('./index.html');
+      });
     })
   );
 });
