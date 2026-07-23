@@ -5550,7 +5550,7 @@ function renderMission(){
   function kpiCard(ico,lbl,val,col){return '<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px"><div style="font-size:26px">'+ico+'</div><div style="font-size:32px;font-weight:800;margin-top:8px;letter-spacing:-.5px;color:'+col+'">'+val+'</div><div style="font-size:12px;color:rgba(255,255,255,.55);margin-top:2px;text-transform:uppercase;letter-spacing:.04em">'+lbl+'</div></div>';}
   var kEl=g('missionKpis');if(kEl)kEl.innerHTML=kpiCard('💰','CA du mois',fmtE(caMois),'#ffe576')+kpiCard('⚡','Chantiers aujourd\'hui',chantiersJour.length,'#60a5fa')+kpiCard('✅','Installations ce mois',termineesMois,'#4ade80')+kpiCard('⭐','Avis Google',avisTotal,'#ffe576');
 
-  var accts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.role==='commercial'&&a.status==='active';});
+  var accts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return (a.role==='commercial'||a.peutVendre)&&a.status==='active';});
   var ranking=accts.map(function(a){var ca=(DB.devis||[]).filter(function(d){if(d.commercialId&&d.commercialId!==a.id)return false;if(d.statut!=='Accepté')return false;var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;}).reduce(function(s,d){return s+(d.lignes||[]).reduce(function(s2,l){return s2+(l.qte||0)*(l.pu||0);},0);},0);return {name:a.name,ca:ca};}).sort(function(a,b){return b.ca-a.ca;});
   var medals=['🥇','🥈','🥉'];
   var rEl=g('missionRanking');if(rEl)rEl.innerHTML=ranking.length?ranking.slice(0,6).map(function(r,i){return '<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)"><div style="font-size:20px;width:30px">'+(medals[i]||(i+1))+'</div><div style="flex:1;font-size:15px;font-weight:600">'+_escR(r.name)+'</div><div style="font-size:16px;font-weight:800;color:#ffe576">'+fmtE(r.ca)+'</div></div>';}).join(''):'<div style="color:rgba(255,255,255,.4);font-size:13px">Aucun commercial actif</div>';
@@ -5681,7 +5681,7 @@ function majTTC(htId,tvaId,ttcId){
 function callField(inputId){var v=(g(inputId)&&g(inputId).value)||'';if(!v){toast('Aucun numéro renseigné');return;}window.location.href='tel:'+v.replace(/[^0-9+]/g,'');}
 function _fillCommercialSelect(idVal){
   var sel=g('mIcommercial');if(!sel)return;
-  var accts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.role==='commercial'&&a.status==='active';});
+  var accts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return (a.role==='commercial'||a.peutVendre)&&a.status==='active';});
   sel.innerHTML='<option value="">--</option>'+accts.map(function(a){return '<option value="'+a.id+'">'+_escR(a.name)+'</option>';}).join('');
   if(idVal)sel.value=idVal;else if(!idVal&&curUserObj&&isCommercial())sel.value=curUserObj.id;
 }
@@ -6510,6 +6510,28 @@ function fusionnerInstallations(){
   };
   reader.readAsText(inp.files[0]);
 }
+function togglePeutVendre(idx){
+  var accounts=loadAccounts();var a=accounts[idx];if(!a)return;
+  a.peutVendre=!a.peutVendre;
+  saveAccounts(accounts);
+  toast(a.peutVendre?('✅ '+a.name+' apparaît maintenant comme commercial'):('❌ '+a.name+' retiré des commerciaux'));
+  renderUsers();
+}
+function _seedRaedianNEX(){
+  try{
+    if(!DB.catalogue)DB.catalogue=[];
+    if(DB._raedianNexSeeded)return;
+    var noms=DB.catalogue.map(function(p){return (p.nom||'').toLowerCase();});
+    if(noms.indexOf('raedian nex')<0){
+      DB.catalogue.push({nom:'Raedian NEX',cat:'Borne',activite:'bornpower',desc:'Borne connectée 7,4 à 22 kW mono/triphasée (WiFi, Bluetooth, RFID, OCPP), gestion intelligente et équilibrage de charge.',pu:0,unite:'unité'});
+      DB._raedianNexSeeded=true;
+      save();
+    } else {
+      DB._raedianNexSeeded=true;
+    }
+  }catch(e){}
+}
+try{window.addEventListener('load',function(){_runAfterLogin(_seedRaedianNEX,1100);});}catch(e){}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
@@ -6730,7 +6752,7 @@ function renderUsers(){
         +(a.status==='pending'?'<button class="btn bPrimary" style="padding:6px 14px;font-size:13px" onclick="validateUser('+realIdx+')">✓ Valider</button>':'')
         +(a.status==='active'?'<button class="btn bGhost" style="padding:6px 12px;font-size:13px" onclick="blockUser('+realIdx+')">🚫 Bloquer</button>':'')
         +(a.status==='blocked'?'<button class="btn bGhost" style="padding:6px 12px;font-size:13px;color:var(--green)" onclick="unblockUser('+realIdx+')">✓ Réactiver</button>':'')
-        +'<button class="btn bGhost" style="padding:6px 10px;font-size:13px" onclick="changerRoleModal('+realIdx+')">✏️ Rôle</button>'+'<button class="btn bGhost" style="padding:6px 10px;font-size:13px;color:var(--red)" onclick="deleteUser('+realIdx+')">🗑</button>'
+        +'<button class="btn bGhost" style="padding:6px 10px;font-size:13px" onclick="changerRoleModal('+realIdx+')">✏️ Rôle</button>'+'<button class="btn bGhost" style="padding:6px 10px;font-size:13px" onclick="togglePeutVendre('+realIdx+')" title="Apparaît comme commercial, garde son rôle actuel">💼 Peut vendre</button>'+'<button class="btn bGhost" style="padding:6px 10px;font-size:13px;color:var(--red)" onclick="deleteUser('+realIdx+')">🗑</button>'
       +'</div></div>';
   }).join('');
 }
