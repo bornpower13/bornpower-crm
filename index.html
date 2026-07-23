@@ -96,8 +96,8 @@ body{font-family:'DM Sans',sans-serif;background:#f0f2f8;color:var(--text);font-
 .sLogout{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:9px;font-size:12px;font-weight:600;color:rgba(255,255,255,.5);cursor:pointer;font-family:inherit;transition:.2s;}
 .sLogout:hover{background:rgba(220,38,38,.15);color:#fca5a5;border-color:rgba(220,38,38,.2);}
 #main{margin-left:var(--sidebar);min-height:100vh;padding:24px;}
-.pg{display:none;}.pg.on{display:block;animation:fadeIn .2s;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.pg{display:none;}.pg.on{display:block;animation:fadeIn .38s cubic-bezier(.16,1,.3,1);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 .pgHead{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;}
 .pgHead h1{font-size:22px;font-weight:700;color:var(--navy);letter-spacing:-.4px;}
 .pgHead .sub{font-size:13px;color:var(--muted);margin-top:2px;}
@@ -539,6 +539,34 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
   #mobileTopBar{display:none !important;}
   #sidebar{transform:none !important;}
 }
+
+/* ===== Animations premium — cascade des cartes à l'ouverture d'un onglet ===== */
+@keyframes cardRise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.pg.on > .card,.pg.on > .kpis > .kpi,.pg.on > .kpiRow > .kpi{animation:cardRise .5s cubic-bezier(.16,1,.3,1) backwards;}
+.pg.on > .card:nth-child(1){animation-delay:.03s}
+.pg.on > .card:nth-child(2){animation-delay:.08s}
+.pg.on > .card:nth-child(3){animation-delay:.13s}
+.pg.on > .card:nth-child(4){animation-delay:.18s}
+.pg.on > .card:nth-child(5){animation-delay:.23s}
+.pg.on > .card:nth-child(n+6){animation-delay:.28s}
+.pg.on > .kpis > .kpi:nth-child(1),.pg.on > .kpiRow > .kpi:nth-child(1){animation-delay:.05s}
+.pg.on > .kpis > .kpi:nth-child(2),.pg.on > .kpiRow > .kpi:nth-child(2){animation-delay:.10s}
+.pg.on > .kpis > .kpi:nth-child(3),.pg.on > .kpiRow > .kpi:nth-child(3){animation-delay:.15s}
+.pg.on > .kpis > .kpi:nth-child(4),.pg.on > .kpiRow > .kpi:nth-child(4){animation-delay:.20s}
+
+/* Lien de menu actif : transition douce du fond au lieu d'un changement brutal */
+#navLinks a{transition:background .25s ease,color .25s ease,transform .15s ease;}
+#navLinks a:active{transform:scale(.97);}
+
+/* Boutons : retour tactile plus premium */
+.btn{transition:transform .15s cubic-bezier(.34,1.56,.64,1),box-shadow .2s ease,background .2s ease,border-color .2s ease,filter .2s ease;}
+.btn:hover{filter:brightness(1.03);}
+.btn:active{transform:scale(.96);}
+.bPrimary:hover{box-shadow:0 4px 16px rgba(34,38,81,.32);transform:translateY(-1px);}
+
+/* Modales : entrée plus premium (léger zoom + fondu) */
+@keyframes modalPop{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.ov.on .modal{animation:modalPop .32s cubic-bezier(.16,1,.3,1);}
 </style>
 <!-- Firebase -->
 
@@ -912,6 +940,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
         <button class="btn bGhost dashActBtn" data-act="airpower" onclick="setDashActivite('airpower')" style="flex:1">🌡️ Air Power</button>
       </div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>💰 Chiffre d'affaires</h3></div><div class="cardB" id="dashCABlock" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px"></div></div>
+      <div class="card" style="margin-bottom:16px"><div class="cardB" id="dashCompareActivites" style="padding:18px"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>⚡ Installations du jour</h3></div><div class="cardB" id="dashInstJour" style="padding:0"></div></div>
       <div class="kpis" id="dashKpis"></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>📈 Analytics</h3></div><div class="cardB" id="analyticsBox"></div></div>
@@ -930,6 +959,12 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
     <!-- DASH COMMERCIAL -->
     <div class="pg" id="pgDashComm">
       <div class="pgHead"><div><h1>Mon tableau de bord</h1><p class="sub">Mes performances</p></div><div style="display:flex;gap:8px"><button class="btn bGhost" onclick="showTemplates()" style="color:var(--blue)">✉️ Modèles</button><button class="btn bGhost" onclick="simADVENIR()" style="color:var(--gold)">🧮 Simulateur aides</button><button class="btn bPrimary" onclick="openOppModal(-1)">+ Opportunité</button></div></div>
+      <div style="display:flex;gap:8px;margin-bottom:16px" id="dashCommActiviteToggle">
+        <button class="btn bPrimary commActBtn" data-act="" onclick="setCommActivite('')" style="flex:1">🔀 Toutes activités</button>
+        <button class="btn bGhost commActBtn" data-act="bornpower" onclick="setCommActivite('bornpower')" style="flex:1">⚡ Born Power</button>
+        <button class="btn bGhost commActBtn" data-act="airpower" onclick="setCommActivite('airpower')" style="flex:1">🌡️ Air Power</button>
+      </div>
+      <div class="card" style="margin-bottom:16px"><div class="cardB" id="commCompareActivites" style="padding:18px"></div></div>
       <div class="kpis" id="dashCommKpis"></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>⚡ Mes ventes en cours d'installation</h3></div><div class="cardB" id="commInstallLink"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🎯 Objectif du mois</h3></div><div class="cardB" id="objectifBox"></div></div>
@@ -2380,6 +2415,7 @@ function nav(id){
   var pg=g(id);if(pg)pg.classList.add('on');
   var navEl=g('nav_'+id);if(navEl)navEl.classList.add('on');
   if(isMobile()){closeMobileMenu();}
+  setTimeout(_animateCounters,120);
   if(id==='pgDash'){renderDash();renderRappels('rappelsDash');if(typeof renderAnalytics==='function')renderAnalytics();}
   if(id==='pgDashComm'){renderDashComm();renderRappels('rappelsComm');if(typeof renderPriorites==='function')renderPriorites();if(typeof renderClassement==='function')renderClassement();if(typeof renderObjectif==='function')renderObjectif();}
   if(id==='pgDashDT')renderDashDT();
@@ -2723,6 +2759,7 @@ function renderInstJour(){
 }
 function renderDash(){
   renderDashCA();
+  if(typeof renderCompareActivites==='function')renderCompareActivites();
   if(typeof renderInstJour==="function")renderInstJour();
   var relances=getProspectsEnRetard();
   if(relances.length>0)addNotif('prospects',relances.length+' prospect(s) sans contact depuis +7 jours','⚠️');
@@ -2755,8 +2792,9 @@ function renderDash(){
 function renderDashComm(){
   var uid=curUserObj?curUserObj.id:'';
   if(typeof renderCommInstallLink==='function')renderCommInstallLink();
-  var myOpps=DB.opportunites.filter(function(o){return !o.commercialId||o.commercialId===uid;});
-  var myDevis=DB.devis.filter(function(d){return !d.commercialId||d.commercialId===uid;});
+  if(typeof renderCommCompareActivites==='function')renderCommCompareActivites();
+  var myOpps=DB.opportunites.filter(function(o){return(!o.commercialId||o.commercialId===uid)&&_matchActComm(o);});
+  var myDevis=DB.devis.filter(function(d){return(!d.commercialId||d.commercialId===uid)&&_matchActComm(d);});
   var caTotal=myDevis.filter(function(d){return d.statut==='Accepté';}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);
   var pipeline=myOpps.filter(function(o){return o.etape!=='Gagné'&&o.etape!=='Perdu';}).reduce(function(s,o){return s+o.montant;},0);
   g('dashCommKpis').innerHTML=kpi('🎯','Mes opportunités',myOpps.length,'blue')+kpi('💰','CA gagné',fmtE(caTotal),'green')+kpi('📋','Mes devis',myDevis.length,'orange')+kpi('💼','Pipeline',fmtE(pipeline),'purple');
@@ -6739,6 +6777,118 @@ function _updateOfflineBanner(){
 window.addEventListener('online',_updateOfflineBanner);
 window.addEventListener('offline',_updateOfflineBanner);
 window.addEventListener('load',function(){setTimeout(_updateOfflineBanner,300);});
+function _animateCounters(){
+  try{
+    var els=document.querySelectorAll('.pg.on .kpiV');
+    els.forEach(function(el){
+      if(el._animDone)return;
+      var raw=el.textContent||'';
+      var m=raw.match(/-?[\d\s]+(?:[.,]\d+)?/);
+      if(!m)return;
+      var numStr=m[0].replace(/\s/g,'').replace(',','.');
+      var target=parseFloat(numStr);
+      if(isNaN(target)||Math.abs(target)<1)return;
+      var prefix=raw.slice(0,m.index);
+      var suffix=raw.slice(m.index+m[0].length);
+      var isDecimal=numStr.indexOf('.')>=0;
+      var start=0,dur=650,t0=null;
+      el._animDone=true;
+      function frame(t){
+        if(!t0)t0=t;
+        var p=Math.min(1,(t-t0)/dur);
+        var eased=1-Math.pow(1-p,3);
+        var val=start+(target-start)*eased;
+        var display=isDecimal?val.toFixed(2).replace('.',','):Math.round(val).toString();
+        if(!isDecimal&&Math.abs(target)>=1000)display=Math.round(val).toLocaleString('fr-FR');
+        el.textContent=prefix+display+suffix;
+        if(p<1)requestAnimationFrame(frame);else el.textContent=raw;
+      }
+      requestAnimationFrame(frame);
+    });
+  }catch(e){}
+}
+function renderCompareActivites(){
+  var el=g('dashCompareActivites');if(!el)return;
+  var now=new Date();var mois=now.getMonth(),an=now.getFullYear();
+  function statsFor(act){
+    var caInst=(DB.installations||[]).filter(function(i){return (i.activite||'bornpower')===act&&i.statut==='Terminée'&&i.dateFin;}).filter(function(i){var d=new Date(i.dateFin);return d.getMonth()===mois&&d.getFullYear()===an;}).reduce(function(s,i){return s+_instMontant(i);},0);
+    var caDevis=(DB.devis||[]).filter(function(d){return (d.activite||'bornpower')===act&&d.statut==='Accepté';}).reduce(function(s,d){return s+(d.lignes||[]).reduce(function(s2,l){return s2+(l.qte||0)*(l.pu||0);},0);},0);
+    var chantiers=(DB.installations||[]).filter(function(i){return (i.activite||'bornpower')===act&&i.statut==='Terminée';}).filter(function(i){if(!i.dateFin)return false;var d=new Date(i.dateFin);return d.getMonth()===mois&&d.getFullYear()===an;}).length;
+    return {ca:caInst+caDevis, chantiers:chantiers};
+  }
+  var bp=statsFor('bornpower'), ap=statsFor('airpower');
+  var total=bp.ca+ap.ca;
+  var bpPct=total>0?Math.round(bp.ca/total*100):50;
+  var apPct=100-bpPct;
+  el.innerHTML=''
+    +'<div style="font-size:13.5px;font-weight:800;color:#222651;margin-bottom:14px;display:flex;align-items:center;gap:6px">💰 Born Power vs Air Power — ce mois-ci</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
+    +'<div style="border-radius:16px;padding:18px;position:relative;overflow:hidden;background:linear-gradient(145deg,#242a56,#171c3c)">'
+      +'<div style="position:absolute;top:-40%;left:-20%;width:80%;height:120%;background:radial-gradient(circle,rgba(199,151,50,.28),transparent 70%);pointer-events:none"></div>'
+      +'<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;position:relative;margin-bottom:6px;color:#fff">⚡ Born Power</div>'
+      +'<div class="kpiV" style="font-size:28px;font-weight:800;position:relative;margin-bottom:4px;color:#fff">'+fmtE(bp.ca)+'</div>'
+      +'<div style="font-size:11px;opacity:.75;position:relative;margin-bottom:12px;color:#fff">CA généré ce mois-ci</div>'
+      +'<div style="display:flex;gap:16px;position:relative">'
+        +'<div><div style="font-size:15px;font-weight:800;color:#ffe576">'+bp.chantiers+'</div><div style="font-size:9px;opacity:.75;text-transform:uppercase;color:#fff">Chantiers</div></div>'
+        +'<div><div style="font-size:15px;font-weight:800;color:#ffe576">'+bpPct+'%</div><div style="font-size:9px;opacity:.75;text-transform:uppercase;color:#fff">Part du CA</div></div>'
+      +'</div></div>'
+    +'<div style="border-radius:16px;padding:18px;position:relative;overflow:hidden;background:linear-gradient(145deg,#307eb6,#1f5a87)">'
+      +'<div style="position:absolute;top:-40%;right:-20%;width:80%;height:120%;background:radial-gradient(circle,rgba(203,161,75,.30),transparent 70%);pointer-events:none"></div>'
+      +'<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;position:relative;margin-bottom:6px;color:#fff">🌡️ Air Power</div>'
+      +'<div class="kpiV" style="font-size:28px;font-weight:800;position:relative;margin-bottom:4px;color:#fff">'+fmtE(ap.ca)+'</div>'
+      +'<div style="font-size:11px;opacity:.75;position:relative;margin-bottom:12px;color:#fff">CA généré ce mois-ci</div>'
+      +'<div style="display:flex;gap:16px;position:relative">'
+        +'<div><div style="font-size:15px;font-weight:800;color:#f0d9a8">'+ap.chantiers+'</div><div style="font-size:9px;opacity:.75;text-transform:uppercase;color:#fff">Chantiers</div></div>'
+        +'<div><div style="font-size:15px;font-weight:800;color:#f0d9a8">'+apPct+'%</div><div style="font-size:9px;opacity:.75;text-transform:uppercase;color:#fff">Part du CA</div></div>'
+      +'</div></div>'
+    +'</div>'
+    +'<div style="height:10px;border-radius:6px;overflow:hidden;display:flex;margin-top:16px"><div style="background:linear-gradient(90deg,#c79732,#ffe576);width:'+bpPct+'%"></div><div style="background:linear-gradient(90deg,#307eb6,#5fa3d4);width:'+apPct+'%"></div></div>'
+    +'<div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-top:6px"><span style="color:#8a6408">⚡ '+bpPct+'%</span><span style="color:#1f5a87">🌡️ '+apPct+'%</span></div>';
+}
+var commActivite='';
+function setCommActivite(act){
+  commActivite=act;
+  document.querySelectorAll('.commActBtn').forEach(function(b){
+    var on=b.dataset.act===act;
+    b.className='btn '+(on?'bPrimary':'bGhost')+' commActBtn';
+  });
+  renderDashComm();
+}
+function _matchActComm(item){return !commActivite||((item.activite||'bornpower')===commActivite);}
+function renderCommCompareActivites(){
+  var el=g('commCompareActivites');if(!el)return;
+  var uid=curUserObj?curUserObj.id:'';
+  var now=new Date();var mois=now.getMonth(),an=now.getFullYear();
+  function statsFor(act){
+    var myDevisAct=DB.devis.filter(function(d){return(!d.commercialId||d.commercialId===uid)&&(d.activite||'bornpower')===act&&d.statut==='Accepté';});
+    var ca=myDevisAct.reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);
+    var myOppsAct=DB.opportunites.filter(function(o){return(!o.commercialId||o.commercialId===uid)&&(o.activite||'bornpower')===act&&o.etape!=='Gagné'&&o.etape!=='Perdu';});
+    var pipeline=myOppsAct.reduce(function(s,o){return s+o.montant;},0);
+    return {ca:ca,pipeline:pipeline,nb:myDevisAct.length};
+  }
+  var bp=statsFor('bornpower'), ap=statsFor('airpower');
+  var total=bp.ca+ap.ca;
+  var bpPct=total>0?Math.round(bp.ca/total*100):50;
+  var apPct=100-bpPct;
+  el.innerHTML=''
+    +'<div style="font-size:13.5px;font-weight:800;color:#222651;margin-bottom:14px">💰 Ma performance — Born Power vs Air Power</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
+    +'<div style="border-radius:16px;padding:18px;position:relative;overflow:hidden;background:linear-gradient(145deg,#242a56,#171c3c)">'
+      +'<div style="position:absolute;top:-40%;left:-20%;width:80%;height:120%;background:radial-gradient(circle,rgba(199,151,50,.28),transparent 70%);pointer-events:none"></div>'
+      +'<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;position:relative;margin-bottom:6px;color:#fff">⚡ Born Power</div>'
+      +'<div class="kpiV" style="font-size:26px;font-weight:800;position:relative;margin-bottom:4px;color:#fff">'+fmtE(bp.ca)+'</div>'
+      +'<div style="font-size:11px;opacity:.75;position:relative;margin-bottom:12px;color:#fff">CA gagné · Pipeline '+fmtE(bp.pipeline)+'</div>'
+      +'<div style="font-size:15px;font-weight:800;color:#ffe576;position:relative">'+bpPct+'% de mon CA</div>'
+      +'</div>'
+    +'<div style="border-radius:16px;padding:18px;position:relative;overflow:hidden;background:linear-gradient(145deg,#307eb6,#1f5a87)">'
+      +'<div style="position:absolute;top:-40%;right:-20%;width:80%;height:120%;background:radial-gradient(circle,rgba(203,161,75,.30),transparent 70%);pointer-events:none"></div>'
+      +'<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;position:relative;margin-bottom:6px;color:#fff">🌡️ Air Power</div>'
+      +'<div class="kpiV" style="font-size:26px;font-weight:800;position:relative;margin-bottom:4px;color:#fff">'+fmtE(ap.ca)+'</div>'
+      +'<div style="font-size:11px;opacity:.75;position:relative;margin-bottom:12px;color:#fff">CA gagné · Pipeline '+fmtE(ap.pipeline)+'</div>'
+      +'<div style="font-size:15px;font-weight:800;color:#f0d9a8;position:relative">'+apPct+'% de mon CA</div>'
+      +'</div></div>'
+    +'<div style="height:10px;border-radius:6px;overflow:hidden;display:flex;margin-top:16px"><div style="background:linear-gradient(90deg,#c79732,#ffe576);width:'+bpPct+'%"></div><div style="background:linear-gradient(90deg,#307eb6,#5fa3d4);width:'+apPct+'%"></div></div>';
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
