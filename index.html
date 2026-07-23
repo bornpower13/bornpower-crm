@@ -528,6 +528,12 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
   table.respCards td.acts{justify-content:flex-end;gap:6px;border-top:1px solid var(--border) !important;margin-top:4px;padding-top:10px !important;}
   table.respCards td.acts::before{display:none;}
   table.respCards td.barCol{display:none;}
+  .compareGrid{grid-template-columns:1fr !important;}
+  .aGrid2{grid-template-columns:1fr !important;}
+  .ficheGrid{grid-template-columns:1fr !important;}
+  div[style^="display:grid;grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important;}
+  #dashActiviteToggle,#dashCommActiviteToggle{flex-wrap:wrap;}
+  #dashActiviteToggle button,#dashCommActiviteToggle button{min-width:calc(50% - 4px);font-size:12px;}
   table:not(.respCards){display:block;overflow-x:auto;white-space:nowrap;}
   .card{overflow-x:auto;}
   div[style*="grid-template-columns:2fr 1fr"]{grid-template-columns:1fr !important;}
@@ -2758,6 +2764,7 @@ function renderInstJour(){
   }).join('');
 }
 function renderDash(){
+  _syncActBtns('dashActBtn',dashActivite);
   renderDashCA();
   if(typeof renderCompareActivites==='function')renderCompareActivites();
   if(typeof renderInstJour==="function")renderInstJour();
@@ -2790,6 +2797,7 @@ function renderDash(){
 }
 
 function renderDashComm(){
+  _syncActBtns('commActBtn',commActivite);
   var uid=curUserObj?curUserObj.id:'';
   if(typeof renderCommInstallLink==='function')renderCommInstallLink();
   if(typeof renderCommCompareActivites==='function')renderCommCompareActivites();
@@ -6822,7 +6830,7 @@ function renderCompareActivites(){
   var apPct=100-bpPct;
   el.innerHTML=''
     +'<div style="font-size:13.5px;font-weight:800;color:#222651;margin-bottom:14px;display:flex;align-items:center;gap:6px">💰 Born Power vs Air Power — ce mois-ci</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
+    +'<div class="compareGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
     +'<div style="border-radius:16px;padding:18px;position:relative;overflow:hidden;background:linear-gradient(145deg,#242a56,#171c3c)">'
       +'<div style="position:absolute;top:-40%;left:-20%;width:80%;height:120%;background:radial-gradient(circle,rgba(199,151,50,.28),transparent 70%);pointer-events:none"></div>'
       +'<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;position:relative;margin-bottom:6px;color:#fff">⚡ Born Power</div>'
@@ -6872,7 +6880,7 @@ function renderCommCompareActivites(){
   var apPct=100-bpPct;
   el.innerHTML=''
     +'<div style="font-size:13.5px;font-weight:800;color:#222651;margin-bottom:14px">💰 Ma performance — Born Power vs Air Power</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
+    +'<div class="compareGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
     +'<div style="border-radius:16px;padding:18px;position:relative;overflow:hidden;background:linear-gradient(145deg,#242a56,#171c3c)">'
       +'<div style="position:absolute;top:-40%;left:-20%;width:80%;height:120%;background:radial-gradient(circle,rgba(199,151,50,.28),transparent 70%);pointer-events:none"></div>'
       +'<div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;position:relative;margin-bottom:6px;color:#fff">⚡ Born Power</div>'
@@ -6888,6 +6896,12 @@ function renderCommCompareActivites(){
       +'<div style="font-size:15px;font-weight:800;color:#f0d9a8;position:relative">'+apPct+'% de mon CA</div>'
       +'</div></div>'
     +'<div style="height:10px;border-radius:6px;overflow:hidden;display:flex;margin-top:16px"><div style="background:linear-gradient(90deg,#c79732,#ffe576);width:'+bpPct+'%"></div><div style="background:linear-gradient(90deg,#307eb6,#5fa3d4);width:'+apPct+'%"></div></div>';
+}
+function _syncActBtns(cls,val){
+  document.querySelectorAll('.'+cls).forEach(function(b){
+    var on=b.dataset.act===val;
+    b.className='btn '+(on?'bPrimary':'bGhost')+' '+cls;
+  });
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
