@@ -518,7 +518,17 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
   .modal{width:94vw !important;max-width:94vw !important;max-height:none !important;margin:calc(12px + env(safe-area-inset-top)) auto calc(12px + env(safe-area-inset-bottom)) auto;padding-bottom:16px;}
   .mf{position:sticky;bottom:0;background:var(--white);padding:12px 0 4px;margin-top:12px;border-top:1px solid var(--border);z-index:2;}
   .mf .btn{flex:1;min-width:0;}
-  table{display:block;overflow-x:auto;white-space:nowrap;}
+  table.respCards{display:block;}
+  table.respCards thead{display:none;}
+  table.respCards tbody{display:block;}
+  table.respCards tr{display:block;background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:10px;box-shadow:0 1px 3px rgba(20,25,60,.05);}
+  table.respCards td{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border:none !important;white-space:normal;text-align:right;}
+  table.respCards td:first-child{padding-top:0;}
+  table.respCards td[data-label]::before{content:attr(data-label);font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;text-align:left;flex-shrink:0;}
+  table.respCards td.acts{justify-content:flex-end;gap:6px;border-top:1px solid var(--border) !important;margin-top:4px;padding-top:10px !important;}
+  table.respCards td.acts::before{display:none;}
+  table.respCards td.barCol{display:none;}
+  table:not(.respCards){display:block;overflow-x:auto;white-space:nowrap;}
   .card{overflow-x:auto;}
   div[style*="grid-template-columns:2fr 1fr"]{grid-template-columns:1fr !important;}
   div[style*="grid-template-columns:repeat(auto-fill"]{grid-template-columns:1fr 1fr !important;}
@@ -958,7 +968,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
         <select class="fsl" id="contactTypeF" onchange="renderContacts()"><option value="">Tous types</option><option>Client</option><option>Prospect</option><option>Partenaire</option></select>
         <span id="contactCount" style="margin-left:auto;font-size:12px;color:var(--muted)"></span>
       </div>
-      <div class="tw"><table>
+      <div class="tw"><table class="respCards">
         <thead><tr><th>Contact</th><th>Société</th><th>Type</th><th>Email</th><th>Téléphone</th><th>Actions</th></tr></thead>
         <tbody id="contactTable"></tbody>
       </table></div>
@@ -972,7 +982,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
         <select class="fsl" id="devisStatF" onchange="renderDevis()"><option value="">Tous statuts</option><option>Brouillon</option><option>Envoyé</option><option>Accepté</option><option>Refusé</option><option>Expiré</option></select>
         <span id="devisCount" style="margin-left:auto;font-size:12px;color:var(--muted)"></span>
       </div>
-      <div class="tw"><table>
+      <div class="tw"><table class="respCards">
         <thead><tr><th>N° Devis</th><th>Client</th><th>Objet</th><th>HT</th><th>TTC</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>
         <tbody id="devisTable"></tbody>
         <tfoot><tr><td colspan="3">Total</td><td id="devTotHT"></td><td id="devTotTTC"></td><td colspan="3"></td></tr></tfoot>
@@ -1012,7 +1022,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
           <label class="btn bGhost" style="cursor:pointer">Import<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
         </div>
       </div>
-      <div class="tw"><table>
+      <div class="tw"><table class="respCards">
         <thead><tr><th></th><th>Chantier</th><th>Type & borne</th><th>Installateur</th><th>Statut</th><th>Date début</th><th>Montant</th><th>Actions</th></tr></thead>
         <tbody id="instTable"></tbody>
       </table></div>
@@ -1299,7 +1309,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
         <button class="btn bGhost" id="prospMineBtn" style="font-size:12px" onclick="toggleProspMine()">👤 Assignés à moi</button>
         <span id="prospCount" style="margin-left:auto;font-size:12px;color:var(--muted)"></span>
       </div>
-      <div class="tw"><table>
+      <div class="tw"><table class="respCards">
         <thead><tr><th>Entreprise</th><th>SIRET</th><th>Activité</th><th>Ville</th><th>Effectif</th><th>Statut</th><th>Contact</th><th>Actions</th></tr></thead>
         <tbody id="prospTable"></tbody>
       </table></div>
@@ -2938,7 +2948,7 @@ function renderContacts(){
   g('contactTable').innerHTML=list.length?list.map(function(c,i){
     var idx=DB.contacts.indexOf(c);
     return '<tr style="cursor:pointer" onclick="if(!event.target.closest(\'button,a,input,select\'))openContactModal('+idx+')"><td><div style="font-weight:600">'+c.nom+(c.visiteDate?' <span title="Visite technique le '+fmtD(c.visiteDate)+'" style="font-size:11px">🔧</span>':'')+'</div>'+(c.societe?'<div style="font-size:11px;color:var(--muted)">'+c.societe+'</div>':'')+(c.visiteDate?'<div style="font-size:11px;color:#0891b2">🔧 Visite '+fmtD(c.visiteDate)+(c.visiteQui?' · '+c.visiteQui:'')+'</div>':'')+'</td>'
-      +'<td>'+c.email+'</td><td>'+c.tel+'</td><td><span class="bdg '+(c.type==='Client'?'bTerm':c.type==='Prospect'?'bCours':'bPause')+'">'+c.type+'</span></td>'
+      +'<td data-label="Email">'+(c.email||'—')+'</td><td data-label="Téléphone">'+(c.tel||'—')+'</td><td data-label="Type"><span class="bdg '+(c.type==='Client'?'bTerm':c.type==='Prospect'?'bCours':'bPause')+'">'+c.type+'</span></td>'
       +'<td class="acts"><button class="act" onclick="openContactModal('+idx+')">✏️</button>'+(isAdmin()?'<button class="act dl" onclick="delContact('+idx+')">🗑</button>':'')+'</td></tr>';
   }).join(''):_emptyRow(6,'👥','Aucun contact','Ajoute ton premier contact avec le bouton + Contact');
 }
@@ -2982,9 +2992,9 @@ function renderDevis(){
     var ht=d.lignes?d.lignes.reduce(function(s,l){return s+l.qte*l.pu;},0):0;
     var tva=d.tva||5.5;var ttc=ht*(1+tva/100);
     return '<tr><td><strong>N°'+d.numero+'</strong><br>'+activiteBadge(d.activite)+'</td><td>'+d.client+'<br><span style="font-size:11px;color:var(--muted)">'+(d.societe||'')+'</span></td>'
-      +'<td>'+fmtD(d.date)+'</td>'
-      +'<td><div>'+fmtE(ht)+' HT</div><div style="font-size:11px;color:var(--muted)">'+fmtE(ttc)+' TTC</div></td>'
-      +'<td><span class="bdg '+(statColors[d.statut]||'bPause')+'">'+d.statut+'</span></td>'
+      +'<td data-label="Date">'+fmtD(d.date)+'</td>'
+      +'<td data-label="Montant"><div>'+fmtE(ht)+' HT</div><div style="font-size:11px;color:var(--muted)">'+fmtE(ttc)+' TTC</div></td>'
+      +'<td data-label="Statut"><span class="bdg '+(statColors[d.statut]||'bPause')+'">'+d.statut+'</span></td>'
       +'<td class="acts">'
         +'<button class="act" onclick="exportDevisPDFById('+idx+')" title="PDF" style="color:var(--red)">📄</button>'+'<button class="act" onclick="telechargerDevisPDFById('+idx+')" title="Télécharger PDF" style="color:var(--navy)">📥</button>'
         +(d.signature?'<span class="act" title="Signé électroniquement" style="color:#166534">✅</span>':'<button class="act" onclick="signatureDevisModal('+idx+')" title="Faire signer" style="color:#166534">✍️</button>')
@@ -3150,9 +3160,9 @@ function renderProspects(){
     var idx=DB.prospects.indexOf(p);
     var sc={Nouveau:'bCours',Contacté:'bPause','En discussion':'bPlan',Gagné:'bTerm',Perdu:'bAnnul'}[p.statut]||'bCours';
     return '<tr style="cursor:pointer" onclick="if(!event.target.closest(\'button,a,input,select\'))openFicheProspect('+idx+')"><td>'+scoreBadge(p)+' <strong>'+p.nom+'</strong>'+_ownerBadge(p)+(p.visiteDate?' <span title="Visite technique" style="font-size:11px">🔧</span>':'')+(p.visiteDate?'<br><span style="font-size:11px;color:#0891b2">🔧 Visite '+fmtD(p.visiteDate)+(p.visiteQui?' · '+p.visiteQui:'')+'</span>':'')+'</td>'
-      +'<td>'+(p.email||'')+'</td><td>'+(p.tel||'')+'</td>'
-      +'<td>'+(p.source||'')+'</td>'
-      +'<td><span class="bdg '+sc+'">'+p.statut+'</span></td>'
+      +'<td data-label="Email">'+(p.email||'—')+'</td><td data-label="Téléphone">'+(p.tel||'—')+'</td>'
+      +'<td data-label="Source">'+(p.source||'—')+'</td>'
+      +'<td data-label="Statut"><span class="bdg '+sc+'">'+p.statut+'</span></td>'
       +'<td class="acts">'
         +'<button class="act" onclick="openFicheProspect('+idx+')">📇</button><button class="act" onclick="genererBrief('+idx+')">📋</button><button class="act" onclick="trouverContactProspect('+idx+')">🔍</button>'+'<button class="act" onclick="openProspectModal('+idx+')">✏️</button>'
         +(isAdmin()?'<button class="act dl" onclick="delProspect('+idx+')">🗑</button>':'')
@@ -3306,13 +3316,13 @@ function renderT(){
     var idx=DB.installations.indexOf(r);
     var col=SCOLS[r.statut]||'#888';
     return '<tr style="cursor:pointer" onclick="if(!event.target.closest(\'button,a,input,select\'))openIM('+idx+')">'
-      +'<td style="padding:0;width:4px"><div style="width:4px;height:100%;min-height:44px;background:'+col+'"></div></td>'
-      +'<td><strong style="color:#1f2438">'+r.chantier+'</strong> '+activiteBadge(r.activite)+'<br><span style="font-size:11.5px;color:var(--muted)">'+r.client+'</span></td>'
-      +'<td><div style="font-size:12.5px">'+r.type+'</div>'+(r.borneModele?'<div style="font-size:11px;color:#166534;font-weight:600">🔌 '+r.borneModele+'</div>':'<div style="font-size:11px;color:#c2c8dc">Borne non choisie</div>')+'</td>'
-      +'<td style="font-size:12.5px">'+(r.installateur||'<span style="color:var(--muted)">Non assigné</span>')+'</td>'
-      +'<td><span class="bdg" style="background:'+col+'18;color:'+col+';font-weight:700">'+r.statut+'</span></td>'
-      +'<td style="font-size:12.5px">'+(r.dateDebut?fmtD(r.dateDebut):'<span style="color:#c2c8dc">--</span>')+(r.heure?(' · '+r.heure):'')+'</td>'
-      +'<td style="font-weight:700;color:var(--navy)">'+((r.montantTTC||r.montant)?fmtE(r.montantTTC||r.montant):'<span style="color:#c2c8dc;font-weight:400">--</span>')+'</td>'
+      +'<td class="barCol" style="padding:0;width:4px"><div style="width:4px;height:100%;min-height:44px;background:'+col+'"></div></td>'
+      +'<td data-label="Chantier"><strong style="color:#1f2438">'+r.chantier+'</strong> '+activiteBadge(r.activite)+'<br><span style="font-size:11.5px;color:var(--muted)">'+r.client+'</span></td>'
+      +'<td data-label="Type"><div style="font-size:12.5px">'+r.type+'</div>'+(r.borneModele?'<div style="font-size:11px;color:#166534;font-weight:600">🔌 '+r.borneModele+'</div>':'<div style="font-size:11px;color:#c2c8dc">Borne non choisie</div>')+'</td>'
+      +'<td data-label="Installateur" style="font-size:12.5px">'+(r.installateur||'<span style="color:var(--muted)">Non assigné</span>')+'</td>'
+      +'<td data-label="Statut"><span class="bdg" style="background:'+col+'18;color:'+col+';font-weight:700">'+r.statut+'</span></td>'
+      +'<td data-label="Date" style="font-size:12.5px">'+(r.dateDebut?fmtD(r.dateDebut):'<span style="color:#c2c8dc">--</span>')+(r.heure?(' · '+r.heure):'')+'</td>'
+      +'<td data-label="Montant" style="font-weight:700;color:var(--navy)">'+((r.montantTTC||r.montant)?fmtE(r.montantTTC||r.montant):'<span style="color:#c2c8dc;font-weight:400">--</span>')+'</td>'
       +'<td class="acts">'
         +'<button class="act" onclick="openFiche('+idx+')" title="Fiche détaillée">👁</button>'
         +(!isInstaller()?'<button class="act" onclick="openIM('+idx+')" title="Modifier">✏️</button>':'')
