@@ -1394,6 +1394,19 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
     </div>
 
     <!-- MA JOURNEE (installateur) -->
+    <div class="pg" id="pgDashInst">
+      <div class="pgHead"><div><h1 id="dashInstGreet">Bonjour 👋</h1><p class="sub">Ton tableau de bord installations</p></div></div>
+      <div class="kpis" id="dashInstKpis" style="margin-bottom:4px"></div>
+      <div class="zoneLbl">⚡ Activité</div>
+      <div class="card" style="margin-bottom:14px;display:none" id="dashInstCompareCard"><div class="cardB" id="dashInstCompare" style="padding:18px"></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:4px" class="dashGrid2">
+        <div class="card"><div class="cardH"><h3>☀️ Aujourd'hui</h3><button class="btn bGhost" onclick="nav('pgMaJournee')">Voir tout</button></div><div class="cardB" id="dashInstToday" style="padding:0"></div></div>
+        <div class="card"><div class="cardH"><h3>📅 Cette semaine</h3><button class="btn bGhost" onclick="nav('pgPlanning')">Planning</button></div><div class="cardB" id="dashInstWeek" style="padding:0"></div></div>
+      </div>
+      <div class="zoneLbl">🎒 Préparation</div>
+      <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🎒 Matériel à charger aujourd'hui</h3></div><div class="cardB" id="materielJourneeDash" style="padding:8px 0"></div></div>
+      <div class="card" style="margin-bottom:16px" id="stockInstallerCardDash"><div class="cardH"><h3>📦 État du stock</h3></div><div class="cardB" id="stockInstallerListDash" style="padding:8px 0"></div></div>
+    </div>
     <div class="pg" id="pgMaJournee">
       <div class="pgHead"><div><h1 id="maJourneeTitle">Ma journée</h1><p class="sub" id="maJourneeDate"></p></div></div>
       <div class="kpiRow" id="maJourneeKpis" style="margin-bottom:16px"></div>
@@ -2408,7 +2421,7 @@ var NAV_MAP={
     {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
   ],
   installer:[
-    {s:'Mes chantiers'},{id:'pgMaJournee',ico:'☀️',lbl:'Ma journée'},{id:'pgInst',ico:'⚡',lbl:'Mes installations'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
+    {s:'Mes chantiers'},{id:'pgDashInst',ico:'📊',lbl:'Tableau de bord'},{id:'pgMaJournee',ico:'☀️',lbl:'Ma journée'},{id:'pgInst',ico:'⚡',lbl:'Mes installations'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
     {id:'pgSAV',ico:'🔧',lbl:'SAV'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},{id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgStock',ico:'📦',lbl:'Stock'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
     {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
@@ -6375,7 +6388,7 @@ function telechargerRapportChantierPDF(idx){
   _telechargerPDF(d.html,d.filename);
 }
 function renderMaterielJournee(){
-  var el=g('materielJournee');if(!el)return;
+  var el=g('materielJournee');var elDash=g('materielJourneeDash');if(!el&&!elDash)return;
   var todayKey=journeeDay.toISOString().slice(0,10);
   var nm=curUserObj?curUserObj.name:'';var mine=(typeof _myPossibleNames==='function')?_myPossibleNames():[];
   var mesChantiers=(DB.installations||[]).filter(function(i){
@@ -6383,7 +6396,7 @@ function renderMaterielJournee(){
     if(getRole()==='installer')return mine.indexOf((i.installateur||'').trim().toLowerCase())>=0;
     return true;
   });
-  if(!mesChantiers.length){el.innerHTML='<div style="font-size:12.5px;color:var(--muted)">Aucun chantier aujourd\'hui — rien à préparer.</div>';return;}
+  if(!mesChantiers.length){var vide='<div style="font-size:12.5px;color:var(--muted)">Aucun chantier aujourd\'hui — rien à préparer.</div>';if(el)el.innerHTML=vide;if(elDash)elDash.innerHTML=vide;return;}
   var bornes={};var cableTotal=0;var typesRacc={};
   mesChantiers.forEach(function(i){
     var nomBorne=i.borneModele||'Borne non précisée';
@@ -6402,7 +6415,7 @@ function renderMaterielJournee(){
   if(cableTotal>0){
     html+='<div style="display:flex;align-items:center;gap:8px;padding:7px 0"><span style="font-size:13px">📏</span><span style="font-size:13px;font-weight:600;flex:1">Métrage total de câble</span><span style="font-size:13px;font-weight:800;color:var(--navy)">~'+Math.round(cableTotal)+'m</span></div>';
   }
-  el.innerHTML=html;
+  if(el)el.innerHTML=html;if(elDash)elDash.innerHTML=html;
 }
 var FLEET_SECTEURS=[
   {q:'transport routier de marchandises',raison:'Flotte de camions/utilitaires quasi certaine'},
@@ -6452,17 +6465,25 @@ function _runFleetProspectionDaily(){
 }
 try{window.addEventListener('load',function(){_runAfterLogin(_runFleetProspectionDaily,3600);});}catch(e){}
 function renderStockInstaller(){
-  var card=g('stockInstallerCard');if(!card)return;
-  if(getRole()!=='installer'){card.style.display='none';return;}
-  card.style.display='block';
-  var el=g('stockInstallerList');if(!el)return;
+  var card=g('stockInstallerCard');var cardDash=g('stockInstallerCardDash');
+  if(!card&&!cardDash)return;
+  var isInst=getRole()==='installer';
+  if(card)card.style.display=isInst?'block':'none';
+  if(cardDash)cardDash.style.display=isInst?'block':'none';
+  if(!isInst)return;
+  var el=g('stockInstallerList');var elDash=g('stockInstallerListDash');
   var items=(DB.materiel||[]).slice().sort(function(a,b){return (a.stock<=(a.seuil||5)?0:1)-(b.stock<=(b.seuil||5)?0:1);});
-  if(!items.length){el.innerHTML='<div style="font-size:12.5px;color:var(--muted)">Aucun article de stock renseigné.</div>';return;}
-  el.innerHTML=items.map(function(m){
-    var bas=m.stock<=(m.seuil||5);
-    var col=bas?'#dc2626':'#166534';
-    return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f0f2f8"><span style="font-size:13px;flex:1">'+_escR(m.nom)+'</span>'+(bas?'<span style="font-size:10.5px;font-weight:700;color:#dc2626;background:#fee2e2;padding:2px 8px;border-radius:10px">BAS</span>':'')+'<span style="font-size:13px;font-weight:800;color:'+col+'">'+m.stock+' '+_escR(m.unite||'')+'</span></div>';
-  }).join('');
+  var html;
+  if(!items.length){
+    html='<div style="font-size:12.5px;color:var(--muted)">Aucun article de stock renseigné.</div>';
+  } else {
+    html=items.map(function(m){
+      var bas=m.stock<=(m.seuil||5);
+      var col=bas?'#dc2626':'#166534';
+      return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f0f2f8"><span style="font-size:13px;flex:1">'+_escR(m.nom)+'</span>'+(bas?'<span style="font-size:10.5px;font-weight:700;color:#dc2626;background:#fee2e2;padding:2px 8px;border-radius:10px">BAS</span>':'')+'<span style="font-size:13px;font-weight:800;color:'+col+'">'+m.stock+' '+_escR(m.unite||'')+'</span></div>';
+    }).join('');
+  }
+  if(el)el.innerHTML=html;if(elDash)elDash.innerHTML=html;
 }
 function toggleSireneSearch(){
   var body=g('sireneSearchBody');var ic=g('sireneToggleIcon');if(!body)return;
@@ -6981,6 +7002,42 @@ function renderChargeInstallateurs(){
       +'</div>';
   }).join('');
 }
+function renderDashInst(){
+  var nm=curUserObj?curUserObj.name:'';var mine=_myPossibleNames();
+  if(g('dashInstGreet')){var h=new Date().getHours();var salut=h<12?'Bonjour':h<18?'Bon après-midi':'Bonsoir';g('dashInstGreet').textContent=salut+' '+(curUserObj?curUserObj.name.split(' ')[0]:'')+' 👋';}
+  var now=new Date();var mois=now.getMonth(),an=now.getFullYear();
+  var d0=new Date(now);d0.setHours(0,0,0,0);
+  var dow=(now.getDay()+6)%7;var weekStart=new Date(d0);weekStart.setDate(d0.getDate()-dow);var weekEnd=new Date(weekStart);weekEnd.setDate(weekStart.getDate()+7);
+  var mesInst=DB.installations.filter(function(i){return mine.indexOf(_norm(i.installateur))>=0;});
+  var termineesMois=mesInst.filter(function(i){if(i.statut!=='Terminée'||!i.dateFin)return false;var d=new Date(i.dateFin);return d.getMonth()===mois&&d.getFullYear()===an;}).length;
+  var enCours=mesInst.filter(function(i){return i.statut==='En cours';}).length;
+  var semaineAvenir=mesInst.filter(function(i){if(i.statut==='Terminée'||i.statut==='Annulée'||!i.dateDebut)return false;var d=new Date(i.dateDebut);return d>=weekStart&&d<weekEnd;}).length;
+  var caGenere=termineesMois>0?mesInst.filter(function(i){if(i.statut!=='Terminée'||!i.dateFin)return false;var d=new Date(i.dateFin);return d.getMonth()===mois&&d.getFullYear()===an;}).reduce(function(s,i){return s+(parseFloat(i.remunInstall)||0);},0):0;
+  g('dashInstKpis').innerHTML=kpi('✅','Terminés ce mois',termineesMois,'green')+kpi('⚡','En cours',enCours,'orange')+kpi('📅','À venir cette semaine',semaineAvenir,'blue')+kpi('💰','Gagné ce mois',fmtE(caGenere),'purple');
+
+  // Comparatif activité (seulement si l'installateur fait les deux)
+  var monProfil=(DB.installateurs||[]).find(function(p){return curUserObj&&p.userId===curUserObj.id;});
+  var mesActs=monProfil?monProfil.activite:'bornpower';
+  var compCard=g('dashInstCompareCard');
+  if(mesActs==='les-deux'&&compCard){
+    compCard.style.display='block';
+    var bpN=mesInst.filter(function(i){return(i.activite||'bornpower')==='bornpower'&&i.statut==='Terminée';}).filter(function(i){var d=new Date(i.dateFin);return d.getMonth()===mois&&d.getFullYear()===an;}).length;
+    var apN=mesInst.filter(function(i){return(i.activite||'bornpower')==='airpower'&&i.statut==='Terminée';}).filter(function(i){var d=new Date(i.dateFin);return d.getMonth()===mois&&d.getFullYear()===an;}).length;
+    g('dashInstCompare').innerHTML='<div style="font-size:13px;font-weight:800;color:#222651;margin-bottom:12px">⚡🌡️ Tes chantiers ce mois</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px"><div style="background:linear-gradient(145deg,#242a56,#171c3c);border-radius:14px;padding:16px;color:#fff"><div style="font-size:10px;opacity:.85;text-transform:uppercase;font-weight:800">⚡ Born Power</div><div style="font-size:22px;font-weight:800;margin-top:4px">'+bpN+' chantier(s)</div></div><div style="background:linear-gradient(145deg,#307eb6,#1f5a87);border-radius:14px;padding:16px;color:#fff"><div style="font-size:10px;opacity:.85;text-transform:uppercase;font-weight:800">🌡️ Air Power</div><div style="font-size:22px;font-weight:800;margin-top:4px">'+apN+' chantier(s)</div></div></div>';
+  } else if(compCard){compCard.style.display='none';}
+
+  // Aujourd'hui
+  var todayKey=d0.toISOString().slice(0,10);
+  var todayList=mesInst.filter(function(i){return i.dateDebut&&i.dateDebut.slice(0,10)===todayKey&&i.statut!=='Annulée';});
+  g('dashInstToday').innerHTML=todayList.length?todayList.map(function(i){var col=SCOLS[i.statut]||'#8990a8';return '<div class="frow" style="align-items:center"><div><div style="font-weight:700;font-size:12.5px">'+_escR(i.chantier||i.client||'')+'</div><div style="font-size:10.5px;color:var(--muted)">'+_escR(i.ville||'')+'</div></div><span class="bdg" style="background:'+col+'18;color:'+col+';font-weight:700">'+i.statut+'</span></div>';}).join(''):'<p style="color:var(--muted);font-size:13px;padding:8px 0">Rien de prévu aujourd\'hui ✓</p>';
+
+  // Cette semaine
+  var weekList=mesInst.filter(function(i){if(i.statut==='Terminée'||i.statut==='Annulée'||!i.dateDebut)return false;var d=new Date(i.dateDebut);return d>=weekStart&&d<weekEnd;}).sort(function(a,b){return new Date(a.dateDebut)-new Date(b.dateDebut);});
+  g('dashInstWeek').innerHTML=weekList.length?weekList.map(function(i){var d=new Date(i.dateDebut);var jr=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'][d.getDay()];return '<div class="frow"><span style="font-size:12px">'+_escR(i.chantier||i.client||'')+'</span><span style="font-size:11px;color:var(--muted);font-weight:700">'+jr+' '+d.getDate()+'</span></div>';}).join(''):'<p style="color:var(--muted);font-size:13px;padding:8px 0">Rien de planifié cette semaine</p>';
+
+  if(typeof renderMaterielJournee==='function')renderMaterielJournee();
+  if(typeof renderStockInstaller==='function')renderStockInstaller();
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
@@ -7275,7 +7332,8 @@ document.addEventListener('DOMContentLoaded',function(){
       if(window._fbListenDebounce)clearTimeout(window._fbListenDebounce);
       window._fbListenDebounce=setTimeout(function(){
         var ap=document.querySelector('.pg.on');
-        if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgLinkedIn')renderLinkedIn();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgMaJournee')renderMaJournee();}
+        if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgLinkedIn')renderLinkedIn();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgDashInst')renderDashInst();
+  if(id==='pgMaJournee')renderMaJournee();}
       },800);
     });
     fbListen(FIREBASE_ACCOUNTS_COLLECTION,function(data){
