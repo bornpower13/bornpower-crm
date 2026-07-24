@@ -169,8 +169,8 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 .mh h2{font-size:16px;font-weight:600;color:var(--navy);}
 .mcl{background:var(--bg);border:none;border-radius:7px;width:28px;height:28px;font-size:14px;cursor:pointer;color:var(--muted);}
 .mcl:hover{background:var(--red-bg);color:var(--red);}
-.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.fi{display:flex;flex-direction:column;gap:4px;}
+.fgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;}
+.fi{display:flex;flex-direction:column;gap:4px;min-width:0;}
 .fi.full{grid-column:1/-1;}
 .fi label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
 .fi input,.fi select,.fi textarea{border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;color:var(--text);outline:none;font-family:inherit;background:var(--white);}
@@ -181,6 +181,7 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 .mf{display:flex;gap:8px;margin-top:18px;justify-content:flex-end;}
 /* PIPELINE */
 .pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;}
+@media (max-width:1024px){.pipeline{display:flex;overflow-x:auto;gap:12px;padding-bottom:12px;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;}.pipeline>div{min-width:250px;flex-shrink:0;scroll-snap-align:start;}}
 .pipeCol{background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden;}
 .pipeColH{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .pipeLabel{font-size:12px;font-weight:600;color:var(--navy);}
@@ -584,6 +585,30 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 .kpiMini .v{font-size:20px;font-weight:800;color:#1a1d3a}
 .kpiDelta{font-size:10.5px;font-weight:700;margin-top:4px}
 #dashKpis.kpis{grid-template-columns:repeat(4,1fr);gap:16px;display:grid}
+
+.dayHead2{display:flex;align-items:center;gap:10px;margin:22px 0 12px}
+.dayHead2:first-child{margin-top:0}
+.dayHead2 .d{font-size:14px;font-weight:800;color:#222651}
+.dayHead2 .today2{background:linear-gradient(135deg,#c79732,#ffe576);color:#5c3f0a;border-radius:20px;padding:2px 10px;font-size:9.5px;font-weight:800;letter-spacing:.03em}
+.dayHead2 .count2{margin-left:auto;font-size:11px;color:#a8adc0;font-weight:700}
+.timeline2{position:relative;padding-left:22px}
+.timeline2::before{content:'';position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,#e6e9f2,#f0f2f8)}
+.tCard2{position:relative;background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(20,25,60,.04),0 10px 24px rgba(20,25,60,.06);display:flex;align-items:center;gap:14px;cursor:pointer}
+.tCard2::before{content:'';position:absolute;left:-19px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:#fff;border:3px solid var(--dotColor,#2563eb)}
+.tDate2{width:44px;height:44px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;flex-shrink:0;position:relative;overflow:hidden}
+.tDate2::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.35),transparent 70%)}
+.tDate2 .n{font-size:16px;font-weight:800;position:relative}
+.tDate2 .m{font-size:8px;text-transform:uppercase;opacity:.9;position:relative}
+.tAvatar2{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#c79732,#ffe576);color:#222651;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tInfo2{flex:1;min-width:0}
+.tTitle2{font-size:13.5px;font-weight:800;color:#1a1d3a}
+.tSub2{font-size:11px;color:#8990a8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tRight2{text-align:right;flex-shrink:0}
+.tBdg2{font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px}
+.tAmt2{font-size:12.5px;font-weight:800;color:#059669;margin-top:5px}
+.warn2{background:linear-gradient(135deg,#fffbeb,#fff7ed);border:1px solid #fde68a;border-radius:16px;padding:16px;margin-bottom:22px}
+.warn2 .h{font-weight:800;font-size:12.5px;color:#92400e;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.warnRow2{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:#fff;border-radius:10px;margin-bottom:6px;cursor:pointer}
 </style>
 <!-- Firebase -->
 
@@ -673,7 +698,7 @@ body{background:
 .btn.bPrimary:hover{filter:brightness(1.12);box-shadow:0 8px 22px rgba(25,30,66,.30)}
 .btn.bGhost{background:#fff;border:1px solid #e3e7f1;box-shadow:0 1px 2px rgba(20,25,60,.03)}
 .btn.bGhost:hover{border-color:var(--gold);color:var(--navy);box-shadow:0 3px 10px rgba(199,151,50,.14)}
-input,select,textarea{border-radius:11px !important;border:1px solid #e3e7f1;transition:border-color .18s ease,box-shadow .18s ease;background:#fff}
+input,select,textarea{border-radius:11px !important;border:1px solid #e3e7f1;transition:border-color .18s ease,box-shadow .18s ease;background:#fff;max-width:100%;box-sizing:border-box;min-width:0}
 input:focus,select:focus,textarea:focus{border-color:var(--gold) !important;box-shadow:0 0 0 3px rgba(199,151,50,.16),0 2px 8px rgba(199,151,50,.10)}
 .pgHead h1{font-size:24px;font-weight:800;letter-spacing:-.7px;background:linear-gradient(135deg,#1f2438,#333a63);-webkit-background-clip:text;background-clip:text;color:#1f2438}
 .pgHead .sub{color:#8990a8;font-weight:500}
@@ -966,6 +991,8 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
         <div class="card"><div class="cardH"><h3>Entonnoir prospects</h3><button class="btn bGhost" onclick="nav('pgProspects')">Voir tout</button></div><div class="cardB" id="dashFunnel"></div></div>
         <div class="card"><div class="cardH"><h3>Charge installateurs</h3><button class="btn bGhost" onclick="nav('pgPlanning')">Planning</button></div><div class="cardB" id="dashChargeInst"></div></div>
       </div>
+
+      <div class="card" style="margin-bottom:4px;position:relative;overflow:hidden;background:linear-gradient(145deg,#242a56,#171c3c)"><div style="position:absolute;top:-40%;right:-10%;width:60%;height:120%;background:radial-gradient(circle,rgba(199,151,50,.25),transparent 70%);pointer-events:none"></div><div class="cardB" id="topInstallateur" style="padding:18px;position:relative"></div></div>
 
       <div class="zoneLbl">📊 Activité</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:4px" class="dashGrid3">
@@ -1578,6 +1605,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="card" style="margin-bottom:16px" id="paiementEnLigneCard"><div class="cardH"><h3>💳 Paiement en ligne (à activer)</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Pour encaisser une carte directement depuis le CRM, il faut un compte chez un prestataire comme <b>Stripe</b> ou <b>SumUp</b>. Dès que tu en as un, dis-le-moi avec tes identifiants API et je branche l'encaissement réel — pas de simulation en attendant, pour ne jamais faire croire qu'un paiement a été pris alors que non.</div><div style="font-size:11.5px;color:#8a6408;background:#fdf3cc;border-radius:8px;padding:8px 10px">⏳ Non configuré pour l'instant</div></div></div>
       <div class="card" style="margin-bottom:16px" id="activiteSettingsCard"><div class="cardH"><h3>🌡️ Configuration Air Power</h3></div><div class="cardB" id="activiteSettingsBody"></div></div>
       <div class="card" style="margin-bottom:16px" id="partagePositionCard"><div class="cardH"><h3>📍 Position en direct</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Partage ta position pendant que tu utilises le CRM, pour que l'équipe te voie sur la carte. Désactivable à tout moment.</div><button class="btn bGhost" id="partagePositionBtn" onclick="togglePartagePosition()">📍 Partager ma position sur la carte</button></div></div>
+      <div class="card" style="margin-bottom:16px" id="monStockPersoCard"><div class="cardH"><h3>🎒 Mon stock personnel</h3></div><div class="cardB" id="monStockPersoList" style="padding:8px 0"></div></div>
       <div class="card" style="margin-bottom:16px" id="stockInstallerCard"><div class="cardH"><h3>📦 État du stock</h3></div><div class="cardB" id="stockInstallerList" style="padding:8px 0"></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>💾 Sauvegarde des données</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Télécharge une sauvegarde de tout ton CRM (à faire régulièrement !). En cas de souci tu pourras tout restaurer.</div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn bPrimary" onclick="exporterDonnees()">💾 Télécharger une sauvegarde</button><input type="file" id="backupFile" accept=".json" style="font-size:12px"><button class="btn bGhost" onclick="importerDonnees()">♻️ Restaurer</button></div></div></div>
       <div class="card" style="margin-bottom:16px"><div class="cardH"><h3>🛡️ Sauvegardes automatiques</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Une copie de sécurité est créée automatiquement chaque jour (cloud, séparée de tes données actives, + un fichier téléchargé sur ton appareil). Tu n'as rien à faire.</div><div id="backupsCloudList"></div><button class="btn bGhost" style="margin-top:10px;font-size:12px" onclick="renderBackupsCloud()">🔄 Actualiser la liste</button></div></div>
@@ -1818,6 +1846,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="fi"><label>Rémunération par installation (€)</label><input type="number" id="mPremun" min="0" placeholder="Ex: 200"></div>
       <div class="fi"><label>👥 Équipe gérée par</label><select id="mPmanager"></select></div>
       <div class="fi full"><label>Notes</label><textarea id="mPnotes" placeholder="Notes..."></textarea></div>
+      <div class="fi full"><label>📦 Stock alloué à cet installateur</label><div id="mPstockList" style="margin-bottom:8px"></div><button class="btn bGhost" type="button" onclick="ajouterLigneStockAlloue()" style="font-size:12px">+ Ajouter un article</button></div>
     </div>
     <div class="mf"><button class="btn bGhost" onclick="closePM()">Annuler</button><button class="btn bPrimary" onclick="saveP()">Enregistrer</button></div>
   </div>
@@ -2154,7 +2183,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       </div>
       <div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">👷 Équipe & planning</div><div class="fi"><label>Installateur</label><select id="mIinst"></select></div>
       <div class="fi"><label>Statut</label>
-        <select id="mIstat" onchange="renderIStatutBadge(this.value)"><option>Planifiée</option><option>En cours</option><option>Terminée</option><option>En pause</option><option>Annulée</option></select>
+        <select id="mIstat" onchange="renderIStatutBadge(this.value);checkConsuelWarn()"><option>Planifiée</option><option>En cours</option><option>Terminée</option><option>En pause</option><option>Annulée</option></select>
       </div>
       <div class="fi"><label>Date début</label><input type="date" id="mIdebut"></div>
       <div class="fi"><label>Heure d'intervention</label><input type="time" id="mIheure"></div>
@@ -2165,7 +2194,13 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="fi"><label>Statut paiement</label>
         <select id="mIpaiement"><option>En attente</option><option>Acompte reçu</option><option>Payé</option><option>En retard</option></select>
       </div>
-      <div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">📝 Suivi</div><div class="fi full"><label>Notes</label><textarea id="mInotes" placeholder="Notes internes..."></textarea></div>
+      <div class="fiFull" style="grid-column:1/-1;font-size:10.5px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 2px;padding-top:10px;border-top:1px solid #f0f2f8">📝 Suivi</div>
+<div class="fi full" id="consuelWarnBox" style="display:none;background:#fee2e2;border:1px solid #fca5a5;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#991b1b;font-weight:700">⚠️ Chantier terminé sans Consuel reçu — attestation obligatoire avant mise en service</div>
+<div class="fi"><label>⚡ Statut Consuel</label><select id="mIconsuel" onchange="checkConsuelWarn()"><option value="">À demander</option><option value="Envoyée">Envoyée</option><option value="Reçue">Reçue</option></select></div>
+<div class="fi"><label>Attestation (photo/PDF)</label><input type="file" id="mIconsuelFile" accept="image/*,.pdf" onchange="uploadConsuelFile(this)" style="font-size:12px"><div id="mIconsuelFileName" style="font-size:11px;color:var(--muted);margin-top:4px"></div></div>
+<div class="fi full"><label>💬 Discussion du chantier</label><div id="mIdiscussion" style="max-height:180px;overflow-y:auto;background:#f7f8fc;border-radius:10px;padding:10px;margin-bottom:8px"></div><div style="display:flex;gap:6px"><input id="mIdiscMsg" placeholder="Écrire un message à l'équipe sur ce chantier..." style="flex:1" onkeypress="if(event.key==='Enter'){envoyerMsgChantier();event.preventDefault();}"><button class="btn bPrimary" onclick="envoyerMsgChantier()">Envoyer</button></div></div>
+<div class="fi full"><label>🎒 Matériel utilisé pour ce chantier</label><div id="mImaterielList" style="margin-bottom:8px"></div><button class="btn bGhost" type="button" onclick="ajouterLigneMaterielUtilise()" style="font-size:12px">+ Ajouter un article utilisé</button><div style="font-size:10.5px;color:var(--muted);margin-top:4px">Sera déduit automatiquement du stock personnel de l'installateur à la clôture du chantier.</div></div>
+<div class="fi full"><label>Notes</label><textarea id="mInotes" placeholder="Notes internes..."></textarea></div>
       <div class="fi full"><label>📷 Photos / Ordre de mission</label><div id="mIphotos" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div><input type="file" accept="image/*" capture="environment" multiple onchange="addInstallPhoto(this)" style="font-size:12px"></div>
       <div class="fi full"><label>⏱️ Pointage du chantier</label><div id="mIpointage"></div></div>
       <div class="fi full" id="mIpayBtn" style="display:none;margin-bottom:8px"></div>
@@ -2379,7 +2414,7 @@ function sendPushForNotif(forUser,txt){
 function addNotif(type,txt,ico,forUser,link){
   if(!DB.notifications)DB.notifications=[];
   var now=new Date();
-  DB.notifications.unshift({id:DB.nextId++,type:type,txt:txt,ico:ico||'🔔',ts:now.getTime(),read:false,forUser:forUser||'',link:link||null});
+  DB.notifications.unshift({id:DB.nextId++,type:type,txt:txt,ico:ico||'🔔',ts:now.getTime(),read:false,forUser:forUser||'',link:link||null,author:(curUserObj?curUserObj.name:'')});
   if(DB.notifications.length>50)DB.notifications=DB.notifications.slice(0,50);
   updateNotifBadge();
   sendPushForNotif(forUser||'',txt);
@@ -2482,7 +2517,7 @@ function nav(id){
   if(id==='pgPlanning')renderP();
   if(id==='pgRapports')renderRapports();
   if(id==='pgUsers'){if(fbReady&&db){loadAccountsFromFirebase(function(){renderUsers();});}else{renderUsers();}}
-  if(id==='pgMonProfil'){renderMonProfil();setTimeout(renderBackupsCloud,100);if(typeof renderStockInstaller==='function')renderStockInstaller();if(typeof renderActiviteSettings==='function'&&isAdmin())renderActiviteSettings();if(typeof renderPartagePositionUI==='function')renderPartagePositionUI();}
+  if(id==='pgMonProfil'){renderMonProfil();setTimeout(renderBackupsCloud,100);if(typeof renderStockInstaller==='function')renderStockInstaller();if(typeof renderActiviteSettings==='function'&&isAdmin())renderActiviteSettings();if(typeof renderPartagePositionUI==='function')renderPartagePositionUI();if(typeof renderMonStockPerso==='function')renderMonStockPerso();}
   if(id==='pgDashCM')renderDashCM();
   if(id==='pgEditorial')renderEditorial();
   if(id==='pgMedia')renderMedia();
@@ -2663,7 +2698,7 @@ function renderNotifPanel(){updateNotifDiag();var pb=g('notifPermBtn');if(pb){va
       var gi=(DB.notifications||[]).indexOf(n);var col=_NOTIF_COL[n.type]||'#242a56';
       html+='<div class="notifItem'+(n.read?'':' unread')+'" style="animation-delay:'+(k*28)+'ms" onclick="clickNotif('+gi+')">'
         +'<div class="notifIco" style="'+(n.read?'':('background:linear-gradient(135deg,'+col+',#171c3c)'))+'">'+n.ico+'</div>'
-        +'<div style="flex:1;min-width:0"><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+fmtNotifTime(n.ts)+(n.link?' · <span style="color:#c79732;font-weight:700">Voir la fiche ›</span>':'')+'</div></div>'
+        +'<div style="flex:1;min-width:0"><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+(n.author&&n.author!==(curUserObj?curUserObj.name:'')?('<span style="color:#8990a8;font-weight:600">'+n.author+'</span> · '):'')+fmtNotifTime(n.ts)+(n.link?' · <span style="color:#c79732;font-weight:700">Voir la fiche ›</span>':'')+'</div></div>'
         +(n.read?'':'<div class="notifDot"></div>')+'</div>';
       k++;
     });
@@ -2805,6 +2840,7 @@ function renderDash(){
   if(typeof renderInstJour==="function")renderInstJour();
   if(typeof renderFunnelProspects==='function')renderFunnelProspects();
   if(typeof renderChargeInstallateurs==='function')renderChargeInstallateurs();
+  if(typeof renderTopInstallateur==='function')renderTopInstallateur();
   var relances=getProspectsEnRetard();
   if(relances.length>0)addNotif('prospects',relances.length+' prospect(s) sans contact depuis +7 jours','⚠️');
   var totalOpp=DB.opportunites.filter(_matchAct).reduce(function(s,o){return s+o.montant;},0);
@@ -2819,13 +2855,32 @@ function renderDash(){
     +'<div class="kpiMini"><div class="kpiTop"><div class="ic" style="background:var(--orange-bg)">⚡</div><div class="l">Chantiers en cours</div></div><div class="v kpiV">'+enCours+'</div><div class="kpiDelta" style="color:#8990a8">'+planifieesSemaine+' planifié(s) cette semaine</div></div>'
     +'<div class="kpiMini"><div class="kpiTop"><div class="ic" style="background:var(--red-bg)">📦</div><div class="l">Alertes stock</div></div><div class="v kpiV">'+stockAlert+'</div><div class="kpiDelta" style="color:'+(stockAlert>0?'#dc2626':'#8990a8')+'">'+(stockAlert>0?'À réapprovisionner':'Tout est ok')+'</div></div>'
     +'<div class="kpiMini"><div class="kpiTop"><div class="ic" style="background:#fef3c7">🔧</div><div class="l">SAV ouverts</div></div><div class="v kpiV">'+savOuverts+'</div><div class="kpiDelta" style="color:'+(savUrgents>0?'#dc2626':'#8990a8')+'">'+(savUrgents>0?(savUrgents+' urgent(s)'):'Aucun urgent')+'</div></div>';
-  // CA mensuel chart
-  var now=new Date();var labels=[],data=[];
-  for(var i=5;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);labels.push(MO[d.getMonth()].slice(0,3));var m2=d.getMonth(),y2=d.getFullYear();data.push(DB.opportunites.filter(function(o){var dt=new Date(o.dateCreation||o.close||now);return o.etape==='Gagné'&&dt.getMonth()===m2&&dt.getFullYear()===y2;}).reduce(function(s,o){return s+o.montant;},0));}
+  // CA mensuel chart — séparé Born Power / Air Power pour une vraie lecture business, sur toute l'historique
+  var now=new Date();var labels=[],dataBP=[],dataAP=[];
+  var toutesDatesInst=(DB.installations||[]).filter(function(i){return i.statut==='Terminée'&&i.dateFin;}).map(function(i){return new Date(i.dateFin);});
+  var toutesDatesDevis=(DB.devis||[]).filter(function(d){return d.statut==='Accepté'&&d.date;}).map(function(d){return new Date(d.date);});
+  var toutesDates=toutesDatesInst.concat(toutesDatesDevis);
+  var premiereDate=toutesDates.length?new Date(Math.min.apply(null,toutesDates)):now;
+  var moisEcart=(now.getFullYear()-premiereDate.getFullYear())*12+(now.getMonth()-premiereDate.getMonth());
+  var nbMois=Math.max(5,Math.min(moisEcart,23));
+  function caPourActiviteMois(act,m2,y2){
+    var caI=(DB.installations||[]).filter(function(ii){return(ii.activite||'bornpower')===act&&ii.statut==='Terminée'&&ii.dateFin;}).filter(function(ii){var dt=new Date(ii.dateFin);return dt.getMonth()===m2&&dt.getFullYear()===y2;}).reduce(function(s,ii){return s+_instMontant(ii);},0);
+    var caD=(DB.devis||[]).filter(function(dd){return(dd.activite||'bornpower')===act&&dd.statut==='Accepté'&&dd.date;}).filter(function(dd){var dt=new Date(dd.date);return dt.getMonth()===m2&&dt.getFullYear()===y2;}).reduce(function(s,dd){return s+(dd.lignes||[]).reduce(function(s2,l){return s2+(l.qte||0)*(l.pu||0);},0);},0);
+    return Math.round((caI+caD)*100)/100;
+  }
+  for(var i=nbMois;i>=0;i--){
+    var d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    labels.push(MO[d.getMonth()].slice(0,3)+(nbMois>11?(" '"+(''+d.getFullYear()).slice(2)):''));
+    dataBP.push(caPourActiviteMois('bornpower',d.getMonth(),d.getFullYear()));
+    dataAP.push(caPourActiviteMois('airpower',d.getMonth(),d.getFullYear()));
+  }
+  var datasets=[];
+  if(!dashActivite||dashActivite==='bornpower')datasets.push({label:'⚡ Born Power',data:dataBP,borderColor:'#c79732',backgroundColor:'rgba(199,151,50,.12)',tension:.4,fill:true,pointBackgroundColor:'#c79732',pointRadius:3,borderWidth:2.5});
+  if(!dashActivite||dashActivite==='airpower')datasets.push({label:'🌡️ Air Power',data:dataAP,borderColor:'#307eb6',backgroundColor:'rgba(48,126,182,.12)',tension:.4,fill:true,pointBackgroundColor:'#307eb6',pointRadius:3,borderWidth:2.5});
   var ctx=g('dashChart');if(ctx){if(window._dashChart)window._dashChart.destroy();window._dashChart=new Chart(ctx,{
       type:'line',
-      data:{labels:labels,datasets:[{label:'CA',data:data,borderColor:'#c79732',backgroundColor:'rgba(199,151,50,.1)',tension:.4,fill:true,pointBackgroundColor:'#c79732'}]},
-      options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:function(v){return v>999?(v/1000).toFixed(0)+'k€':v+'€';}}}}}
+      data:{labels:labels,datasets:datasets},
+      options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{display:datasets.length>1,position:'top',align:'end',labels:{boxWidth:10,font:{size:11,weight:'600'}}},tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+' : '+fmtE(ctx.parsed.y);}}}},scales:{y:{beginAtZero:true,ticks:{callback:function(v){return v>999?(v/1000).toFixed(0)+'k€':v+'€';}}},x:{ticks:{maxRotation:45,minRotation:0}}}}
     });}
   // Top opps
   var topOpps=DB.opportunites.filter(function(o){return o.etape!=='Gagné'&&o.etape!=='Perdu';}).sort(function(a,b){return b.montant-a.montant;}).slice(0,5);
@@ -3453,7 +3508,7 @@ function openIM(idx){
   g('mIadresse').value=r.adresse||'';if(typeof _renderQuickPills==='function')_renderQuickPills('mIpills',r.tel,'',([r.adresse,r.cp,r.ville].filter(Boolean).join(' ')));if(g('mIville'))g('mIville').value=r.ville||'';if(g('mIcp'))g('mIcp').value=r.cp||'';if(g('mIphase'))g('mIphase').value=r.phase||'';if(g('mIcableType'))g('mIcableType').value=r.cableType||'';g('mItel').value=r.tel||'';
   g('mItype').value=r.type||'Borne de recharge';g('mIbien').value=r.typeBien||'Maison individuelle';
   g('mInbbornes').value=r.nbBornes||1;g('mIpuissance').value=r.puissance||'7.4 kW';
-  if(g('mIactivite'))g('mIactivite').value=r.activite||'bornpower';
+  if(g('mIactivite'))g('mIactivite').value=r.activite||'bornpower';if(g('mIconsuel'))g('mIconsuel').value=r.consuelStatut||'';if(g('mIconsuelFileName'))g('mIconsuelFileName').innerHTML=r.consuelFileName?('📎 '+r.consuelFileName+' <span style="color:var(--red);cursor:pointer" onclick="delConsuelFile()">✕</span>'):'';setTimeout(checkConsuelWarn,50);setTimeout(renderDiscussionChantier,50);chargerMaterielUtilise(r.materielUtilise||[]);
   fillInstallerSelectByActivite(r.installateur||'');
   g('mIstat').value=r.statut||'Planifiée';g('mIdebut').value=r.dateDebut||'';g('mIfin').value=r.dateFin||'';
   if(g('mIheure'))g('mIheure').value=r.heure||(idx<0?'08:00':'');
@@ -3496,7 +3551,7 @@ function saveI(){
     type:g('mItype').value,typeBien:g('mIbien').value,
     raccordement:g('mIraccord')?g('mIraccord').value:'',
     cableM:g('mIcable')?parseInt(g('mIcable').value)||0:0,
-    typeClient:g('mITypeClient')?g('mITypeClient').value:'',tva:g('mITva')?parseFloat(g('mITva').value)||0:0,montantTTC:g('mIttc')?parseFloat(g('mIttc').value)||0:0,commercialId:g('mIcommercial')?g('mIcommercial').value:'',activite:g('mIactivite')?g('mIactivite').value:(existing.activite||'bornpower'),
+    typeClient:g('mITypeClient')?g('mITypeClient').value:'',tva:g('mITva')?parseFloat(g('mITva').value)||0:0,montantTTC:g('mIttc')?parseFloat(g('mIttc').value)||0:0,commercialId:g('mIcommercial')?g('mIcommercial').value:'',activite:g('mIactivite')?g('mIactivite').value:(existing.activite||'bornpower'),consuelStatut:g('mIconsuel')?g('mIconsuel').value:(existing.consuelStatut||''),materielUtilise:lireMaterielUtilise(),consuelFile:existing.consuelFile||'',consuelFileName:existing.consuelFileName||'',
     borneModele:g('mIborne')?g('mIborne').value:'',
     phase:g('mIphase')?g('mIphase').value:'',cableType:g('mIcableType')?g('mIcableType').value:'',ville:g('mIville')?g('mIville').value:'',cp:g('mIcp')?g('mIcp').value:'',
     visiteQui:g('mIvisiteQui')?g('mIvisiteQui').value:'',visiteDate:g('mIvisiteDate')?g('mIvisiteDate').value:'',visiteHeure:g('mIvisiteHeure')?g('mIvisiteHeure').value:'',
@@ -3545,7 +3600,7 @@ function saveI(){
     addNotif('assign','Nouveau chantier assigné : '+row.chantier+(row.dateDebut?' le '+fmtD(row.dateDebut):''),'⚡',row.installateur,{kind:'install',id:row.id});
   }
   _logAudit(row,(eInst>=0?existing:null),_AUDIT_FIELDS_INST);
-  _deductStockForInstall(row,(eInst>=0&&existing?existing.statut:''));
+  _deductStockForInstall(row,(eInst>=0&&existing?existing.statut:''));_deductStockPersonnel(row,(eInst>=0&&existing?existing.statut:''));
   var _wasTerminee=(eInst>=0&&existing?existing.statut:'')==='Terminée';
   if(eInst>=0)DB.installations[eInst]=row;else DB.installations.push(row);
   if(row.statut==='Terminée'&&!_wasTerminee){
@@ -3765,8 +3820,8 @@ function fillManagerSelect(selectId,selected){
   loadAccounts().filter(function(a){return a.status==='active'&&a.role==='dirtech';}).forEach(function(a){opts+='<option value="'+a.id+'"'+(selected===a.id?' selected':'')+'>'+a.name+'</option>';});
   sel.innerHTML=opts;
 }
-function openProfModal(idx){eProfil=idx;var r=idx>=0?DB.installateurs[idx]:{};g('mProfT').textContent=idx>=0?'Modifier':'Nouvel installateur';g('mPp').value=r.prenom||'';g('mPn').value=r.nom||'';g('mPtel').value=r.tel||'';g('mPemail').value=r.email||'';g('mPspec').value=r.spec||'';if(g('mPactivite'))g('mPactivite').value=r.activite||'bornpower';g('mPdispo').value=r.dispo||'Disponible';initDeptTags(r.depts||'');g('mPnotes').value=r.notes||'';if(g('mPremun'))g('mPremun').value=r.remunInstall||'';fillManagerSelect('mPmanager',r.managerId||'');profColSel=r.color||COLS[0];document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col===profColSel);});g('mProf').classList.add('on');}
-function saveP(){var p=g('mPp').value.trim();if(!p){alert('Prénom requis');return;}var row={id:eProfil>=0?DB.installateurs[eProfil].id:DB.nextId++,prenom:p,nom:g('mPn').value,tel:g('mPtel').value,email:g('mPemail').value,spec:g('mPspec').value,activite:g('mPactivite')?g('mPactivite').value:'bornpower',dispo:g('mPdispo').value,color:profColSel,depts:g('mPdepts').value,notes:g('mPnotes').value,remunInstall:g('mPremun')?parseFloat(g('mPremun').value)||0:0,managerId:g('mPmanager')?g('mPmanager').value:'',userId:eProfil>=0?(DB.installateurs[eProfil].userId||''):''};if(eProfil>=0)DB.installateurs[eProfil]=row;else DB.installateurs.push(row);save();g('mProf').classList.remove('on');renderProfils();toast('Installateur enregistré !');}
+function openProfModal(idx){eProfil=idx;var r=idx>=0?DB.installateurs[idx]:{};g('mProfT').textContent=idx>=0?'Modifier':'Nouvel installateur';g('mPp').value=r.prenom||'';g('mPn').value=r.nom||'';g('mPtel').value=r.tel||'';g('mPemail').value=r.email||'';g('mPspec').value=r.spec||'';if(g('mPactivite'))g('mPactivite').value=r.activite||'bornpower';g('mPdispo').value=r.dispo||'Disponible';initDeptTags(r.depts||'');g('mPnotes').value=r.notes||'';chargerStockAlloue(r.stockAlloue||[]);if(g('mPremun'))g('mPremun').value=r.remunInstall||'';fillManagerSelect('mPmanager',r.managerId||'');profColSel=r.color||COLS[0];document.querySelectorAll('.cSwatch').forEach(function(s){s.classList.toggle('on',s.dataset.col===profColSel);});g('mProf').classList.add('on');}
+function saveP(){var p=g('mPp').value.trim();if(!p){alert('Prénom requis');return;}var row={id:eProfil>=0?DB.installateurs[eProfil].id:DB.nextId++,prenom:p,nom:g('mPn').value,tel:g('mPtel').value,email:g('mPemail').value,spec:g('mPspec').value,activite:g('mPactivite')?g('mPactivite').value:'bornpower',dispo:g('mPdispo').value,color:profColSel,depts:g('mPdepts').value,notes:g('mPnotes').value,remunInstall:g('mPremun')?parseFloat(g('mPremun').value)||0:0,managerId:g('mPmanager')?g('mPmanager').value:'',userId:eProfil>=0?(DB.installateurs[eProfil].userId||''):'',stockAlloue:lireStockAlloue()};if(eProfil>=0)DB.installateurs[eProfil]=row;else DB.installateurs.push(row);save();g('mProf').classList.remove('on');renderProfils();toast('Installateur enregistré !');}
 function delProf(i){if(confirm('Supprimer ?')){DB.installateurs.splice(i,1);save();renderProfils();}}
 function toggleTeam(idx){var p=DB.installateurs[idx];if(!p)return;var myId=curUserObj?curUserObj.id:'';if(p.managerId===myId){p.managerId='';toast('Retiré de votre équipe');}else{p.managerId=myId;toast('Ajouté à votre équipe ✅');}save();renderProfils();}
 
@@ -4169,29 +4224,39 @@ function renderPList(y,m){
   var sansDate=visible.filter(function(i){return !i.dateDebut&&i.statut!=='Terminée'&&i.statut!=='Annulée';});
   var html2='';
   if(sansDate.length){
-    html2+='<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:12px;padding:14px;margin-bottom:16px"><div style="font-weight:700;font-size:13px;color:#d97706;margin-bottom:8px">⚠️ '+sansDate.length+' installation(s) à planifier (sans date)</div>';
-    html2+=sansDate.map(function(i){var fi=ficheIdxFor(i);return '<div onclick="openIM('+fi+')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--white);border-radius:8px;margin-bottom:6px"><div><div style="font-weight:600;font-size:13px">'+i.chantier+'</div><div style="font-size:11px;color:var(--muted)">'+(i.client||'')+' · '+(i.installateur||'Non assigné')+'</div></div><span class="btn bGhost" style="font-size:11px;padding:4px 10px">📅 Planifier</span></div>';}).join('');
+    html2+='<div class="warn2"><div class="h">⚠️ '+sansDate.length+' installation(s) à planifier (sans date)</div>';
+    html2+=sansDate.map(function(i){var fi=ficheIdxFor(i);return '<div class="warnRow2" onclick="openIM('+fi+')"><div><div style="font-weight:700;font-size:12.5px">'+_escR(i.chantier)+'</div><div style="font-size:10.5px;color:#8990a8">'+_escR(i.client||'')+' · '+_escR(i.installateur||'Non assigné')+'</div></div><span style="background:#242a56;color:#fff;font-size:10.5px;font-weight:700;padding:5px 12px;border-radius:8px">📅 Planifier</span></div>';}).join('');
     html2+='</div>';
   }
   if(!allInsts.length){g('planWrap').innerHTML=html2+'<div style="background:var(--white);border-radius:var(--radius-lg);padding:40px;text-align:center;color:var(--muted);font-size:13px">Aucune installation datée ce mois-ci</div>';return;}
-  // Group by day
   var groups={};
   allInsts.forEach(function(i){var key=i.dateDebut;if(!groups[key])groups[key]=[];groups[key].push(i);});
   var today=new Date();today.setHours(0,0,0,0);
-  var html=html2+'<div class="planListWrap">';
+  var GRAD={'Planifiée':'linear-gradient(145deg,#2563eb,#1d4ed8)','En cours':'linear-gradient(145deg,#d97706,#b45309)','Terminée':'linear-gradient(145deg,#059669,#047857)','En pause':'linear-gradient(145deg,#92400e,#78350f)','Annulée':'linear-gradient(145deg,#dc2626,#b91c1c)'};
+  var html=html2;
   Object.keys(groups).sort().forEach(function(key){
     var d=new Date(key);d.setHours(0,0,0,0);
     var isToday=d.toDateString()===today.toDateString();
     var jour=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][d.getDay()];
-    html+='<div style="display:flex;align-items:center;gap:8px;margin:18px 0 8px;font-size:13px;font-weight:700;color:'+(isToday?'var(--gold)':'var(--navy)')+'"><span>'+jour+' '+d.getDate()+' '+MO[d.getMonth()]+'</span>'+(isToday?'<span style="background:var(--gold);color:#fff;border-radius:10px;padding:1px 8px;font-size:10px">AUJOURD\'HUI</span>':'')+'</div>';
+    var nb=groups[key].length;
+    html+='<div class="dayHead2"><span class="d">'+jour+' '+d.getDate()+' '+MO[d.getMonth()]+'</span>'+(isToday?'<span class="today2">AUJOURD\'HUI</span>':'')+'<span class="count2">'+nb+' chantier'+(nb>1?'s':'')+'</span></div>';
+    html+='<div class="timeline2">';
     groups[key].forEach(function(i){
-      var fi=ficheIdxFor(i);var col=instColor(i.installateur);
-      html+='<div class="planListCard" style="cursor:pointer" onclick="openIM('+fi+')"><div class="planListDate" style="background:'+(SCOLS[i.statut]||'#888')+'"><div class="planListDateD" style="color:#fff">'+new Date(i.dateDebut).getDate()+'</div><div class="planListDateM" style="color:#fff">'+MO[new Date(i.dateDebut).getMonth()].slice(0,3)+'</div></div><div class="planListInfo"><div class="planListTitle">'+i.chantier+'</div><div class="planListSub">'+i.client+' &middot; '+(i.typeBien||i.type)+' &middot; <span style="color:'+col+';font-weight:600">'+(i.installateur||'Non assigné')+'</span></div></div><div style="text-align:right;flex-shrink:0"><span class="bdg '+(BDGS[i.statut]||'')+'">'+i.statut+'</span>'+(i.montant?'<div style="font-size:12px;font-weight:600;color:var(--green);margin-top:4px">'+fmtE(i.montant)+'</div>':'')+'</div></div>';
+      var fi=ficheIdxFor(i);var col=SCOLS[i.statut]||'#888';var grad=GRAD[i.statut]||'linear-gradient(145deg,#888,#666)';
+      var nomComplet=(i.installateur||'').trim();
+      var init=nomComplet?nomComplet.split(' ').map(function(w){return w[0]||'';}).join('').slice(0,2).toUpperCase():'?';
+      html+='<div class="tCard2" style="--dotColor:'+col+'" onclick="openIM('+fi+')">'
+        +'<div class="tDate2" style="background:'+grad+'"><div class="n">'+d.getDate()+'</div><div class="m">'+MO[d.getMonth()].slice(0,3)+'</div></div>'
+        +'<div class="tAvatar2" title="'+_escR(nomComplet||'Non assigné')+'">'+init+'</div>'
+        +'<div class="tInfo2"><div class="tTitle2">'+_escR(i.chantier)+'</div><div class="tSub2">'+_escR(i.client||'')+' · '+_escR(i.typeBien||i.type||'')+' · '+_escR(nomComplet||'Non assigné')+'</div></div>'
+        +'<div class="tRight2"><span class="tBdg2" style="background:'+col+'22;color:'+col+'">'+i.statut+'</span>'+(i.montant?'<div class="tAmt2">'+fmtE(i.montant)+'</div>':'')+'</div>'
+        +'</div>';
     });
+    html+='</div>';
   });
-  html+='</div>';
   g('planWrap').innerHTML=html;
 }
+
 
 // ── CHAT ──
 var curChatChannel=null;
@@ -7037,6 +7102,158 @@ function renderDashInst(){
 
   if(typeof renderMaterielJournee==='function')renderMaterielJournee();
   if(typeof renderStockInstaller==='function')renderStockInstaller();
+}
+function checkConsuelWarn(){
+  var box=g('consuelWarnBox');if(!box)return;
+  var statutSel=g('mIstat');var consuelSel=g('mIconsuel');
+  var termine=statutSel&&statutSel.value==='Terminée';
+  var pasRecu=consuelSel&&consuelSel.value!=='Reçue';
+  box.style.display=(termine&&pasRecu)?'block':'none';
+}
+function uploadConsuelFile(input){
+  if(typeof eInst==='undefined'||eInst<0){toast('Enregistre d\'abord l\'installation');input.value='';return;}
+  var inst=DB.installations[eInst];if(!inst)return;
+  var file=input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    inst.consuelFile=e.target.result;inst.consuelFileName=file.name;
+    save();
+    if(g('mIconsuelFileName'))g('mIconsuelFileName').innerHTML='📎 '+file.name+' <span style="color:var(--red);cursor:pointer" onclick="delConsuelFile()">✕</span>';
+    toast('✅ Attestation jointe');
+  };
+  reader.readAsDataURL(file);
+}
+function delConsuelFile(){
+  if(typeof eInst==='undefined'||eInst<0)return;
+  var inst=DB.installations[eInst];if(!inst)return;
+  delete inst.consuelFile;delete inst.consuelFileName;
+  save();if(g('mIconsuelFileName'))g('mIconsuelFileName').innerHTML='';
+  toast('Attestation retirée');
+}
+function renderDiscussionChantier(){
+  var el=g('mIdiscussion');if(!el)return;
+  if(typeof eInst==='undefined'||eInst<0){el.innerHTML='<div style="font-size:11.5px;color:var(--muted)">Enregistre d\'abord l\'installation pour pouvoir discuter dessus.</div>';return;}
+  var inst=DB.installations[eInst];if(!inst)return;
+  var msgs=inst.discussion||[];
+  if(!msgs.length){el.innerHTML='<div style="font-size:11.5px;color:var(--muted)">Aucun message pour l\'instant.</div>';return;}
+  el.innerHTML=msgs.map(function(m){
+    var moi=curUserObj&&m.by===curUserObj.name;
+    return '<div style="margin-bottom:8px;text-align:'+(moi?'right':'left')+'"><div style="display:inline-block;max-width:80%;background:'+(moi?'#242a56':'#fff')+';color:'+(moi?'#fff':'#1f2438')+';border-radius:10px;padding:7px 11px;font-size:12.5px;text-align:left">'+_escR(m.txt)+'</div><div style="font-size:9.5px;color:var(--muted);margin-top:2px">'+_escR(m.by||'')+' · '+fmtNotifTime(m.ts)+'</div></div>';
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+function envoyerMsgChantier(){
+  if(typeof eInst==='undefined'||eInst<0){toast('Enregistre d\'abord l\'installation');return;}
+  var input=g('mIdiscMsg');var txt=input.value.trim();if(!txt)return;
+  var inst=DB.installations[eInst];if(!inst)return;
+  if(!inst.discussion)inst.discussion=[];
+  inst.discussion.push({txt:txt,by:(curUserObj?curUserObj.name:''),ts:Date.now()});
+  save();input.value='';renderDiscussionChantier();
+  var commercialNom='';if(inst.commercialId){var acc=(typeof loadAccounts==='function'?loadAccounts():[]).find(function(a){return a.id===inst.commercialId;});if(acc)commercialNom=acc.name;}var dest=[inst.installateur,commercialNom].filter(function(n){return n&&n!==(curUserObj?curUserObj.name:'');});
+  dest.forEach(function(nm){addNotif('install','💬 '+(curUserObj?curUserObj.name:'')+' sur '+(inst.chantier||'')+' : '+txt.slice(0,60),'💬',nm);});
+}
+function renderTopInstallateur(){
+  var el=g('topInstallateur');if(!el)return;
+  var now=new Date();var mois=now.getMonth(),an=now.getFullYear();
+  var insts=(DB.installateurs||[]).filter(function(i){return !dashActivite||!i.activite||i.activite===dashActivite||i.activite==='les-deux';});
+  if(!insts.length){el.innerHTML='<div style="color:#fff;font-size:12.5px;opacity:.8">Aucun installateur pour l\'instant</div>';return;}
+  var rows=insts.map(function(inst){
+    var nom=instName(inst.prenom,inst.nom);
+    var termines=(DB.installations||[]).filter(function(i){return i.installateur===nom&&i.statut==='Terminée'&&i.dateFin;}).filter(function(i){var d=new Date(i.dateFin);return d.getMonth()===mois&&d.getFullYear()===an;});
+    return {nom:nom,nb:termines.length};
+  }).sort(function(a,b){return b.nb-a.nb;});
+  var top=rows[0];
+  if(!top||top.nb===0){el.innerHTML='<div style="color:#fff;font-size:12.5px;opacity:.8">🏅 Aucun chantier terminé ce mois-ci pour l\'instant</div>';return;}
+  var init=top.nom.split(' ').map(function(w){return w[0]||'';}).join('').slice(0,2).toUpperCase();
+  el.innerHTML='<div style="display:flex;align-items:center;gap:14px">'
+    +'<div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#c79732,#ffe576);color:#222651;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+init+'</div>'
+    +'<div><div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#ffe576">🏅 Installateur du mois</div><div style="font-size:17px;font-weight:800;color:#fff;margin-top:2px">'+top.nom+'</div><div style="font-size:11.5px;color:rgba(255,255,255,.7);margin-top:2px">'+top.nb+' chantier(s) terminé(s) ce mois-ci</div></div>'
+    +'</div>';
+}
+function ajouterLigneStockAlloue(item,qte){
+  var wrap=g('mPstockList');if(!wrap)return;
+  var row=document.createElement('div');
+  row.className='stockAlloueRow';
+  row.style.cssText='display:flex;gap:8px;margin-bottom:6px;align-items:center';
+  row.innerHTML='<input placeholder="Article (ex: Câble 5G6)" class="salItem" value="'+_escR(item||'')+'" style="flex:2"><input type="number" placeholder="Qté" class="salQte" value="'+(qte!=null?qte:'')+'" style="flex:1;width:70px"><button type="button" class="btn bGhost" style="padding:6px 10px;color:var(--red)" onclick="this.parentNode.remove()">🗑</button>';
+  wrap.appendChild(row);
+}
+function chargerStockAlloue(list){
+  var wrap=g('mPstockList');if(!wrap)return;
+  wrap.innerHTML='';
+  (list||[]).forEach(function(l){ajouterLigneStockAlloue(l.item,l.qte);});
+  if(!list||!list.length)ajouterLigneStockAlloue();
+}
+function lireStockAlloue(){
+  var wrap=g('mPstockList');if(!wrap)return[];
+  var rows=wrap.querySelectorAll('.stockAlloueRow');
+  var out=[];
+  rows.forEach(function(r){
+    var item=r.querySelector('.salItem').value.trim();
+    var qte=parseFloat(r.querySelector('.salQte').value)||0;
+    if(item)out.push({item:item,qte:qte});
+  });
+  return out;
+}
+function renderMonStockPerso(){
+  var el=g('monStockPersoList');var card=g('monStockPersoCard');if(!el||!card)return;
+  if(getRole()!=='installer'){card.style.display='none';return;}
+  var monProfil=(DB.installateurs||[]).find(function(p){return curUserObj&&p.userId===curUserObj.id;});
+  var stock=monProfil?(monProfil.stockAlloue||[]):[];
+  if(!stock.length){card.style.display='none';return;}
+  card.style.display='block';
+  el.innerHTML=stock.map(function(s){
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f2f8"><span style="font-size:13px">'+_escR(s.item)+'</span><span style="font-size:13px;font-weight:800;color:var(--navy)">'+s.qte+'</span></div>';
+  }).join('');
+}
+function ajouterLigneMaterielUtilise(item,qte){
+  var wrap=g('mImaterielList');if(!wrap)return;
+  var row=document.createElement('div');
+  row.className='materielUtiliseRow';
+  row.style.cssText='display:flex;gap:8px;margin-bottom:6px;align-items:center';
+  row.innerHTML='<input placeholder="Article (ex: Câble 5G6)" class="mulItem" value="'+_escR(item||'')+'" style="flex:2"><input type="number" placeholder="Qté" class="mulQte" value="'+(qte!=null?qte:'')+'" style="flex:1;width:70px"><button type="button" class="btn bGhost" style="padding:6px 10px;color:var(--red)" onclick="this.parentNode.remove()">🗑</button>';
+  wrap.appendChild(row);
+}
+function chargerMaterielUtilise(list){
+  var wrap=g('mImaterielList');if(!wrap)return;
+  wrap.innerHTML='';
+  (list||[]).forEach(function(l){ajouterLigneMaterielUtilise(l.item,l.qte);});
+}
+function lireMaterielUtilise(){
+  var wrap=g('mImaterielList');if(!wrap)return[];
+  var rows=wrap.querySelectorAll('.materielUtiliseRow');
+  var out=[];
+  rows.forEach(function(r){
+    var item=r.querySelector('.mulItem').value.trim();
+    var qte=parseFloat(r.querySelector('.mulQte').value)||0;
+    if(item&&qte>0)out.push({item:item,qte:qte});
+  });
+  return out;
+}
+function _deductStockPersonnel(row,existingStatut){
+  try{
+    if(row.statut!=='Terminée')return;
+    if(existingStatut==='Terminée')return;
+    if(!row.materielUtilise||!row.materielUtilise.length)return;
+    var inst=(DB.installateurs||[]).find(function(p){return instName(p.prenom,p.nom)===row.installateur;});
+    if(!inst)return;
+    if(!inst.stockAlloue)inst.stockAlloue=[];
+    var manque=[];
+    row.materielUtilise.forEach(function(u){
+      var ligne=inst.stockAlloue.find(function(s){return (s.item||'').trim().toLowerCase()===(u.item||'').trim().toLowerCase();});
+      if(ligne){
+        ligne.qte=(ligne.qte||0)-u.qte;
+        if(ligne.qte<0)manque.push(u.item);
+      } else {
+        manque.push(u.item);
+      }
+      // Déduction en miroir du stock central si un article correspondant existe
+      var matCentral=(DB.materiel||[]).find(function(m){return (m.nom||'').trim().toLowerCase()===(u.item||'').trim().toLowerCase();});
+      if(matCentral)matCentral.stock=(matCentral.stock||0)-u.qte;
+    });
+    if(manque.length)addNotif('sav','⚠️ Stock personnel de '+row.installateur+' insuffisant pour : '+manque.join(', '),'📦','@admin');
+    toast('🎒 Stock personnel de '+row.installateur+' mis à jour');
+  }catch(e){}
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
