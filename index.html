@@ -982,6 +982,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
         <button class="btn bGhost dashActBtn" data-act="airpower" onclick="setDashActivite('airpower')" style="flex:1">🌡️ Air Power</button>
       </div>
 
+      <div id="dashConsuelAlert" style="display:none;background:linear-gradient(135deg,#fef2f2,#fff7ed);border:1px solid #fca5a5;border-radius:14px;padding:12px 16px;margin-bottom:14px;cursor:pointer" onclick="nav('pgInst')"></div>
       <div class="zoneLbl">💰 Performance financière</div>
       <div class="card" style="margin-bottom:14px"><div class="cardB" id="dashCompareActivites" style="padding:18px"></div></div>
       <div class="kpis" id="dashKpis" style="margin-bottom:4px"></div>
@@ -2882,6 +2883,7 @@ function renderDash(){
   if(typeof renderChargeInstallateurs==='function')renderChargeInstallateurs();
   if(typeof renderTopInstallateur==='function')renderTopInstallateur();
   if(typeof renderTopCommercial==='function')renderTopCommercial();
+  if(typeof renderDashConsuelAlert==='function')renderDashConsuelAlert();
   var relances=getProspectsEnRetard();
   if(relances.length>0)addNotif('prospects',relances.length+' prospect(s) sans contact depuis +7 jours','⚠️');
   var totalOpp=DB.opportunites.filter(_matchAct).reduce(function(s,o){return s+o.montant;},0);
@@ -7421,6 +7423,16 @@ function renderTopCommercial(){
     +'<div><div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff">🏆 Meilleur commercial</div><div style="font-size:17px;font-weight:800;color:#fff;margin-top:2px">'+top.nom+'</div><div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:2px">'+fmtE(top.ca)+' de CA ce mois-ci</div></div>'
     +'</div>';
 }
+
+
+
+function renderDashConsuelAlert(){
+  var el=g('dashConsuelAlert');if(!el)return;
+  var manquants=(DB.installations||[]).filter(function(i){return i.typeBien==='Copropriété'&&i.statut==='Terminée'&&(i.consuelStatut||'')!=='Reçue';});
+  if(!manquants.length){el.style.display='none';return;}
+  el.style.display='block';
+  el.innerHTML='<div style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">⚠️</span><div><div style="font-weight:800;color:#991b1b;font-size:13px">'+manquants.length+' installation'+(manquants.length>1?'s':'')+' en copropriété terminée'+(manquants.length>1?'s':'')+' sans Consuel reçu</div><div style="font-size:11px;color:#b45309">Obligatoire pour la mise en service — clique pour voir les chantiers concernés</div></div></div>';
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
@@ -7720,6 +7732,33 @@ document.addEventListener('DOMContentLoaded',function(){
   if(id==='pgMaJournee')renderMaJournee();}
       },800);
     });
+    // Signal chaud : le client vient de consulter son devis en ligne -> notifier le commercial concerné en direct
+    try{
+      if(db){
+        db.collection('vues_devis').orderBy('vu','desc').limit(20).onSnapshot(function(snap){
+          if(!curUserObj)return;
+          snap.docChanges().forEach(function(change){
+            if(change.type!=='added')return;
+            var v=change.doc.data();
+            var vuTs=new Date(v.vu).getTime();
+            if(Date.now()-vuTs>120000)return; // ignore les vues anciennes (ex: au premier chargement)
+            var deja=JSON.parse(localStorage.getItem('bp_vues_notifiees')||'[]');
+            if(deja.indexOf(change.doc.id)>=0)return;
+            deja.push(change.doc.id);if(deja.length>50)deja=deja.slice(-50);
+            localStorage.setItem('bp_vues_notifiees',JSON.stringify(deja));
+            var d=(DB.devis||[]).find(function(dd){return dd.id===v.devisId;});
+            var commercialNom='';
+            if(d&&d.commercialId){var acc=(typeof loadAccounts==='function'?loadAccounts():[]).find(function(a){return a.id===d.commercialId;});if(acc)commercialNom=acc.name;}
+            var estLeMien=!d||!d.commercialId||d.commercialId===curUserObj.id||isAdmin();
+            if(estLeMien){
+              showBanner('🔥 Devis n°'+(v.numero||'')+' vient d\'être consulté par le client !','🔥');
+              if(commercialNom)addNotif('devis','🔥 Le client vient de consulter le devis n°'+(v.numero||''),'🔥',commercialNom);
+              addNotif('devis','🔥 Le client vient de consulter le devis n°'+(v.numero||''),'🔥','@admin');
+            }
+          });
+        });
+      }
+    }catch(e){}
     fbListen(FIREBASE_ACCOUNTS_COLLECTION,function(data){
       if(data&&data.accounts){
         try{localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(data.accounts));}catch(e){}
@@ -7736,7 +7775,7 @@ document.addEventListener('DOMContentLoaded',function(){
       var tryAutoLogin=function(){var acc=findAccount(session.email);if(acc&&acc.status==='active'){curUserObj=acc;if(fbReady){loadFromFirebase(function(){g('authScreen').style.display='none';g('app').style.display='block';initApp();});}else{load();g('authScreen').style.display='none';g('app').style.display='block';initApp();}}else{localStorage.removeItem('bp_session');g('aEmail').value='contact@bornpower.fr';}};
       if(fbReady&&db){loadAccountsFromFirebase(function(){tryAutoLogin();});}else{tryAutoLogin();}
     } else {g('aEmail').value='contact@bornpower.fr';}
-  }catch(e){g('aEmail').value='contact@bornpower.fr';}
+  }catch(e){console.error('Connexion automatique échouée :',e);g('aEmail').value='contact@bornpower.fr';}
 
   applyMobileLayout();
 });
