@@ -2925,7 +2925,7 @@ function renderDash(){
     });}
   // Top opps
   var topOpps=DB.opportunites.filter(function(o){return o.etape!=='Gagné'&&o.etape!=='Perdu';}).sort(function(a,b){return b.montant-a.montant;}).slice(0,5);
-  g('dashTopOpps').innerHTML=topOpps.length?topOpps.map(function(o){return '<div class="frow"><span>'+o.nom+'</span><span style="font-weight:600;color:var(--green)">'+fmtE(o.montant)+'</span></div>';}).join(''):'<p style="color:var(--muted);font-size:13px">Aucune opportunité</p>';
+  g('dashTopOpps').innerHTML=topOpps.length?topOpps.map(function(o){var idxReel=DB.opportunites.indexOf(o);return '<div class="frow" style="cursor:pointer" onclick="openOppModal('+idxReel+')"><span>'+o.nom+'</span><span style="font-weight:600;color:var(--green)">'+fmtE(o.montant)+'</span></div>';}).join(''):'<p style="color:var(--muted);font-size:13px">Aucune opportunité</p>';
   // Stock alerts
   var alerts=DB.materiel.filter(function(m){return m.stock<=m.seuil;});
   g('dashStock').innerHTML=alerts.length?alerts.map(function(m){return '<div class="frow"><span>'+m.nom+'</span><span class="bdg bAnnul">'+m.stock+' restant(s)</span></div>';}).join(''):'<p style="color:var(--muted);font-size:13px">Aucune alerte ✓</p>';
