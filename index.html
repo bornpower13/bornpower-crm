@@ -993,6 +993,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       </div>
 
       <div class="card" style="margin-bottom:4px;position:relative;overflow:hidden;background:linear-gradient(145deg,#242a56,#171c3c)"><div style="position:absolute;top:-40%;right:-10%;width:60%;height:120%;background:radial-gradient(circle,rgba(199,151,50,.25),transparent 70%);pointer-events:none"></div><div class="cardB" id="topInstallateur" style="padding:18px;position:relative"></div></div>
+      <div class="card" style="margin-bottom:4px;position:relative;overflow:hidden;background:linear-gradient(145deg,#307eb6,#1f5a87)"><div style="position:absolute;top:-40%;left:-10%;width:60%;height:120%;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 70%);pointer-events:none"></div><div class="cardB" id="topCommercial" style="padding:18px;position:relative"></div></div>
 
       <div class="zoneLbl">📊 Activité</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:4px" class="dashGrid3">
@@ -1271,7 +1272,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;margin-top:20px">🎯 Préparer & closer</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px"><div class="conqCard" onclick="briefConqueteModal()"><div class="conqIco" style="background:var(--blue-bg)">📋</div><div class="conqT">Brief de conquête</div><div class="conqD">Avant d'appeler un prospect</div></div><div class="conqCard" onclick="battlecardModal()"><div class="conqIco" style="background:var(--red-bg)">⚔️</div><div class="conqT">Battlecard</div><div class="conqD">Répondre à la concurrence</div></div><div class="conqCard" onclick="objectionModal()"><div class="conqIco" style="background:#fee2e2">🛡️</div><div class="conqT">Objection killer</div><div class="conqD">Réponse en temps réel</div></div><div class="conqCard" onclick="logAppelModal()"><div class="conqIco" style="background:var(--green-bg)">📞</div><div class="conqT">Log d'appel</div><div class="conqD">Notes → suivi structuré</div></div></div>
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;margin-top:20px">📊 Piloter</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px"><div class="conqCard" onclick="nav('pgPipeline')"><div class="conqIco" style="background:var(--red-bg)">📈</div><div class="conqT">Prioriser le pipeline</div><div class="conqD">L'IA classe vos deals</div></div><div class="conqCard" onclick="propositionsDuJour()"><div class="conqIco" style="background:var(--gold3)">💡</div><div class="conqT">Propositions du jour</div><div class="conqD">L'IA analyse tout et propose</div></div><div class="conqCard" onclick="rapportHebdo()"><div class="conqIco" style="background:var(--gold3)">📊</div><div class="conqT">Rapport hebdo</div><div class="conqD">Vert / orange / rouge</div></div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px"><div class="conqCard" onclick="nav('pgPipeline')"><div class="conqIco" style="background:var(--red-bg)">📈</div><div class="conqT">Prioriser le pipeline</div><div class="conqD">L'IA classe vos deals</div></div><div class="conqCard" onclick="entrainementModal()"><div class="conqIco" style="background:#e0e7ff">🗣️</div><div class="conqT">Entraînement objections</div><div class="conqD">Pratique avant un RDV</div></div><div class="conqCard" onclick="onboardingModal()"><div class="conqIco" style="background:#fef3c7">🎓</div><div class="conqT">Mon parcours</div><div class="conqD">Check-list de démarrage</div></div><div class="conqCard" onclick="suiviOutilsModal()"><div class="conqIco" style="background:#dcfce7">🎯</div><div class="conqT">Ce qui marche</div><div class="conqD">Outils les plus utilisés</div></div><div class="conqCard" onclick="propositionsDuJour()"><div class="conqIco" style="background:var(--gold3)">💡</div><div class="conqT">Propositions du jour</div><div class="conqD">L'IA analyse tout et propose</div></div><div class="conqCard" onclick="rapportHebdo()"><div class="conqIco" style="background:var(--gold3)">📊</div><div class="conqT">Rapport hebdo</div><div class="conqD">Vert / orange / rouge</div></div></div>
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;margin-top:20px">👥 Équipe</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px"><div class="conqCard" onclick="commissionModal()"><div class="conqIco" style="background:var(--gold3)">💰</div><div class="conqT">Ma commission</div><div class="conqD">Ce que tu gagnes</div></div><div class="conqCard" onclick="eventReminderModal()"><div class="conqIco" style="background:#e0e7ff">🔔</div><div class="conqT">Rappeler un collègue</div><div class="conqD">Installateur, commercial...</div></div></div>
     </div>
@@ -2246,6 +2247,45 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
+// ===== Espace client partagé : interception avant tout le reste de l'app =====
+(function(){
+  try{
+    var params=new URLSearchParams(location.search);
+    var data=params.get('devis');
+    if(!data)return;
+    var json=JSON.parse(decodeURIComponent(escape(atob(data.replace(/-/g,'+').replace(/_/g,'/')))));
+    document.addEventListener('DOMContentLoaded',function(){
+      document.body.innerHTML='';
+      document.body.style.cssText='margin:0;font-family:Helvetica Neue,Arial,sans-serif;background:#eef1f8;min-height:100vh;padding:20px';
+      var lignesHtml=(json.lignes||[]).map(function(l){
+        return '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f2f8"><span style="font-size:13px;color:#333">'+(l.desc||'')+' <span style="color:#8990a8">x'+(l.qte||1)+'</span></span><span style="font-size:13px;font-weight:700">'+((l.qte||1)*(l.pu||0)).toLocaleString('fr-FR')+' €</span></div>';
+      }).join('');
+      var totalHT=(json.lignes||[]).reduce(function(s,l){return s+(l.qte||1)*(l.pu||0);},0);
+      var tva=json.tva||5.5;
+      var totalTTC=totalHT*(1+tva/100);
+      document.body.innerHTML=''
+        +'<div style="max-width:520px;margin:0 auto">'
+        +'<div style="background:linear-gradient(145deg,#242a56,#171c3c);border-radius:20px;padding:24px;color:#fff;margin-bottom:16px;text-align:center">'
+        +'<div style="font-size:20px;font-weight:800">'+(json.entreprise||'BORN POWER')+'</div>'
+        +'<div style="font-size:12px;opacity:.8;margin-top:4px">Votre devis n°'+(json.numero||'')+'</div>'
+        +'</div>'
+        +'<div style="background:#fff;border-radius:16px;padding:20px;margin-bottom:16px">'
+        +'<div style="font-size:12px;color:#8990a8;margin-bottom:12px">Pour '+(json.client||'')+'</div>'
+        +lignesHtml
+        +'<div style="display:flex;justify-content:space-between;padding-top:14px;margin-top:8px;border-top:2px solid #222651"><span style="font-weight:800">Total TTC</span><span style="font-weight:800;font-size:18px;color:#059669">'+totalTTC.toLocaleString('fr-FR',{minimumFractionDigits:2})+' €</span></div>'
+        +'</div>'
+        +'<div style="text-align:center;font-size:11px;color:#8990a8;padding:10px">Document généré depuis votre CRM · Contactez votre commercial pour toute question</div>'
+        +'</div>';
+      // Best effort : notifier le commercial que le devis a été vu (peut échouer selon les règles Firestore, sans bloquer l'affichage)
+      try{
+        if(json.notifUid&&window.firebase){
+          firebase.firestore().collection('vues_devis').add({devisId:json.id||'',numero:json.numero||'',vu:new Date().toISOString()});
+        }
+      }catch(e){}
+    });
+    window._clientViewActive=true;
+  }catch(e){}
+})();
 
 var KEY='bpcrm_v2', ACCOUNTS_KEY='bp_accounts_v2';
 var COLS=['#2563eb','#7c3aed','#059669','#d97706','#dc2626','#0891b2','#c79732','#6b7280'];
@@ -2841,6 +2881,7 @@ function renderDash(){
   if(typeof renderFunnelProspects==='function')renderFunnelProspects();
   if(typeof renderChargeInstallateurs==='function')renderChargeInstallateurs();
   if(typeof renderTopInstallateur==='function')renderTopInstallateur();
+  if(typeof renderTopCommercial==='function')renderTopCommercial();
   var relances=getProspectsEnRetard();
   if(relances.length>0)addNotif('prospects',relances.length+' prospect(s) sans contact depuis +7 jours','⚠️');
   var totalOpp=DB.opportunites.filter(_matchAct).reduce(function(s,o){return s+o.montant;},0);
@@ -3139,7 +3180,7 @@ function renderDevis(){
       +'<td data-label="Montant"><div>'+fmtE(ht)+' HT</div><div style="font-size:11px;color:var(--muted)">'+fmtE(ttc)+' TTC</div></td>'
       +'<td data-label="Statut"><span class="bdg '+(statColors[d.statut]||'bPause')+'">'+d.statut+'</span></td>'
       +'<td class="acts">'
-        +'<button class="act" onclick="exportDevisPDFById('+idx+')" title="PDF" style="color:var(--red)">📄</button>'+'<button class="act" onclick="telechargerDevisPDFById('+idx+')" title="Télécharger PDF" style="color:var(--navy)">📥</button>'
+        +'<button class="act" onclick="exportDevisPDFById('+idx+')" title="PDF" style="color:var(--red)">📄</button>'+'<button class="act" onclick="telechargerDevisPDFById('+idx+')" title="Télécharger PDF" style="color:var(--navy)">📥</button>'+'<button class="act" onclick="copierLienDevis('+idx+')" title="Copier le lien de partage" style="color:#0891b2">🔗</button>'
         +(d.signature?'<span class="act" title="Signé électroniquement" style="color:#166534">✅</span>':'<button class="act" onclick="signatureDevisModal('+idx+')" title="Faire signer" style="color:#166534">✍️</button>')
         +(d.statut==='Accepté'?(d.installCreated?'<button class="act" onclick="nav(\'pgInst\');setTimeout(function(){var ix=DB.installations.findIndex(function(i){return i.id==='+d.installId+';});if(ix>=0)openIM(ix);},200)" title="Voir l\'installation" style="color:#2563eb">🏗️</button>':'<button class="act" onclick="creerInstallationDepuisDevis('+idx+')" title="Créer l\'installation" style="color:#d97706">🏗️</button>'):'')
         +'<button class="act" onclick="emailDevis('+idx+')" title="Envoyer par email" style="color:var(--blue)">✉️</button>'
@@ -4836,7 +4877,7 @@ function genererLog(){
     _piaCamp=txt;res.innerHTML='<div style="background:#f8f9fd;border:1px solid var(--border);border-radius:12px;padding:14px;font-size:13.5px;">'+_fmtAI(txt)+'</div><div style="margin-top:8px"><button class="btn bGhost" onclick="_copyPia(\'camp\')">📋 Copier</button></div>';
   });
 }
-function battlecardModal(){
+function battlecardModal(){_trackToolUsage('battlecardModal');
   var h='<div class="ov on" id="mBattleTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>⚔️ Battlecard</h2><button class="mcl" onclick="g(\'mBattleTemp\').remove()">✕</button></div><div style="padding:16px"><label style="font-size:12px;font-weight:600;color:var(--muted)">Concurrent / situation (optionnel)</label><input id="battleIn" style="width:100%;margin:6px 0 12px" placeholder="Ex: le client compare avec Beev / un devis moins cher"><button class="btn bPrimary" onclick="genererBattlecard()">Générer</button><div id="battleRes" style="margin-top:12px"></div></div></div></div>';
   document.body.insertAdjacentHTML('beforeend',h);
 }
@@ -5132,7 +5173,7 @@ try{window.addEventListener('load',function(){_runAfterLogin(_checkBanners,1600)
 try{setInterval(_checkBanners,45000);}catch(e){}
 var _simArg='';
 function _defBareme(){if(!DB.baremeAdvenir)DB.baremeAdvenir={coproInd:{pct:50,plaf:600},coproCol:{pct:50,plaf:8000},entreprise:{pct:50,plaf:1000},maison:{pct:0,plaf:500}};}
-function simulateurModal(){
+function simulateurModal(){_trackToolUsage('simulateurModal');
   _defBareme();
   var opts='<option value="coproInd">Copropriété — point individuel</option><option value="coproCol">Copropriété — infrastructure collective</option><option value="entreprise">Entreprise / flotte</option><option value="maison">Maison individuelle</option>';
   var h='<div class="ov on" id="mSimTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>💶 Simulateur d\'aides ADVENIR</h2><button class="mcl" onclick="g(\'mSimTemp\').remove()">✕</button></div><div style="padding:16px">'
@@ -5156,7 +5197,7 @@ function calcAdvenir(){
   g('simRes').innerHTML='<div style="background:linear-gradient(135deg,#242a56,#171c3c);color:#fff;border-radius:14px;padding:16px;text-align:center"><div style="font-size:12px;color:rgba(255,255,255,.7)">Prix installation</div><div style="font-size:15px;text-decoration:line-through;color:rgba(255,255,255,.6)">'+fmtE(prix)+'</div><div style="font-size:12px;color:#ffe576;margin-top:8px">Aide ADVENIR</div><div style="font-size:15px;color:#ffe576">- '+fmtE(aide)+'</div><div style="border-top:1px solid rgba(255,255,255,.2);margin:10px 0"></div><div style="font-size:12px;color:rgba(255,255,255,.7)">Reste à charge</div><div style="font-size:30px;font-weight:800;letter-spacing:-.5px">'+fmtE(net)+'</div></div><button class="btn bGhost" style="margin-top:10px;width:100%" onclick="_copySimArg()">📋 Copier l\'argumentaire</button>';
 }
 function _copySimArg(){if(navigator.clipboard&&_simArg)navigator.clipboard.writeText(_simArg);toast('Copié ✅');}
-function objectionModal(){
+function objectionModal(){_trackToolUsage('objectionModal');
   var h='<div class="ov on" id="mObjTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>🛡️ Réponse à une objection</h2><button class="mcl" onclick="g(\'mObjTemp\').remove()">✕</button></div><div style="padding:16px">'
     +'<label style="font-size:12px;font-weight:600;color:var(--muted)">L\'objection du client</label>'
     +'<textarea id="objIn" rows="2" placeholder="Ex: c\'est trop cher, je vais réfléchir, un concurrent est moins cher..." style="width:100%;margin:6px 0 10px"></textarea>'
@@ -5207,7 +5248,7 @@ function _fmtAI(t){
   cl();return html;
 }
 var _recVehs=[['Renault','Zoé',52,22],['Renault','5 E-Tech',52,11],['Renault','4 E-Tech',52,11],['Renault','Mégane E-Tech',60,22],['Renault','Scénic E-Tech',87,22],['Renault','Twingo E-Tech',22,11],['Renault','Kangoo E-Tech',45,11],['Peugeot','e-208',51,11],['Peugeot','e-2008',54,11],['Peugeot','e-308',54,11],['Peugeot','e-3008',73,11],['Peugeot','e-5008',98,11],['Peugeot','e-Rifter',50,11],['Citroën','ë-C3',44,7],['Citroën','ë-C4',54,11],['Citroën','ë-C4 X',54,11],['Citroën','Ami',5,3],['Tesla','Model 3',60,11],['Tesla','Model 3 Grande Autonomie',79,11],['Tesla','Model Y',60,11],['Tesla','Model Y Grande Autonomie',75,11],['Tesla','Model S',100,11],['Tesla','Model X',100,11],['Volkswagen','ID.3',58,11],['Volkswagen','ID.4',77,11],['Volkswagen','ID.5',77,11],['Volkswagen','ID.7',86,11],['Volkswagen','ID.Buzz',79,11],['Volkswagen','e-Up',36,7],['Audi','Q4 e-tron',77,11],['Audi','Q6 e-tron',95,11],['Audi','e-tron GT',93,22],['Audi','Q8 e-tron',106,22],['BMW','i4',81,11],['BMW','iX1',65,11],['BMW','iX2',65,11],['BMW','iX3',74,11],['BMW','i5',81,11],['BMW','iX',105,11],['BMW','i7',102,11],['Mercedes','EQA',66,11],['Mercedes','EQB',66,11],['Mercedes','EQC',80,11],['Mercedes','EQE',90,22],['Mercedes','EQS',108,22],['Hyundai','Kona Electric',64,11],['Hyundai','Ioniq 5',77,11],['Hyundai','Ioniq 6',77,11],['Hyundai','Inster',49,11],['Kia','Niro EV',64,11],['Kia','EV3',81,11],['Kia','EV6',77,11],['Kia','EV9',99,11],['Fiat','500e',42,11],['Fiat','600e',54,11],['Fiat','Grande Panda',44,7],['Dacia','Spring',27,7],['Nissan','Leaf',39,7],['Nissan','Leaf e+',59,7],['Nissan','Ariya',87,22],['Opel','Corsa Electric',51,11],['Opel','Mokka Electric',54,11],['Opel','Astra Electric',54,11],['Opel','Frontera Electric',44,11],['Škoda','Enyaq',77,11],['Škoda','Elroq',77,11],['Cupra','Born',58,11],['Cupra','Tavascan',77,11],['Volvo','EX30',64,11],['Volvo','EC40 / C40',78,11],['Volvo','EX90',107,11],['Polestar','2',78,11],['Polestar','3',107,11],['Polestar','4',94,11],['MG','MG4',64,11],['MG','MG5',61,11],['MG','ZS EV',72,11],['MG','MG3 Hybrid+',4,0],['Ford','Mustang Mach-E',91,11],['Ford','Explorer EV',77,11],['Ford','Puma Gen-E',43,11],['Ford','Capri EV',77,11],['Mini','Cooper Electric',54,11],['Mini','Countryman E',66,11],['Mini','Aceman',54,11],['Smart','#1',66,22],['Smart','#3',66,22],['BYD','Atto 3',60,11],['BYD','Dolphin',60,11],['BYD','Seal',82,11],['BYD','Seal U',87,11],['Jeep','Avenger',54,11],['Jeep','Wrangler 4xe',17,7],['DS','DS 3 E-Tense',54,11],['DS','DS 4 E-Tense',54,11],['Porsche','Taycan',93,22],['Porsche','Macan Electric',95,11],['Lexus','RZ',71,11],['Lexus','UX 300e',72,11],['Toyota','bZ4X',71,11],['Toyota','Proace Electric',75,11],['Honda','e:Ny1',68,11],['Subaru','Solterra',71,11],['Mazda','MX-30',35,11],['Alpine','A290',52,11],['Autre','je saisis moi-même',50,0]];
-function rechargeModal(){
+function rechargeModal(){_trackToolUsage('rechargeModal');
   var vopts='';var _cb='';_recVehs.forEach(function(v,i){if(v[0]!==_cb){if(_cb)vopts+='</optgroup>';_cb=v[0];vopts+='<optgroup label="'+_cb+'">';}vopts+='<option value="'+i+'">'+v[1]+' ('+v[2]+' kWh)</option>';});if(_cb)vopts+='</optgroup>';
   var h='<div class="ov on" id="mRecTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>🔌 Temps de recharge</h2><button class="mcl" onclick="g(\'mRecTemp\').remove()">✕</button></div><div style="padding:16px">'
     +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Véhicule du client</label><select id="recVeh" onchange="recVehChange()" style="width:100%;margin:6px 0 12px">'+vopts+'</select>'
@@ -5232,7 +5273,7 @@ function calcRecharge(){
   _simArg=arg;
   g('recRes').innerHTML='<div style="background:linear-gradient(135deg,#242a56,#171c3c);color:#fff;border-radius:14px;padding:16px;text-align:center"><div style="font-size:12px;color:rgba(255,255,255,.7)">Temps de recharge estimé</div><div style="font-size:32px;font-weight:800;letter-spacing:-.5px;margin-top:4px">'+dur+'</div><div style="font-size:12px;color:#ffe576;margin-top:6px">de '+start+'% à '+end+'% · borne '+borne.toString().replace('.',',')+' kW</div><div style="font-size:11.5px;color:rgba(255,255,255,.75);margin-top:8px;border-top:1px solid rgba(255,255,255,.15);padding-top:8px">'+_escR(arg)+'</div></div><button class="btn bGhost" style="margin-top:10px;width:100%" onclick="_copySimArg()">📋 Copier l\'argumentaire</button>';
 }
-function coutRechargeModal(){
+function coutRechargeModal(){_trackToolUsage('coutRechargeModal');
   var h='<div class="ov on" id="mCoutTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>🔋 Coût de recharge</h2><button class="mcl" onclick="g(\'mCoutTemp\').remove()">✕</button></div><div style="padding:16px">'
     +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Consommation du véhicule (kWh / 100 km)</label>'
     +'<div style="display:flex;gap:8px;align-items:center;margin:6px 0 4px"><input id="coutConso" type="number" value="16" style="flex:1"><button class="btn bGhost" style="font-size:11px;padding:4px 8px" onclick="coutPreset(14)">Citadine</button><button class="btn bGhost" style="font-size:11px;padding:4px 8px" onclick="coutPreset(17)">Berline</button><button class="btn bGhost" style="font-size:11px;padding:4px 8px" onclick="coutPreset(20)">SUV</button></div>'
@@ -5559,7 +5600,7 @@ function _cleanCatalogueAmbigu(){
   }catch(e){}
 }
 try{window.addEventListener('load',function(){_runAfterLogin(_cleanCatalogueAmbigu,700);});}catch(e){}
-function recommandeurModal(){
+function recommandeurModal(){_trackToolUsage('recommandeurModal');
   var h='<div class="ov on" id="mRecoTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>💡 Recommandeur de borne</h2><button class="mcl" onclick="g(\'mRecoTemp\').remove()">✕</button></div><div style="padding:16px">'
     +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Type de véhicule</label><select id="recoVeh" style="width:100%;margin:6px 0 12px"><option value="citadine">Citadine (petite batterie)</option><option value="berline">Berline / SUV familial</option><option value="flotte">Flotte / plusieurs véhicules</option></select>'
     +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Usage principal</label><select id="recoUsage" style="width:100%;margin:6px 0 12px"><option value="quotidien">Recharge quotidienne à domicile</option><option value="rapide">Besoin de recharge rapide (peu de temps)</option><option value="pro">Usage professionnel / plusieurs bornes</option></select>'
@@ -5585,7 +5626,7 @@ function calcRecommandeur(){
   _simArg='Borne recommandée : '+pick.nom+' — '+why.join(', ')+'.';
   g('recoRes').innerHTML='<div style="background:linear-gradient(135deg,#242a56,#171c3c);color:#fff;border-radius:14px;padding:16px"><div style="font-size:11px;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.05em">Recommandation</div><div style="font-size:19px;font-weight:800;color:#ffe576;margin-top:4px">'+pick.nom+'</div><div style="font-size:12.5px;color:rgba(255,255,255,.8);margin-top:8px">'+why.map(function(w){return '✓ '+w;}).join('<br>')+'</div></div><button class="btn bGhost" style="margin-top:10px;width:100%" onclick="_copySimArg()">📋 Copier l\'argumentaire</button>';
 }
-function rentabiliteModal(){
+function rentabiliteModal(){_trackToolUsage('rentabiliteModal');
   var h='<div class="ov on" id="mRoiTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>📈 Rentabilité pro (ROI)</h2><button class="mcl" onclick="g(\'mRoiTemp\').remove()">✕</button></div><div style="padding:16px">'
     +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Type d\'établissement</label><select id="roiType" style="width:100%;margin:6px 0 12px"><option value="hotel">Hôtel / camping</option><option value="entreprise">Entreprise (flotte/salariés)</option><option value="commerce">Commerce / restaurant</option></select>'
     +'<label style="font-size:12px;font-weight:600;color:var(--muted)">Coût installation (€)</label><input id="roiCout" type="number" placeholder="3500" style="width:100%;margin:6px 0 12px">'
@@ -6620,7 +6661,7 @@ function _defBaremeClim(){
     };
   }
 }
-function simulateurClimModal(){
+function simulateurClimModal(){_trackToolUsage('simulateurClimModal');
   _defBaremeClim();
   var h='<div class="ov on" id="mSimClimTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>🌡️ Simulateur d\'aides Air Power</h2><button class="mcl" onclick="g(\'mSimClimTemp\').remove()">✕</button></div><div style="padding:16px">'
     +'<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 12px;font-size:11.5px;color:#1e40af;margin-bottom:14px">ℹ️ Montants indicatifs, à vérifier sur <b>maprimerenov.gouv.fr</b> — ils dépendent du revenu fiscal exact et évoluent chaque année.</div>'
@@ -7255,6 +7296,131 @@ function _deductStockPersonnel(row,existingStatut){
     toast('🎒 Stock personnel de '+row.installateur+' mis à jour');
   }catch(e){}
 }
+function copierLienDevis(idx){
+  var d=DB.devis[idx];if(!d)return;
+  var payload={id:d.id,numero:d.numero,client:d.client,entreprise:(d.activite==='airpower'?'AIR POWER':'BORN POWER'),lignes:d.lignes,tva:d.tva,notifUid:(curUserObj?curUserObj.id:'')};
+  var json=JSON.stringify(payload);
+  var b64=btoa(unescape(encodeURIComponent(json))).replace(/\+/g,'-').replace(/\//g,'_');
+  var url=location.origin+location.pathname+'?devis='+b64;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(function(){toast('🔗 Lien copié ! Envoie-le à ton client');}).catch(function(){prompt('Copie ce lien :',url);});
+  } else {
+    prompt('Copie ce lien :',url);
+  }
+}
+function _trackToolUsage(tool){
+  try{
+    if(!DB.toolUsage)DB.toolUsage=[];
+    DB.toolUsage.push({tool:tool,by:(curUserObj?curUserObj.name:''),ts:Date.now()});
+    if(DB.toolUsage.length>500)DB.toolUsage=DB.toolUsage.slice(-500);
+    save();
+  }catch(e){}
+}
+function renderSuiviOutils(){
+  var el=g('suiviOutilsBody');if(!el)return;
+  var usage=DB.toolUsage||[];
+  if(!usage.length){el.innerHTML='<p style="color:var(--muted);font-size:13px">Pas encore de données d\'utilisation.</p>';return;}
+  var parOutil={};usage.forEach(function(u){parOutil[u.tool]=(parOutil[u.tool]||0)+1;});
+  var noms={simulateurModal:'💶 Simulateur aides',rentabiliteModal:'📈 Rentabilité pro',recommandeurModal:'🔌 Recommandeur borne',objectionModal:'🛡️ Objection killer',rechargeModal:'⏱️ Temps de recharge',coutRechargeModal:'⚡ Coût de recharge',simulateurClimModal:'🌡️ Simulateur Air Power',battlecardModal:'⚔️ Battlecard'};
+  var rows=Object.keys(parOutil).map(function(k){return {nom:noms[k]||k,n:parOutil[k]};}).sort(function(a,b){return b.n-a.n;});
+  var maxN=Math.max.apply(null,rows.map(function(r){return r.n;}));
+  el.innerHTML=rows.map(function(r){
+    var pct=Math.round(r.n/maxN*100);
+    return '<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">'+r.nom+'</span><span style="color:var(--muted)">'+r.n+' utilisation(s)</span></div><div style="height:7px;background:#eef1f8;border-radius:5px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:linear-gradient(90deg,#c79732,#ffe576)"></div></div></div>';
+  }).join('');
+  // Top utilisateur par CA parmi ceux qui utilisent le plus d'outils
+  var parPersonne={};usage.forEach(function(u){parPersonne[u.by]=(parPersonne[u.by]||0)+1;});
+  var topPersonne=Object.keys(parPersonne).sort(function(a,b){return parPersonne[b]-parPersonne[a];})[0];
+  if(topPersonne)el.innerHTML+='<div style="margin-top:12px;padding-top:12px;border-top:1px solid #f0f2f8;font-size:11.5px;color:var(--muted)">💡 <b style="color:var(--navy)">'+topPersonne+'</b> est celui/celle qui utilise le plus ces outils — à observer comme référence.</div>';
+}
+function suiviOutilsModal(){
+  var h='<div class="ov on" id="mSuiviTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>🎯 Ce qui marche vraiment</h2><button class="mcl" onclick="g(\'mSuiviTemp\').remove()">✕</button></div><div style="padding:16px"><div style="font-size:11.5px;color:var(--muted);margin-bottom:14px">Quels outils sont réellement utilisés par l\'équipe — pour repérer ce qui aide vraiment à closer.</div><div id="suiviOutilsBody"></div></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+  renderSuiviOutils();
+}
+var ONBOARDING_STEPS=[
+  {j:'Jour 1',t:'Découvre ton tableau de bord',d:'Ouvre l\'app tous les matins, regarde "À faire maintenant" en premier.'},
+  {j:'Jour 1',t:'Explore le hub Conquête',d:'22 outils classés en 6 sections — parcours-les une fois pour savoir ce qui existe.'},
+  {j:'Jour 2',t:'Trouve tes 5 premiers prospects',d:'Conquête → Où prospecter, puis Trouver des entreprises.'},
+  {j:'Jour 3',t:'Lance ta première séquence',d:'Conquête → Prospection multicanal sur un de tes prospects.'},
+  {j:'Jour 5',t:'Utilise un simulateur en rendez-vous',d:'Simulateur d\'aides ou Recommandeur de borne, devant le client.'},
+  {j:'Semaine 2',t:'Crée et fais signer ton premier devis',d:'Devis → + Devis, puis signature électronique sur place.'},
+  {j:'Semaine 2',t:'Consulte "Ce qui marche"',d:'Conquête → Piloter → Ce qui marche, pour voir les outils les plus utilisés par l\'équipe.'},
+];
+function renderOnboarding(){
+  var el=g('onboardingBody');if(!el)return;
+  var uid=curUserObj?curUserObj.id:'';
+  if(!DB.onboardingDone)DB.onboardingDone={};
+  if(!DB.onboardingDone[uid])DB.onboardingDone[uid]=[];
+  var done=DB.onboardingDone[uid];
+  el.innerHTML=ONBOARDING_STEPS.map(function(s,i){
+    var checked=done.indexOf(i)>=0;
+    return '<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f0f2f8"><input type="checkbox" '+(checked?'checked':'')+' onchange="toggleOnboardingStep('+i+')" style="margin-top:3px"><div style="'+(checked?'opacity:.5;text-decoration:line-through':'')+'"><div style="font-size:10px;font-weight:800;color:#c79732;text-transform:uppercase">'+s.j+'</div><div style="font-size:13px;font-weight:700;color:#222651">'+s.t+'</div><div style="font-size:11.5px;color:var(--muted)">'+s.d+'</div></div></div>';
+  }).join('');
+  var pct=Math.round(done.length/ONBOARDING_STEPS.length*100);
+  var bar=g('onboardingBar');if(bar)bar.innerHTML='<div style="height:8px;background:#eef1f8;border-radius:5px;overflow:hidden;margin-bottom:14px"><div style="width:'+pct+'%;height:100%;background:linear-gradient(90deg,#c79732,#ffe576)"></div></div><div style="font-size:11.5px;color:var(--muted);margin-bottom:10px">'+done.length+'/'+ONBOARDING_STEPS.length+' étapes terminées</div>';
+}
+function toggleOnboardingStep(i){
+  var uid=curUserObj?curUserObj.id:'';
+  if(!DB.onboardingDone)DB.onboardingDone={};
+  if(!DB.onboardingDone[uid])DB.onboardingDone[uid]=[];
+  var done=DB.onboardingDone[uid];
+  var idx=done.indexOf(i);
+  if(idx>=0)done.splice(idx,1);else done.push(i);
+  save();renderOnboarding();
+}
+function onboardingModal(){
+  var h='<div class="ov on" id="mOnbTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>🎓 Mon parcours de démarrage</h2><button class="mcl" onclick="g(\'mOnbTemp\').remove()">✕</button></div><div style="padding:16px"><div id="onboardingBar"></div><div id="onboardingBody"></div></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+  renderOnboarding();
+}
+var OBJECTIONS_ENTRAINEMENT=['C\'est trop cher par rapport à un simple câble','Je vais réfléchir et je vous rappelle','Un concurrent me propose moins cher','Je n\'ai pas de budget pour ça cette année','Je ne suis pas sûr que ma copropriété accepte','J\'ai peur que ce soit compliqué à l\'usage','Je préfère attendre que les prix baissent'];
+var _entTrainIdx=0;
+function entrainementModal(){
+  _entTrainIdx=0;_trackToolUsage('entrainementModal');
+  var h='<div class="ov on" id="mEntTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>🗣️ Entraînement objections</h2><button class="mcl" onclick="g(\'mEntTemp\').remove()">✕</button></div><div style="padding:16px"><div id="entBody"></div></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+  _afficherObjectionEntrainement();
+}
+function _afficherObjectionEntrainement(){
+  var el=g('entBody');if(!el)return;
+  if(_entTrainIdx>=OBJECTIONS_ENTRAINEMENT.length){
+    el.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:32px">🎉</div><div style="font-weight:800;color:var(--navy);margin-top:8px">Entraînement terminé !</div><div style="font-size:12.5px;color:var(--muted);margin-top:4px">Tu as pratiqué les '+OBJECTIONS_ENTRAINEMENT.length+' objections les plus courantes.</div><button class="btn bGhost" style="margin-top:14px" onclick="entrainementModal()">Recommencer</button></div>';
+    return;
+  }
+  var obj=OBJECTIONS_ENTRAINEMENT[_entTrainIdx];
+  el.innerHTML='<div style="font-size:10.5px;color:var(--muted);margin-bottom:10px">Objection '+(_entTrainIdx+1)+' / '+OBJECTIONS_ENTRAINEMENT.length+'</div>'
+    +'<div style="background:#f7f8fc;border-radius:10px;padding:12px 14px;font-size:13.5px;font-weight:700;color:#222651;margin-bottom:14px">💬 "'+obj+'"</div>'
+    +'<div style="font-size:11.5px;color:var(--muted);margin-bottom:10px">Réfléchis à ta réponse, puis clique pour voir la suggestion IA.</div>'
+    +'<button class="btn bPrimary" style="width:100%" onclick="_reponseEntrainement()">💡 Voir la réponse suggérée</button>'
+    +'<div id="entReponse" style="margin-top:12px"></div>';
+}
+function _reponseEntrainement(){
+  var obj=OBJECTIONS_ENTRAINEMENT[_entTrainIdx];
+  var res=g('entReponse');res.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">⏳ Réflexion en cours...</div>';
+  askClaudeProspect(VENTE_SYS,'Un client de BORN POWER (bornes de recharge) vient de dire cette objection pendant la vente : "'+obj+'". Reponds IMMEDIATEMENT et de facon tres concise (on est en entrainement) : 1) une reformulation qui montre qu on comprend. 2) LA meilleure reponse pour lever l objection (avec nos atouts : aides ADVENIR, certification IRVE, garantie decennale, 131 avis 4,9/5, service cle en main). 3) une phrase pour reprendre la main et avancer vers la vente.',function(txt,err){
+    if(err){res.innerHTML='<div style="color:var(--red);font-size:12px">'+_escR(err)+'</div>';return;}
+    res.innerHTML='<div style="background:linear-gradient(145deg,#242a56,#171c3c);border-radius:10px;padding:12px 14px;color:#fff;font-size:12.5px;line-height:1.6;white-space:pre-wrap">'+_escR(txt)+'</div>'
+      +'<button class="btn bGhost" style="width:100%;margin-top:10px" onclick="_entTrainIdx++;_afficherObjectionEntrainement()">Objection suivante →</button>';
+  });
+}
+function renderTopCommercial(){
+  var el=g('topCommercial');if(!el)return;
+  var now=new Date();var mois=now.getMonth(),an=now.getFullYear();
+  var accounts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.role==='commercial'&&a.status==='active';});
+  if(!accounts.length){el.innerHTML='<div style="color:#fff;font-size:12.5px;opacity:.8">Aucun commercial pour l\'instant</div>';return;}
+  var rows=accounts.map(function(a){
+    var ca=(DB.devis||[]).filter(function(d){if(d.commercialId&&d.commercialId!==a.id)return false;if(d.statut!=='Accepté')return false;if(!d.date)return false;var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;}).reduce(function(sm,d){return sm+(d.lignes||[]).reduce(function(s2,l){return s2+(l.qte||0)*(l.pu||0);},0);},0);
+    return {nom:a.name,ca:ca};
+  }).sort(function(a,b){return b.ca-a.ca;});
+  var top=rows[0];
+  if(!top||top.ca===0){el.innerHTML='<div style="color:#fff;font-size:12.5px;opacity:.8">🏆 Aucune vente conclue ce mois-ci pour l\'instant</div>';return;}
+  var init=top.nom.split(' ').map(function(w){return w[0]||'';}).join('').slice(0,2).toUpperCase();
+  el.innerHTML='<div style="display:flex;align-items:center;gap:14px">'
+    +'<div style="width:48px;height:48px;border-radius:50%;background:#fff;color:#1f5a87;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+init+'</div>'
+    +'<div><div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff">🏆 Meilleur commercial</div><div style="font-size:17px;font-weight:800;color:#fff;margin-top:2px">'+top.nom+'</div><div style="font-size:11.5px;color:rgba(255,255,255,.8);margin-top:2px">'+fmtE(top.ca)+' de CA ce mois-ci</div></div>'
+    +'</div>';
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
@@ -7490,6 +7656,7 @@ function changePassword(){var old=g('oldPass').value;var nw=g('newPass').value;v
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',function(){
+  if(window._clientViewActive)return;
   if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(e){console.log('SW error:',e);});}
   // Guide d'installation PWA
   var deferredPrompt=null;
