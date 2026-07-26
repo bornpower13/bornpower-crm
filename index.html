@@ -982,7 +982,6 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
         <button class="btn bGhost dashActBtn" data-act="airpower" onclick="setDashActivite('airpower')" style="flex:1">🌡️ Air Power</button>
       </div>
 
-      <div id="dashConsuelAlert" style="display:none;background:linear-gradient(135deg,#fef2f2,#fff7ed);border:1px solid #fca5a5;border-radius:14px;padding:12px 16px;margin-bottom:14px;cursor:pointer" onclick="nav('pgInst')"></div>
       <div class="zoneLbl">💰 Performance financière</div>
       <div class="card" style="margin-bottom:14px"><div class="cardB" id="dashCompareActivites" style="padding:18px"></div></div>
       <div class="kpis" id="dashKpis" style="margin-bottom:4px"></div>
@@ -2605,7 +2604,7 @@ function checkPendingAccounts(){
       pending.forEach(function(p){
         var exists=(DB.notifications||[]).some(function(n){return n.txt && n.txt.indexOf(p.email)>=0;});
         if(!exists){
-          addNotif('user', p.name+' ('+p.email+') attend la validation de son compte', '👤');
+          addNotif('user', p.name+' ('+p.email+') attend la validation de son compte', '👤','',{kind:'users'});
         }
       });
       updateNotifBadge();
@@ -2757,6 +2756,9 @@ function openFromNotif(link){
   else if(link.kind==='install'){idx=(DB.installations||[]).findIndex(function(i){return i.id===link.id;});if(idx>=0)openFiche(idx);else nav('pgInst');}
   else if(link.kind==='sav'){idx=(DB.savTickets||[]).findIndex(function(s){return s.id===link.id;});nav('pgSAV');if(idx>=0)openSAVModal(idx);}
   else if(link.kind==='visite'){nav('pgVisites');}
+  else if(link.kind==='prospects'){nav('pgProspects');}
+  else if(link.kind==='stock'){nav('pgStock');}
+  else if(link.kind==='users'){nav('pgUsers');}
   else if(link.kind==='install_celebrate'){
     idx=(DB.installations||[]).findIndex(function(i){return i.id===link.id;});
     if(typeof showCelebration==='function'&&curUserObj&&link.commercialId===curUserObj.id){
@@ -2883,9 +2885,8 @@ function renderDash(){
   if(typeof renderChargeInstallateurs==='function')renderChargeInstallateurs();
   if(typeof renderTopInstallateur==='function')renderTopInstallateur();
   if(typeof renderTopCommercial==='function')renderTopCommercial();
-  if(typeof renderDashConsuelAlert==='function')renderDashConsuelAlert();
   var relances=getProspectsEnRetard();
-  if(relances.length>0)addNotif('prospects',relances.length+' prospect(s) sans contact depuis +7 jours','⚠️');
+  if(relances.length>0)addNotif('prospects',relances.length+' prospect(s) sans contact depuis +7 jours','⚠️','',{kind:'prospects'});
   var totalOpp=DB.opportunites.filter(_matchAct).reduce(function(s,o){return s+o.montant;},0);
   var nouvellesOppsSemaine=DB.opportunites.filter(_matchAct).filter(function(o){if(!o.dateCreation)return false;var j=(Date.now()-new Date(o.dateCreation).getTime())/86400000;return j<=7;}).length;
   var enCours=DB.installations.filter(_matchAct).filter(function(i){return i.statut==='En cours';}).length;
@@ -2930,7 +2931,7 @@ function renderDash(){
   g('dashTopOpps').innerHTML=topOpps.length?topOpps.map(function(o){var idxReel=DB.opportunites.indexOf(o);return '<div class="frow" style="cursor:pointer" onclick="openOppModal('+idxReel+')"><span>'+o.nom+'</span><span style="font-weight:600;color:var(--green)">'+fmtE(o.montant)+'</span></div>';}).join(''):'<p style="color:var(--muted);font-size:13px">Aucune opportunité</p>';
   // Stock alerts
   var alerts=DB.materiel.filter(function(m){return m.stock<=m.seuil;});
-  g('dashStock').innerHTML=alerts.length?alerts.map(function(m){return '<div class="frow"><span>'+m.nom+'</span><span class="bdg bAnnul">'+m.stock+' restant(s)</span></div>';}).join(''):'<p style="color:var(--muted);font-size:13px">Aucune alerte ✓</p>';
+  g('dashStock').innerHTML=alerts.length?alerts.map(function(m){return '<div class="frow" style="cursor:pointer" onclick="nav(\'pgStock\')"><span>'+m.nom+'</span><span class="bdg bAnnul">'+m.stock+' restant(s)</span></div>';}).join(''):'<p style="color:var(--muted);font-size:13px">Aucune alerte ✓</p>';
   // Activites
   var acts=DB.activites.slice(0,8);
   g('dashActivites').innerHTML=acts.length?acts.map(function(a){return '<div class="frow"><span style="font-size:12px">'+a.txt+'</span><span style="font-size:11px;color:var(--muted)">'+a.date+'</span></div>';}).join(''):'<p style="color:var(--muted);font-size:13px">Aucune activité</p>';
@@ -5547,7 +5548,7 @@ function _checkInstallJm1(){
       var txt='📅 Demain : '+(inst.chantier||inst.client||'chantier')+(inst.heure?(' à '+inst.heure):'')+(inst.adresse?(' — '+inst.adresse):'');
       if(!DB.taches)DB.taches=[];
       DB.taches.push({id:DB.nextId++,userId:uid,titre:txt,date:tKey,priorite:'haute',fait:false,createdBy:'auto',createdAt:new Date().toISOString()});
-      addNotif('install',txt,'⚡',inst.installateur);
+      addNotif('install',txt,'⚡',inst.installateur,{kind:'install',id:inst.id});
       DB._rappelsJm1Sent[sentKey]=true;changed=true;
     });
     if(changed&&typeof save==='function')save();
@@ -5665,8 +5666,8 @@ function envoyerSignalement(idx){
   r.activites.unshift({type:'probleme',txt:txt,date:new Date().toISOString(),by:(curUserObj?curUserObj.name:'')});
   var qui=(curUserObj?curUserObj.name:'un installateur');
   var msg='⚠️ Problème signalé par '+qui+' sur « '+(r.chantier||r.client||'chantier')+' » : '+txt;
-  addNotif('sav',msg,'⚠️','');
-  if(r.commercialId){var accts=(typeof loadAccounts==='function'?loadAccounts():[]);var com=accts.find(function(a){return a.id===r.commercialId;});if(com)addNotif('sav',msg,'⚠️',com.name);}
+  addNotif('sav',msg,'⚠️','',{kind:'install',id:r.id});
+  if(r.commercialId){var accts=(typeof loadAccounts==='function'?loadAccounts():[]);var com=accts.find(function(a){return a.id===r.commercialId;});if(com)addNotif('sav',msg,'⚠️',com.name,{kind:'install',id:r.id});}
   save();var m=g('mPbTemp');if(m)m.remove();
   toast('✅ Alerte envoyée à l\'équipe');
 }
@@ -5823,7 +5824,7 @@ function _runAutoProspection(manual){
   function next(){
     if(idx>=criteres.length){
       DB.autoProspectLastRun=new Date().toISOString();save();
-      if(added>0)addNotif('prospects','🤖 Prospection auto : '+added+' nouveau(x) prospect(s) ajouté(s)','🤖','');
+      if(added>0)addNotif('prospects','🤖 Prospection auto : '+added+' nouveau(x) prospect(s) ajouté(s)','🤖','',{kind:'prospects'});
       if(manual)toast(added>0?('✅ '+added+' nouveau(x) prospect(s) ajouté(s)'):'Aucun nouveau prospect trouvé cette fois');
       if(typeof renderProspects==='function')renderProspects();
       var lr=g('apLastRun');if(lr)lr.textContent=new Date(DB.autoProspectLastRun).toLocaleString('fr-FR');
@@ -5858,8 +5859,8 @@ function _deductStockForInstall(row,existingStatut){
       mat.stock=(mat.stock||0)-qte;
       if(mat.stock<=(mat.seuil||5)){
         var _installers=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.role==='installer'&&a.status==='active';});
-        _installers.forEach(function(a){addNotif('sav','📦 Stock bas : '+mat.nom+' ('+mat.stock+' restant(s))','📦',a.name);});
-        addNotif('sav','📦 Stock bas : '+mat.nom+' ('+mat.stock+' restant(s))','📦','@admin');
+        _installers.forEach(function(a){addNotif('sav','📦 Stock bas : '+mat.nom+' ('+mat.stock+' restant(s))','📦',a.name,{kind:'stock'});});
+        addNotif('sav','📦 Stock bas : '+mat.nom+' ('+mat.stock+' restant(s))','📦','@admin',{kind:'stock'});
       }
       toast('📦 Stock mis à jour : -'+qte+' '+mat.nom);
     }
@@ -6564,7 +6565,7 @@ function _runFleetProspectionDaily(){
         DB.prospects.push({id:DB.nextId++,nom:nom,societe:nom,siret:e.siren||'',naf:e.activite_principale||'',formeJ:e.nature_juridique||'',adresse:adr,ville:siege.libelle_commune||'',cp:siege.code_postal||'',effectif:e.tranche_effectif_salarie||'',dateCreationEnt:e.date_creation||'',statut:'Nouveau',contactPrenom:'',contactNom:'',tel:'',email:'',notes:'🚚 Prospection flotte auto — secteur « '+secteur.q+' ». '+secteur.raison,source:'Flottes auto',ownerId:com.id,ownerName:com.name,assignedAt:new Date().toISOString(),lastContact:new Date().toISOString().slice(0,10)});
         usedKeys[e.siren]=true;added++;
       });
-      if(added>0){addNotif('prospects','🚚 '+added+' nouveau(x) prospect(s) « flotte véhicules » ajouté(s) pour toi — secteur '+secteur.q,'🚚',com.name);}
+      if(added>0){addNotif('prospects','🚚 '+added+' nouveau(x) prospect(s) « flotte véhicules » ajouté(s) pour toi — secteur '+secteur.q,'🚚',com.name,{kind:'prospects'});}
       save();
       setTimeout(function(){processCommercial(i+1);},500);
     }).catch(function(){setTimeout(function(){processCommercial(i+1);},500);});
@@ -7137,7 +7138,7 @@ function renderDashInst(){
   // Aujourd'hui
   var todayKey=d0.toISOString().slice(0,10);
   var todayList=mesInst.filter(function(i){return i.dateDebut&&i.dateDebut.slice(0,10)===todayKey&&i.statut!=='Annulée';});
-  g('dashInstToday').innerHTML=todayList.length?todayList.map(function(i){var col=SCOLS[i.statut]||'#8990a8';return '<div class="frow" style="align-items:center"><div><div style="font-weight:700;font-size:12.5px">'+_escR(i.chantier||i.client||'')+'</div><div style="font-size:10.5px;color:var(--muted)">'+_escR(i.ville||'')+'</div></div><span class="bdg" style="background:'+col+'18;color:'+col+';font-weight:700">'+i.statut+'</span></div>';}).join(''):'<p style="color:var(--muted);font-size:13px;padding:8px 0">Rien de prévu aujourd\'hui ✓</p>';
+  g('dashInstToday').innerHTML=todayList.length?todayList.map(function(i){var col=SCOLS[i.statut]||'#8990a8';var idxReel=DB.installations.indexOf(i);return '<div class="frow" style="align-items:center;cursor:pointer" onclick="openIM('+idxReel+')"><div><div style="font-weight:700;font-size:12.5px">'+_escR(i.chantier||i.client||'')+'</div><div style="font-size:10.5px;color:var(--muted)">'+_escR(i.ville||'')+'</div></div><span class="bdg" style="background:'+col+'18;color:'+col+';font-weight:700">'+i.statut+'</span></div>';}).join(''):'<p style="color:var(--muted);font-size:13px;padding:8px 0">Rien de prévu aujourd\'hui ✓</p>';
 
   // Cette semaine
   var weekList=mesInst.filter(function(i){if(i.statut==='Terminée'||i.statut==='Annulée'||!i.dateDebut)return false;var d=new Date(i.dateDebut);return d>=weekStart&&d<weekEnd;}).sort(function(a,b){return new Date(a.dateDebut)-new Date(b.dateDebut);});
@@ -7426,13 +7427,7 @@ function renderTopCommercial(){
 
 
 
-function renderDashConsuelAlert(){
-  var el=g('dashConsuelAlert');if(!el)return;
-  var manquants=(DB.installations||[]).filter(function(i){return i.typeBien==='Copropriété'&&i.statut==='Terminée'&&(i.consuelStatut||'')!=='Reçue';});
-  if(!manquants.length){el.style.display='none';return;}
-  el.style.display='block';
-  el.innerHTML='<div style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">⚠️</span><div><div style="font-weight:800;color:#991b1b;font-size:13px">'+manquants.length+' installation'+(manquants.length>1?'s':'')+' en copropriété terminée'+(manquants.length>1?'s':'')+' sans Consuel reçu</div><div style="font-size:11px;color:#b45309">Obligatoire pour la mise en service — clique pour voir les chantiers concernés</div></div></div>';
-}
+
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
@@ -7752,8 +7747,8 @@ document.addEventListener('DOMContentLoaded',function(){
             var estLeMien=!d||!d.commercialId||d.commercialId===curUserObj.id||isAdmin();
             if(estLeMien){
               showBanner('🔥 Devis n°'+(v.numero||'')+' vient d\'être consulté par le client !','🔥');
-              if(commercialNom)addNotif('devis','🔥 Le client vient de consulter le devis n°'+(v.numero||''),'🔥',commercialNom);
-              addNotif('devis','🔥 Le client vient de consulter le devis n°'+(v.numero||''),'🔥','@admin');
+              if(commercialNom)addNotif('devis','🔥 Le client vient de consulter le devis n°'+(v.numero||''),'🔥',commercialNom,{kind:'devis',id:v.devisId});
+              addNotif('devis','🔥 Le client vient de consulter le devis n°'+(v.numero||''),'🔥','@admin',{kind:'devis',id:v.devisId});
             }
           });
         });
