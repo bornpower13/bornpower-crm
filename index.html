@@ -1879,7 +1879,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="fi"><label>Société</label><input id="mOsociete" placeholder="Société"></div>
       <div class="fi"><label>Activité</label><select id="mOactivite"><option value="bornpower">⚡ Born Power</option><option value="airpower">🌡️ Air Power</option></select></div><div class="fi"><label>Montant (€)</label><input id="mOmontant" type="number" placeholder="0"></div>
       <div class="fi"><label>Probabilité (%)</label><input id="mOproba" type="number" min="0" max="100" placeholder="50"></div>
-      <div class="fi"><label>Étape</label><select id="mOetape"><option>Prospection</option><option>Contact</option><option>Qualification</option><option>Proposition</option><option>Négociation</option><option>Gagné</option><option>Perdu</option></select></div>
+      <div class="fi"><label>Étape</label><select id="mOetape"><option>Prospection</option><option>Contact</option><option>Qualification</option><option>Proposition</option><option>Négociation</option><option>Gagné</option><option>Perdu</option></select></div><div class="fi"><label>Commercial</label><select id="mOcommercial"></select></div>
       <div class="fi"><label>Clôture prévue</label><input id="mOclose" type="date"></div>
       <div class="fi"><label>📞 Date de rappel client</label><input id="mOrappel" type="date"></div>
       <div class="fi"><label>🔧 Visite tech. — qui</label><select id="mOvisiteQui"></select></div>
@@ -2109,7 +2109,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       <div class="fi"><label>Téléphone</label><input id="mDtel" placeholder="06 00 00 00 00"></div>
       <hr class="sep"><div class="seclbl full" style="grid-column:1/-1">Devis</div>
       <div class="fi"><label>Date d'émission</label><input type="date" id="mDdate"></div>
-      <div class="fi"><label>Validité (jours)</label><input type="number" id="mDvalidite" value="30" min="1"></div>
+      <div class="fi"><label>Validité (jours)</label><input type="number" id="mDvalidite" value="30" min="1"></div><div class="fi"><label>Commercial</label><select id="mDcommercial"></select></div>
       <div class="fi"><label>Activité</label><select id="mDactivite"><option value="bornpower">⚡ Born Power</option><option value="airpower">🌡️ Air Power</option></select></div><div class="fi"><label>TVA (%)</label><select id="mDtva"><option value="5.5">5,5%</option><option value="10">10%</option><option value="20">20%</option><option value="0">0%</option></select></div>
       <div class="fi"><label>Statut</label><select id="mDstat"><option>Brouillon</option><option>Envoyé</option><option>Accepté</option><option>Refusé</option></select></div>
       <div class="fi"><label>💼 Prime commercial (€)</label><input type="number" id="mDprime" min="0" placeholder="Auto selon le taux"></div>
@@ -3063,7 +3063,7 @@ function openOppModal(idx){
   g('mOppT').textContent=idx>=0?'Modifier':'Nouvelle opportunité';
   g('mOnom').value=r.nom||'';g('mOclient').value=r.client||'';g('mOsociete').value=r.societe||'';
   g('mOmontant').value=r.montant||'';if(g('mOactivite'))g('mOactivite').value=r.activite||'bornpower';g('mOproba').value=r.proba||50;
-  g('mOetape').value=r.etape||'Prospection';g('mOclose').value=r.close||'';
+  g('mOetape').value=r.etape||'Prospection';g('mOclose').value=r.close||'';if(typeof _fillCommercialSelect==='function')_fillCommercialSelect('mOcommercial',r.commercialId||(idx<0&&curUserObj?curUserObj.id:''));
   if(g('mOrappel'))g('mOrappel').value=r.dateRappel||'';
   fillVisiteQui('mOvisiteQui',r.visiteQui||'');
   if(g('mOvisiteDate'))g('mOvisiteDate').value=r.visiteDate||'';
@@ -3078,7 +3078,7 @@ function openOppModal(idx){
 function closeOppModal(){g('mOpp').classList.remove('on');}
 function saveOpp(){
   var nom=g('mOnom').value.trim();if(!nom){alert('Nom requis');return;}
-  var row={id:eOpp>=0?DB.opportunites[eOpp].id:DB.nextId++,nom:nom,client:g('mOclient').value,societe:g('mOsociete').value,montant:parseFloat(g('mOmontant').value)||0,activite:g('mOactivite')?g('mOactivite').value:'bornpower',proba:parseInt(g('mOproba').value)||50,etape:g('mOetape').value,close:g('mOclose').value,dateRappel:g('mOrappel')?g('mOrappel').value:'',visiteQui:g('mOvisiteQui')?g('mOvisiteQui').value:'',visiteDate:g('mOvisiteDate')?g('mOvisiteDate').value:'',visiteHeure:g('mOvisiteHeure')?g('mOvisiteHeure').value:'',source:g('mOsource').value,notes:g('mOnotes').value,commercialId:eOpp>=0?DB.opportunites[eOpp].commercialId:curUserObj?curUserObj.id:'',echanges:eOpp>=0?DB.opportunites[eOpp].echanges||[]:[],dateCreation:eOpp>=0?DB.opportunites[eOpp].dateCreation:new Date().toLocaleDateString('fr-FR'),creePar:eOpp>=0&&DB.opportunites[eOpp].creePar?DB.opportunites[eOpp].creePar:(curUserObj?curUserObj.name:''),proprietaire:eOpp>=0&&DB.opportunites[eOpp].proprietaire?DB.opportunites[eOpp].proprietaire:(curUserObj?curUserObj.name:'')};
+  var row={id:eOpp>=0?DB.opportunites[eOpp].id:DB.nextId++,nom:nom,client:g('mOclient').value,societe:g('mOsociete').value,montant:parseFloat(g('mOmontant').value)||0,activite:g('mOactivite')?g('mOactivite').value:'bornpower',proba:parseInt(g('mOproba').value)||50,etape:g('mOetape').value,close:g('mOclose').value,dateRappel:g('mOrappel')?g('mOrappel').value:'',visiteQui:g('mOvisiteQui')?g('mOvisiteQui').value:'',visiteDate:g('mOvisiteDate')?g('mOvisiteDate').value:'',visiteHeure:g('mOvisiteHeure')?g('mOvisiteHeure').value:'',source:g('mOsource').value,notes:g('mOnotes').value,commercialId:g('mOcommercial')&&g('mOcommercial').value?g('mOcommercial').value:(eOpp>=0?DB.opportunites[eOpp].commercialId:(curUserObj?curUserObj.id:'')),echanges:eOpp>=0?DB.opportunites[eOpp].echanges||[]:[],dateCreation:eOpp>=0?DB.opportunites[eOpp].dateCreation:new Date().toLocaleDateString('fr-FR'),creePar:eOpp>=0&&DB.opportunites[eOpp].creePar?DB.opportunites[eOpp].creePar:(curUserObj?curUserObj.name:''),proprietaire:eOpp>=0&&DB.opportunites[eOpp].proprietaire?DB.opportunites[eOpp].proprietaire:(curUserObj?curUserObj.name:'')};
   var _prevEtapeOpp=eOpp>=0&&DB.opportunites[eOpp]?DB.opportunites[eOpp].etape:'';
   var _prevVisOpp=eOpp>=0&&DB.opportunites[eOpp]?(DB.opportunites[eOpp].visiteDate||'')+'|'+(DB.opportunites[eOpp].visiteQui||''):'';
   if(eOpp>=0)DB.opportunites[eOpp]=row;else DB.opportunites.push(row);
@@ -3200,7 +3200,7 @@ function openDM(idx){
   g('mDadresse').value=r.adresse||'';g('mDville').value=r.ville||'';
   g('mDemail').value=r.emailClient||'';g('mDtel').value=r.telClient||'';
   g('mDdate').value=r.date||new Date().toISOString().slice(0,10);
-  g('mDvalidite').value=r.validite||30;g('mDtva').value=r.tva||5.5;if(g('mDactivite'))g('mDactivite').value=r.activite||'bornpower';
+  g('mDvalidite').value=r.validite||30;g('mDtva').value=r.tva||5.5;if(g('mDactivite'))g('mDactivite').value=r.activite||'bornpower';if(typeof _fillCommercialSelect==='function')_fillCommercialSelect('mDcommercial',r.commercialId||(curUserObj?curUserObj.id:''));
   g('mDstat').value=r.statut||'Brouillon';g('mDnotes').value=r.notes||'';
   g('mDadvenir').value=r.advenir||'';
   if(g('mDprime')){
@@ -3276,7 +3276,7 @@ function saveD(){
   var tva=parseFloat(g('mDtva').value)||5.5;var activiteDevis=g('mDactivite')?g('mDactivite').value:'bornpower';
   var rows=g('mDlignes').querySelectorAll('tr');var lignes=[];
   rows.forEach(function(tr){var ta=tr.querySelector('textarea');var inputs=tr.querySelectorAll('input[type=number]');if(!ta)return;lignes.push({desc:ta.value,qte:parseFloat(inputs[0]?inputs[0].value:1)||0,pu:parseFloat(inputs[1]?inputs[1].value:0)||0});});
-  var row={id:eDevis>=0?DB.devis[eDevis].id:DB.nextId++,client:client,societe:g('mDsociete').value,adresse:g('mDadresse').value,ville:g('mDville').value,emailClient:g('mDemail').value,telClient:g('mDtel').value,date:g('mDdate').value,validite:parseInt(g('mDvalidite').value)||30,tva:tva,activite:activiteDevis,statut:g('mDstat').value,lignes:lignes,notes:g('mDnotes').value,advenir:g('mDadvenir').value,conditionsPaiement:g('mDpaiement').value,numero:eDevis>=0?DB.devis[eDevis].numero:genDevisNum(),commercialId:eDevis>=0&&DB.devis[eDevis].commercialId?DB.devis[eDevis].commercialId:(curUserObj?curUserObj.id:''),primeCommercial:g('mDprime')&&g('mDprime').value!==''?parseFloat(g('mDprime').value)||0:''};
+  var row={id:eDevis>=0?DB.devis[eDevis].id:DB.nextId++,client:client,societe:g('mDsociete').value,adresse:g('mDadresse').value,ville:g('mDville').value,emailClient:g('mDemail').value,telClient:g('mDtel').value,date:g('mDdate').value,validite:parseInt(g('mDvalidite').value)||30,tva:tva,activite:activiteDevis,statut:g('mDstat').value,lignes:lignes,notes:g('mDnotes').value,advenir:g('mDadvenir').value,conditionsPaiement:g('mDpaiement').value,numero:eDevis>=0?DB.devis[eDevis].numero:genDevisNum(),commercialId:g('mDcommercial')&&g('mDcommercial').value?g('mDcommercial').value:(eDevis>=0&&DB.devis[eDevis].commercialId?DB.devis[eDevis].commercialId:(curUserObj?curUserObj.id:'')),primeCommercial:g('mDprime')&&g('mDprime').value!==''?parseFloat(g('mDprime').value)||0:''};
   var _prevStatD=eDevis>=0&&DB.devis[eDevis]?DB.devis[eDevis].statut:'';
   if(eDevis>=0)DB.devis[eDevis]=row;else DB.devis.push(row);
   if(eDevis<0){addNotif('devis','Nouveau devis N°'+row.numero+' — '+client+' • par '+(curUserObj?curUserObj.name:'?'),'📋','@admin',{kind:'devis',id:row.id});}
@@ -5913,8 +5913,9 @@ function majTTC(htId,tvaId,ttcId){
   if(g(ttcId))g(ttcId).value=ttc?ttc.toFixed(2):'';
 }
 function callField(inputId){var v=(g(inputId)&&g(inputId).value)||'';if(!v){toast('Aucun numéro renseigné');return;}window.location.href='tel:'+v.replace(/[^0-9+]/g,'');}
-function _fillCommercialSelect(idVal){
-  var sel=g('mIcommercial');if(!sel)return;
+function _fillCommercialSelect(champId,idVal){
+  if(arguments.length===1){idVal=champId;champId='mIcommercial';} // rétrocompatibilité : ancien appel à 1 seul argument
+  var sel=g(champId);if(!sel)return;
   var accts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return (a.role==='commercial'||a.peutVendre)&&a.status==='active';});
   sel.innerHTML='<option value="">--</option>'+accts.map(function(a){return '<option value="'+a.id+'">'+_escR(a.name)+'</option>';}).join('');
   if(idVal)sel.value=idVal;else if(!idVal&&curUserObj&&isCommercial())sel.value=curUserObj.id;
@@ -7080,7 +7081,7 @@ function renderFunnelProspects(){
   var html='<div style="display:flex;align-items:center;gap:0;height:64px">';
   stages.forEach(function(s,idx){
     var flexVal=0.6+((counts[idx]/maxC)*3.4);
-    html+='<div style="flex:'+flexVal+';height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;background:'+s.bg+';clip-path:polygon(0 0,100% 8%,100% 92%,0 100%)"><div style="font-size:16px;font-weight:800">'+counts[idx]+'</div><div style="font-size:8px;text-transform:uppercase;letter-spacing:.04em;opacity:.85">'+s.lbl+'</div></div>';
+    html+='<div style="flex:'+flexVal+';height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;background:'+s.bg+';clip-path:polygon(0 0,100% 8%,100% 92%,0 100%);cursor:pointer" onclick="ouvrirProspectsParStatut(\''+s.key+'\')"><div style="font-size:16px;font-weight:800">'+counts[idx]+'</div><div style="font-size:8px;text-transform:uppercase;letter-spacing:.04em;opacity:.85">'+s.lbl+'</div></div>';
     if(idx<stages.length-1){
       var conv=counts[idx]>0?Math.round(counts[idx+1]/counts[idx]*100):0;
       html+='<div style="font-size:9px;color:#9aa0b8;font-weight:700;text-align:center;width:34px">'+conv+'%</div>';
@@ -7428,6 +7429,13 @@ function renderTopCommercial(){
 
 
 
+function ouvrirProspectsParStatut(statut){
+  nav('pgProspects');
+  setTimeout(function(){
+    var sel=g('prospStatF');
+    if(sel){sel.value=statut;renderProspects();}
+  },100);
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
