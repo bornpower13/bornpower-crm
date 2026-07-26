@@ -625,20 +625,19 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 .notifItem.hot .notifTxt{font-weight:700}
 .notifHotTag{display:inline-block;background:#dc2626;color:#fff;font-size:9px;font-weight:800;letter-spacing:.04em;padding:1px 7px;border-radius:20px;margin-left:6px;text-transform:uppercase;vertical-align:middle}
 
-.notifItem2{border-radius:16px;padding:14px 16px;margin-bottom:9px;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s ease}
-.notifItem2:hover{transform:translateY(-1px)}
-.notifItem2.n-unread{background:linear-gradient(145deg,#242a56,#171c3c);color:#fff}
-.notifItem2.n-unread::before{content:'';position:absolute;top:-40%;right:-10%;width:60%;height:120%;background:radial-gradient(circle,rgba(199,151,50,.22),transparent 70%);pointer-events:none}
-.notifItem2.n-read{background:#fff;border:1px solid #edeff6;color:#1f2438}
-.notifItem2 .n2top{display:flex;align-items:center;gap:8px;position:relative;margin-bottom:4px}
-.notifItem2 .n2ico{font-size:14px}
-.notifItem2 .n2who{font-size:11px;font-weight:700;opacity:.85}
-.notifItem2 .n2amt{font-size:22px;font-weight:800;position:relative;margin-bottom:2px}
-.notifItem2 .n2txt{font-size:12.5px;position:relative;opacity:.95;line-height:1.4}
-.notifItem2 .n2time{font-size:10px;opacity:.6;position:relative;margin-top:6px}
-.notifItem2.n-read .n2time{color:#9aa0b8}
+.notifItem2{background:#fff;border-radius:12px;padding:13px 16px;margin-bottom:8px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;border-left:3px solid #c79732;transition:transform .15s ease,box-shadow .15s ease;box-shadow:0 1px 2px rgba(20,25,60,.03)}
+.notifItem2:hover{transform:translateX(2px);box-shadow:0 3px 10px rgba(20,25,60,.07)}
+.notifItem2.n-read{border-left-color:#e5e8f2;opacity:.62}
+.notifItem2 .n2ico{font-size:17px;flex-shrink:0;margin-top:1px}
+.notifItem2 .n2mid{flex:1;min-width:0}
+.notifItem2 .n2who{font-size:11px;font-weight:700;color:#c79732;margin-bottom:1px}
+.notifItem2.n-read .n2who{color:#9aa0b8}
+.notifItem2 .n2amt{font-weight:800;color:#166534}
+.notifItem2 .n2txt{font-size:13px;color:#1f2438;line-height:1.42}
+.notifItem2.n-read .n2txt{color:#6b7280}
+.notifItem2 .n2time{font-size:10.5px;color:#b0b5c4;margin-top:4px}
 .notifItem2 .n2goto{color:#c79732;font-weight:700}
-.notifItem2.n-read .n2goto{color:#8a6408}
+.notifItem2.n-read .n2goto{color:#b0b5c4}
 </style>
 <!-- Firebase -->
 
@@ -1643,6 +1642,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
     <!-- MON PROFIL -->
     <div class="pg" id="pgMonProfil">
       <div class="pgHead"><div><h1>Mon profil</h1><p class="sub">Informations et sécurité</p></div></div>
+      <div class="card" style="margin-bottom:16px" id="peutVendreMoiCard"><div class="cardH"><h3>💼 Apparaître comme commercial</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Active-le pour être sélectionnable sur les devis/opportunités, et apparaître dans le classement — sans perdre tes droits admin.</div><button class="btn bGhost" id="peutVendreMoiBtn" onclick="togglePeutVendreMoi()" style="width:100%"></button></div></div>
       <div class="card" style="margin-bottom:16px" id="paiementEnLigneCard"><div class="cardH"><h3>💳 Paiement en ligne (à activer)</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Pour encaisser une carte directement depuis le CRM, il faut un compte chez un prestataire comme <b>Stripe</b> ou <b>SumUp</b>. Dès que tu en as un, dis-le-moi avec tes identifiants API et je branche l'encaissement réel — pas de simulation en attendant, pour ne jamais faire croire qu'un paiement a été pris alors que non.</div><div style="font-size:11.5px;color:#8a6408;background:#fdf3cc;border-radius:8px;padding:8px 10px">⏳ Non configuré pour l'instant</div></div></div>
       <div class="card" style="margin-bottom:16px" id="activiteSettingsCard"><div class="cardH"><h3>🌡️ Configuration Air Power</h3></div><div class="cardB" id="activiteSettingsBody"></div></div>
       <div class="card" style="margin-bottom:16px" id="partagePositionCard"><div class="cardH"><h3>📍 Position en direct</h3></div><div class="cardB"><div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Partage ta position pendant que tu utilises le CRM, pour que l'équipe te voie sur la carte. Désactivable à tout moment.</div><button class="btn bGhost" id="partagePositionBtn" onclick="togglePartagePosition()">📍 Partager ma position sur la carte</button></div></div>
@@ -2696,7 +2696,7 @@ function nav(id){
   if(id==='pgPlanning')renderP();
   if(id==='pgRapports')renderRapports();
   if(id==='pgUsers'){if(fbReady&&db){loadAccountsFromFirebase(function(){renderUsers();});}else{renderUsers();}}
-  if(id==='pgMonProfil'){renderMonProfil();setTimeout(renderBackupsCloud,100);if(typeof renderStockInstaller==='function')renderStockInstaller();if(typeof renderActiviteSettings==='function'&&isAdmin())renderActiviteSettings();if(typeof renderPartagePositionUI==='function')renderPartagePositionUI();if(typeof renderMonStockPerso==='function')renderMonStockPerso();}
+  if(id==='pgMonProfil'){renderMonProfil();setTimeout(renderBackupsCloud,100);if(typeof renderStockInstaller==='function')renderStockInstaller();if(typeof renderActiviteSettings==='function'&&isAdmin())renderActiviteSettings();if(typeof renderPartagePositionUI==='function')renderPartagePositionUI();if(typeof renderMonStockPerso==='function')renderMonStockPerso();if(typeof renderPeutVendreMoi==='function')renderPeutVendreMoi();}
   if(id==='pgDashCM')renderDashCM();
   if(id==='pgEditorial')renderEditorial();
   if(id==='pgMedia')renderMedia();
@@ -2875,16 +2875,16 @@ function renderNotifPanel(){updateNotifDiag();var pb=g('notifPermBtn');if(pb){va
     html+='<div class="notifDayLbl">'+lbl+'</div>';
     groups[lbl].forEach(function(n){
       var gi=(DB.notifications||[]).indexOf(n);
-      // Extraire un montant en euros du texte s'il y en a un, pour le mettre en avant
+      // Extraire un montant en euros du texte s'il y en a un, pour le mettre en gras dans la phrase
       var montantMatch=(n.txt||'').match(/[\d\s]+(?:[.,]\d+)?\s*€/);
-      var montantTxt=montantMatch?montantMatch[0].trim():null;
-      var texteSansMontant=montantMatch?n.txt.replace(montantMatch[0],'').replace(/\s+/g,' ').replace(/[—·:-]\s*$/,'').trim():n.txt;
-      html+='<div class="notifItem2 '+(n.read?'n-read':'n-unread')+'" style="animation:notifIn .38s ease forwards;animation-delay:'+(k*28)+'ms" onclick="clickNotif('+gi+')">'
-        +'<div class="n2top"><span class="n2ico">'+n.ico+'</span>'+(n.author&&n.author!==(curUserObj?curUserObj.name:'')?'<span class="n2who">'+n.author+'</span>':'')+'</div>'
-        +(montantTxt?'<div class="n2amt">'+montantTxt+'</div>':'')
-        +'<div class="n2txt">'+texteSansMontant+'</div>'
-        +'<div class="n2time">'+fmtNotifTime(n.ts)+(n.link?' · <span class="n2goto">Voir ›</span>':'')+'</div>'
-        +'</div>';
+      var texteAvecMontantGras=montantMatch?n.txt.replace(montantMatch[0],'<span class="n2amt">'+montantMatch[0].trim()+'</span>'):n.txt;
+      html+='<div class="notifItem2 '+(n.read?'n-read':'')+'" style="animation:notifIn .38s ease forwards;animation-delay:'+(k*28)+'ms" onclick="clickNotif('+gi+')">'
+        +'<span class="n2ico">'+n.ico+'</span>'
+        +'<div class="n2mid">'
+          +(n.author&&n.author!==(curUserObj?curUserObj.name:'')?'<div class="n2who">'+n.author+'</div>':'')
+          +'<div class="n2txt">'+texteAvecMontantGras+'</div>'
+          +'<div class="n2time">'+fmtNotifTime(n.ts)+(n.link?' · <span class="n2goto">Voir ›</span>':'')+'</div>'
+        +'</div></div>';
       k++;
     });
   });
@@ -7715,6 +7715,26 @@ function exportJSON(){
   var blob=new Blob([JSON.stringify(rows,null,2)],{type:'application/json'});
   var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='installations_bornpower.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
   toast('✅ Export JSON téléchargé ('+rows.length+' installations)');
+}
+function renderPeutVendreMoi(){
+  var card=g('peutVendreMoiCard');var btn=g('peutVendreMoiBtn');if(!card||!btn)return;
+  if(!curUserObj||curUserObj.role==='commercial'){card.style.display='none';return;}
+  card.style.display='block';
+  var accounts=loadAccounts();
+  var moi=accounts.find(function(a){return a.id===curUserObj.id;});
+  var actif=moi&&moi.peutVendre;
+  btn.textContent=actif?'✅ Actif — tu apparais comme commercial':'💼 Activer « Peut vendre »';
+  btn.className='btn '+(actif?'bPrimary':'bGhost');
+}
+function togglePeutVendreMoi(){
+  if(!curUserObj)return;
+  var accounts=loadAccounts();
+  var moi=accounts.find(function(a){return a.id===curUserObj.id;});
+  if(!moi){toast('Compte introuvable');return;}
+  moi.peutVendre=!moi.peutVendre;
+  saveAccounts(accounts);
+  toast(moi.peutVendre?'✅ Tu apparais maintenant comme commercial':'❌ Retiré des commerciaux');
+  renderPeutVendreMoi();
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
