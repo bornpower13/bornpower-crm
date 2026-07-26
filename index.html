@@ -1263,6 +1263,10 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
         <div id="conqOrdreRes" style="margin-top:12px"></div>
       </div>
       <div id="conqKpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px"></div>
+      <div id="conqAccesRapideZone" style="display:none">
+        <div style="font-size:12px;font-weight:700;color:#c79732;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">⭐ Tes outils les plus utilisés</div>
+        <div id="conqAccesRapide" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px;margin-bottom:22px"></div>
+      </div>
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;margin-top:20px">🔍 Trouver des prospects</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px"><div class="conqCard" onclick="nav('pgProspectIA')"><div class="conqIco" style="background:var(--purple-bg)">🎯</div><div class="conqT">Où prospecter</div><div class="conqD">L'IA propose des secteurs</div></div><div class="conqCard" onclick="nav('pgProspects')"><div class="conqIco" style="background:var(--blue-bg)">🔍</div><div class="conqT">Trouver des entreprises</div><div class="conqD">Base INSEE + contact</div></div><div class="conqCard" onclick="nav('pgLinkedIn')"><div class="conqIco" style="background:#e0e7ff">💼</div><div class="conqT">LinkedIn</div><div class="conqD">Leads + messages IA</div></div><div class="conqCard" onclick="autoProspectionModal()"><div class="conqIco" style="background:#f3e8ff">🤖</div><div class="conqT">Prospection automatique</div><div class="conqD">Trouve des leads sans y penser</div></div><div class="conqCard" onclick="nav('pgAcquisition')"><div class="conqIco" style="background:var(--gold3)">🔄</div><div class="conqT">Prospects dormants</div><div class="conqD">Réactiver avec l'IA</div></div></div>
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;margin-top:20px">📡 Contacter</div>
@@ -1508,6 +1512,12 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
     <div class="pg" id="pgMonCA">
       <div class="pgHead"><div><h1>Mon CA</h1><p class="sub">Vos performances et revenus générés</p></div></div>
       <div id="monCAContent"></div>
+      <div class="card" style="margin-top:16px" id="factuCard"><div class="cardH"><h3>💰 Mes ventes à facturer</h3></div><div class="cardB"><div id="factuList"></div><div style="margin-top:14px;padding-top:14px;border-top:1px solid #f0f2f8">
+        <label style="font-size:12px;font-weight:700;color:var(--muted)">📎 Ta facture (PDF ou photo) — obligatoire pour la demande</label>
+        <input type="file" id="factuUpload" accept="image/*,.pdf" style="margin:6px 0 4px;font-size:12px" onchange="chargerMaFactureFichier(this)">
+        <div id="factuFileName" style="font-size:11px;color:var(--muted);margin-bottom:10px"></div>
+        <button class="btn bPrimary" onclick="demanderPaiementGroupe()">💰 Envoyer ma demande de paiement</button>
+      </div></div></div>
     </div>
 
     <!-- OBJECTIFS -->
@@ -2545,10 +2555,10 @@ function nav(id){
   if(id==='pgMaJournee'){renderMaJournee();renderRappels('rappelsJournee');}
   if(id==='pgCatalogue')renderCatalogue();
   if(id==='pgProfils'){if(fbReady&&db){loadFromFirebase(function(){renderProfils();});}else{renderProfils();}}
-  if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgSequences'){setTimeout(renderSequences,50);}if(id==='pgLinkedIn')renderLinkedIn();
+  if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete'){renderConquete();if(typeof renderConqAccesRapide==='function')renderConqAccesRapide();}if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgSequences'){setTimeout(renderSequences,50);}if(id==='pgLinkedIn')renderLinkedIn();
   if(id==='pgSAV')renderSAV();
   if(id==='pgChat')renderChat();
-  if(id==='pgMonCA')renderMonCA();
+  if(id==='pgMonCA'){renderMonCA();if(typeof renderFacturationList==='function')renderFacturationList();}
   if(id==='pgObjectifs')renderObjectifs();
   if(id==='pgRH')renderRH();
   if(id==='pgFinance')renderFinance();
@@ -2758,6 +2768,7 @@ function openFromNotif(link){
   else if(link.kind==='visite'){nav('pgVisites');}
   else if(link.kind==='prospects'){nav('pgProspects');}
   else if(link.kind==='stock'){nav('pgStock');}
+  else if(link.kind==='paiement'){voirDemandePaiement(link.id);}
   else if(link.kind==='users'){nav('pgUsers');}
   else if(link.kind==='install_celebrate'){
     idx=(DB.installations||[]).findIndex(function(i){return i.id===link.id;});
@@ -7436,6 +7447,105 @@ function ouvrirProspectsParStatut(statut){
     if(sel){sel.value=statut;renderProspects();}
   },100);
 }
+function _mesVentesAFacturer(){
+  var role=getRole();var uid=curUserObj?curUserObj.id:'';var nom=curUserObj?curUserObj.name:'';
+  if(role==='installer'){
+    var mine=typeof _myPossibleNames==='function'?_myPossibleNames():[nom];
+    return (DB.installations||[]).filter(function(i){return mine.indexOf(_norm(i.installateur))>=0&&i.statut==='Terminée'&&!i.paiementDemande&&(i.remunInstall||0)>0;}).map(function(i){var idx=DB.installations.indexOf(i);return {type:'install',idx:idx,id:i.id,libelle:i.chantier||i.client||'Chantier',montant:i.remunInstall||0,date:i.dateFin};});
+  } else {
+    var myDevis=(DB.devis||[]).filter(function(d){return(!d.commercialId||d.commercialId===uid)&&d.statut==='Accepté'&&!d.paiementDemande;});
+    return myDevis.map(function(d){var idx=DB.devis.indexOf(d);var prime=(d.primeCommercial!==undefined&&d.primeCommercial!=='')?parseFloat(d.primeCommercial):((DB.commercialPrimes&&DB.commercialPrimes[uid])||0);return {type:'devis',idx:idx,id:d.id,libelle:'Devis n°'+(d.numero||'')+' — '+(d.client||''),montant:prime,date:d.date};}).filter(function(x){return x.montant>0;});
+  }
+}
+function renderFacturationList(){
+  var el=g('factuList');if(!el)return;
+  var items=_mesVentesAFacturer();
+  if(!items.length){el.innerHTML='<p style="color:var(--muted);font-size:12.5px">Rien à facturer pour l\'instant — tes ventes/chantiers terminés apparaîtront ici.</p>';return;}
+  el.innerHTML=items.map(function(x,i){
+    return '<label style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f0f2f8;cursor:pointer"><input type="checkbox" class="factuChk" data-i="'+i+'" checked><span style="flex:1;font-size:12.5px">'+_escR(x.libelle)+'</span><span style="font-size:12.5px;font-weight:800;color:var(--green)">'+fmtE(x.montant)+'</span></label>';
+  }).join('');
+}
+function _factuSelection(){
+  var items=_mesVentesAFacturer();
+  var chks=document.querySelectorAll('.factuChk:checked');
+  var sel=[];chks.forEach(function(c){var i=parseInt(c.dataset.i,10);if(items[i])sel.push(items[i]);});
+  return sel;
+}
+var _maFactureFichier=null,_maFactureFichierNom=null;
+function chargerMaFactureFichier(input){
+  var file=input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    _maFactureFichier=e.target.result;_maFactureFichierNom=file.name;
+    g('factuFileName').innerHTML='📎 '+_escR(file.name)+' <span style="color:var(--red);cursor:pointer" onclick="_maFactureFichier=null;_maFactureFichierNom=null;g(\'factuFileName\').innerHTML=\'\';g(\'factuUpload\').value=\'\';">✕</span>';
+  };
+  reader.readAsDataURL(file);
+}
+function demanderPaiementGroupe(){
+  var sel=_factuSelection();
+  if(!sel.length){toast('Sélectionne au moins une ligne');return;}
+  if(!_maFactureFichier){toast('⚠️ Importe ta facture avant d\'envoyer la demande');return;}
+  if(!confirm('Envoyer ta facture et demander le paiement de '+sel.length+' élément(s) ?'))return;
+  var qui=curUserObj?curUserObj.name:'Quelqu\'un';
+  var total=sel.reduce(function(s,x){return s+x.montant;},0);
+  if(!DB.demandesPaiement)DB.demandesPaiement=[];
+  var demande={id:DB.nextId++,par:qui,parId:(curUserObj?curUserObj.id:''),date:new Date().toISOString(),items:sel.map(function(x){return{type:x.type,id:x.id,libelle:x.libelle,montant:x.montant};}),montantTotal:total,factureFichier:_maFactureFichier,factureFichierNom:_maFactureFichierNom,statut:'En attente'};
+  DB.demandesPaiement.push(demande);
+  var accts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return(a.role==='admin'||a.role==='dirtech')&&a.status==='active';});
+  sel.forEach(function(x){
+    if(x.type==='install'){DB.installations[x.idx].paiementDemande=new Date().toISOString();DB.installations[x.idx].paiementDemandePar=qui;}
+    else{DB.devis[x.idx].paiementDemande=new Date().toISOString();}
+  });
+  accts.forEach(function(a){addNotif('pay','💰 '+qui+' a envoyé sa facture — demande de paiement pour '+sel.length+' élément(s) : '+fmtE(total),'💰',a.name,{kind:'paiement',id:demande.id});});
+  save();toast('✅ Facture envoyée, demande de paiement transmise');
+  _maFactureFichier=null;_maFactureFichierNom=null;if(g('factuFileName'))g('factuFileName').innerHTML='';if(g('factuUpload'))g('factuUpload').value='';
+  renderFacturationList();
+}
+
+function voirDemandePaiement(id){
+  var d=(DB.demandesPaiement||[]).find(function(x){return x.id===id;});
+  if(!d){toast('Demande introuvable');return;}
+  var lignesHtml=d.items.map(function(x){return '<div class="frow"><span>'+_escR(x.libelle)+'</span><span style="font-weight:700">'+fmtE(x.montant)+'</span></div>';}).join('');
+  var h='<div class="ov on" id="mDemPayTemp" onclick="if(event.target===this)this.remove()"><div class="modal"><div class="mh"><h2>💰 Demande de '+_escR(d.par)+'</h2><button class="mcl" onclick="g(\'mDemPayTemp\').remove()">✕</button></div><div style="padding:16px">'
+    +'<div style="font-size:11.5px;color:var(--muted);margin-bottom:12px">Envoyée le '+fmtD(d.date)+' · Statut : <b>'+d.statut+'</b></div>'
+    +'<div style="font-weight:700;font-size:12.5px;margin-bottom:8px">Détail</div>'
+    +lignesHtml
+    +'<div class="frow" style="border-top:2px solid var(--navy);margin-top:6px;padding-top:10px"><span style="font-weight:800">Total</span><span style="font-weight:800;color:var(--green)">'+fmtE(d.montantTotal)+'</span></div>'
+    +'<div style="margin-top:16px"><a href="'+d.factureFichier+'" download="'+_escR(d.factureFichierNom||'facture')+'" class="btn bPrimary" style="width:100%;text-align:center;display:block;text-decoration:none">📎 Voir / télécharger la facture jointe</a></div>'
+    +(d.statut==='En attente'?'<button class="btn bGhost" style="width:100%;margin-top:10px" onclick="marquerDemandePayee('+d.id+')">✅ Marquer comme payée</button>':'')
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function marquerDemandePayee(id){
+  var d=(DB.demandesPaiement||[]).find(function(x){return x.id===id;});
+  if(!d)return;
+  d.statut='Payée';d.payeeLe=new Date().toISOString();d.payeePar=(curUserObj?curUserObj.name:'');
+  save();
+  addNotif('pay','✅ Ta demande de paiement de '+fmtE(d.montantTotal)+' a été réglée','✅',d.par);
+  var m=g('mDemPayTemp');if(m)m.remove();
+  toast('✅ Marqué comme payée');
+}
+function renderConqAccesRapide(){
+  var zone=g('conqAccesRapideZone');var el=g('conqAccesRapide');if(!zone||!el)return;
+  var nom=curUserObj?curUserObj.name:'';
+  var mine=(DB.toolUsage||[]).filter(function(u){return u.by===nom;});
+  if(mine.length<3){zone.style.display='none';return;}
+  var infos={
+    simulateurModal:{ico:'💶',bg:'#fef3c7',t:'Simulateur d\'aides',d:'Prix après ADVENIR'},
+    rentabiliteModal:{ico:'📈',bg:'#dcfce7',t:'Rentabilité pro (ROI)',d:'Argument B2B'},
+    recommandeurModal:{ico:'💡',bg:'#ede9fe',t:'Recommandeur de borne',d:'Guide le client'},
+    objectionModal:{ico:'🛡️',bg:'#fee2e2',t:'Objection killer',d:'Réponse en temps réel'},
+    rechargeModal:{ico:'🔌',bg:'#dcfce7',t:'Temps de recharge',d:'Calcul pour le client'},
+    coutRechargeModal:{ico:'🔋',bg:'#dbeafe',t:'Coût de recharge',d:'Économies vs essence'},
+    simulateurClimModal:{ico:'🌡️',bg:'#fee2e2',t:'Aides Air Power',d:'MaPrimeRénov\', CEE, éco-PTZ'},
+    battlecardModal:{ico:'⚔️',bg:'#fee2e2',t:'Battlecard',d:'Répondre à la concurrence'}
+  };
+  var counts={};mine.forEach(function(u){counts[u.tool]=(counts[u.tool]||0)+1;});
+  var top=Object.keys(counts).filter(function(k){return infos[k];}).sort(function(a,b){return counts[b]-counts[a];}).slice(0,3);
+  if(!top.length){zone.style.display='none';return;}
+  zone.style.display='block';
+  el.innerHTML=top.map(function(k){var inf=infos[k];return '<div class="conqCard" onclick="'+k+'()"><div class="conqIco" style="background:'+inf.bg+'">'+inf.ico+'</div><div class="conqT">'+inf.t+'</div><div class="conqD">'+inf.d+'</div></div>';}).join('');
+}
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
   // Ventes signées (devis acceptés) ce mois
@@ -7731,7 +7841,7 @@ document.addEventListener('DOMContentLoaded',function(){
       if(window._fbListenDebounce)clearTimeout(window._fbListenDebounce);
       window._fbListenDebounce=setTimeout(function(){
         var ap=document.querySelector('.pg.on');
-        if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete')renderConquete();if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgLinkedIn')renderLinkedIn();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgDashInst')renderDashInst();
+        if(ap){var id=ap.id;if(id==='pgDash')renderDash();else if(id==='pgInst')renderT();else if(id==='pgPipeline')renderPipeline();else if(id==='pgContacts')renderContacts();else if(id==='pgDevis')renderDevis();else if(id==='pgStock')renderS();else if(id==='pgSAV')renderSAV();else if(id==='pgProspects')renderProspects();if(id==='pgProspectIA')renderProspectIA();if(id==='pgAcquisition')renderAcquisition();if(id==='pgConquete'){renderConquete();if(typeof renderConqAccesRapide==='function')renderConqAccesRapide();}if(id==='pgCarte'){setTimeout(renderCarte,50);}if(id==='pgLinkedIn')renderLinkedIn();else if(id==='pgCatalogue')renderCatalogue();else if(id==='pgVisites')renderVisites();else if(id==='pgDashInst')renderDashInst();
   if(id==='pgMaJournee')renderMaJournee();}
       },800);
     });
