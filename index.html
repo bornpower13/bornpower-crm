@@ -609,6 +609,36 @@ tfoot td{padding:9px 12px;font-weight:600;color:var(--navy);border-top:2px solid
 .warn2{background:linear-gradient(135deg,#fffbeb,#fff7ed);border:1px solid #fde68a;border-radius:16px;padding:16px;margin-bottom:22px}
 .warn2 .h{font-weight:800;font-size:12.5px;color:#92400e;margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .warnRow2{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:#fff;border-radius:10px;margin-bottom:6px;cursor:pointer}
+
+.tutoSection{background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(20,25,60,.04),0 10px 24px rgba(20,25,60,.06)}
+.tutoSection h3{font-size:15px;font-weight:800;color:#222651;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.tutoItem{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #f0f2f8}
+.tutoItem:last-child{border:none;margin:0;padding:0}
+.tutoItem b{color:#222651;font-size:13.5px}
+.tutoItem p{font-size:12.5px;color:#555;margin-top:4px;line-height:1.5}
+.tutoWhere{display:inline-block;background:#fdf3cc;color:#8a6408;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px;margin-top:6px}
+.tutoIntro{background:linear-gradient(145deg,#242a56,#171c3c);border-radius:16px;padding:20px;color:#fff;margin-bottom:18px}
+
+@keyframes notifPulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.35)}50%{box-shadow:0 0 0 6px rgba(220,38,38,0)}}
+.notifItem.hot{border-color:#fca5a5;background:linear-gradient(180deg,#fff5f5,#fff)}
+.notifItem.hot .notifIco{background:linear-gradient(135deg,#dc2626,#f87171)!important;animation:notifPulse 1.8s ease-in-out infinite}
+.notifItem.hot .notifTxt{font-weight:700}
+.notifHotTag{display:inline-block;background:#dc2626;color:#fff;font-size:9px;font-weight:800;letter-spacing:.04em;padding:1px 7px;border-radius:20px;margin-left:6px;text-transform:uppercase;vertical-align:middle}
+
+.notifItem2{border-radius:16px;padding:14px 16px;margin-bottom:9px;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s ease}
+.notifItem2:hover{transform:translateY(-1px)}
+.notifItem2.n-unread{background:linear-gradient(145deg,#242a56,#171c3c);color:#fff}
+.notifItem2.n-unread::before{content:'';position:absolute;top:-40%;right:-10%;width:60%;height:120%;background:radial-gradient(circle,rgba(199,151,50,.22),transparent 70%);pointer-events:none}
+.notifItem2.n-read{background:#fff;border:1px solid #edeff6;color:#1f2438}
+.notifItem2 .n2top{display:flex;align-items:center;gap:8px;position:relative;margin-bottom:4px}
+.notifItem2 .n2ico{font-size:14px}
+.notifItem2 .n2who{font-size:11px;font-weight:700;opacity:.85}
+.notifItem2 .n2amt{font-size:22px;font-weight:800;position:relative;margin-bottom:2px}
+.notifItem2 .n2txt{font-size:12.5px;position:relative;opacity:.95;line-height:1.4}
+.notifItem2 .n2time{font-size:10px;opacity:.6;position:relative;margin-top:6px}
+.notifItem2.n-read .n2time{color:#9aa0b8}
+.notifItem2 .n2goto{color:#c79732;font-weight:700}
+.notifItem2.n-read .n2goto{color:#8a6408}
 </style>
 <!-- Firebase -->
 
@@ -1634,6 +1664,105 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
       </div>
     </div>
 
+    <div class="pg" id="pgTutoAdmin">
+      <div class="pgHead"><div><h1>📖 Tutoriel Admin</h1><p class="sub">Tout ce qui a été ajouté récemment</p></div></div>
+
+      <div class="tutoIntro"><b>👋 Ce guide couvre les nouveautés récentes.</b><br><span style="font-size:12.5px;opacity:.85">Le reste du CRM (devis, installations, planning...) fonctionne comme avant — ici, seulement ce qui a changé.</span></div>
+
+      <div class="tutoSection"><h3>📊 Tableau de bord</h3>
+        <div class="tutoItem"><b>Performance Born Power vs Air Power</b><p>Une carte compare le CA des deux activités côte à côte, avec la tendance par rapport au mois précédent.</p><span class="tutoWhere">Tableau de bord, en haut</span></div>
+        <div class="tutoItem"><b>Entonnoir prospects (cliquable)</b><p>Chaque colonne (Nouveaux, Contactés...) t'emmène directement vers tes prospects filtrés sur ce statut précis.</p><span class="tutoWhere">Tableau de bord</span></div>
+        <div class="tutoItem"><b>Charge installateurs</b><p>Qui est chargé, modéré ou disponible cette semaine, en un coup d'œil.</p><span class="tutoWhere">Tableau de bord</span></div>
+        <div class="tutoItem"><b>Installateur du mois / Meilleur commercial</b><p>Calculés automatiquement chaque mois selon les chantiers terminés et le CA généré.</p><span class="tutoWhere">Tableau de bord</span></div>
+        <div class="tutoItem"><b>CA mensuel en 2 courbes</b><p>Le graphique sépare maintenant Born Power (or) et Air Power (bleu) au lieu d'un seul chiffre mélangé.</p><span class="tutoWhere">Tableau de bord</span></div>
+      </div>
+
+      <div class="tutoSection"><h3>🌡️ Air Power</h3>
+        <div class="tutoItem"><b>Configuration</b><p>Nom, logo, SIRET propres à Air Power, indépendants de Born Power.</p><span class="tutoWhere">Mon profil → Configuration Air Power</span></div>
+        <div class="tutoItem"><b>Activité sur chaque fiche</b><p>Devis, installations, catalogue et installateurs ont tous un champ Activité (⚡ Born Power / 🌡️ Air Power) qui filtre automatiquement le reste (produits proposés, installateurs assignables...).</p></div>
+      </div>
+
+      <div class="tutoSection"><h3>👷 Gestion des installateurs</h3>
+        <div class="tutoItem"><b>Stock personnel alloué</b><p>Renseigne ce que tu confies à chaque installateur (câble, disjoncteurs...) sur sa fiche. Se déduit automatiquement quand il déclare avoir utilisé du matériel sur un chantier terminé.</p><span class="tutoWhere">Utilisateurs → fiche installateur</span></div>
+        <div class="tutoItem"><b>« Peut vendre »</b><p>Pour apparaître toi-même comme commercial sélectionnable (devis, opportunités, classement) sans changer ton rôle admin.</p><span class="tutoWhere">Utilisateurs → ta fiche</span></div>
+        <div class="tutoItem"><b>Discussion par chantier</b><p>Un fil de messages dédié à chaque installation, pour échanger avec l'installateur et le commercial concernés sans passer par la messagerie générale.</p><span class="tutoWhere">Fiche installation</span></div>
+      </div>
+
+      <div class="tutoSection"><h3>⚡ Consuel</h3>
+        <div class="tutoItem"><b>Suivi par chantier</b><p>Statut (À demander / Envoyée / Reçue) + possibilité de joindre le fichier reçu. Alerte visuelle si un chantier en <b>copropriété</b> est terminé sans Consuel reçu (les maisons individuelles n'en ont généralement pas besoin).</p><span class="tutoWhere">Fiche installation</span></div>
+      </div>
+
+      <div class="tutoSection"><h3>💰 Demandes de paiement (indépendants)</h3>
+        <div class="tutoItem"><b>Comment ça marche</b><p>Installateurs et commerciaux sont indépendants : ils importent leur PROPRE facture (pas générée par le CRM) et demandent le paiement. Tu reçois une notification cliquable qui montre le détail et leur facture à télécharger, avec un bouton pour marquer comme payée.</p><span class="tutoWhere">Notifications</span></div>
+      </div>
+
+      <div class="tutoSection"><h3>🔧 Divers</h3>
+        <div class="tutoItem"><b>Mode hors-ligne</b><p>L'app peut s'ouvrir et être consultée sans réseau (lecture seule tant que la connexion n'est pas revenue).</p></div>
+        <div class="tutoItem"><b>Notifications cliquables</b><p>La quasi-totalité des notifications t'emmènent maintenant directement vers ce qu'il faut regarder ou traiter.</p></div>
+      </div>
+    </div>
+
+    <div class="pg" id="pgTutoCommercial">
+      <div class="pgHead"><div><h1>📖 Tutoriel Commercial</h1><p class="sub">Tout ce qui a été ajouté récemment</p></div></div>
+
+      <div class="tutoIntro"><b>👋 Ce guide couvre les nouveautés récentes.</b><br><span style="font-size:12.5px;opacity:.85">Le reste du CRM fonctionne comme avant — ici, seulement ce qui a changé.</span></div>
+
+      <div class="tutoSection"><h3>📊 Mon tableau de bord</h3>
+        <div class="tutoItem"><b>Ma performance Born Power vs Air Power</b><p>Ton CA et ton pipeline séparés par activité, pour voir laquelle tu développes le mieux.</p></div>
+        <div class="tutoItem"><b>Classement du mois</b><p>Si tu es admin avec « Peut vendre » activé, tu y apparais aussi désormais.</p></div>
+      </div>
+
+      <div class="tutoSection"><h3>📇 Prospects</h3>
+        <div class="tutoItem"><b>Score 🔥 sur chaque prospect</b><p>Note de 0 à 100 calculée automatiquement (statut, fraîcheur du contact, engagement). La liste est triée du plus chaud au plus froid.</p></div>
+      </div>
+
+      <div class="tutoSection"><h3>📄 Devis</h3>
+        <div class="tutoItem"><b>Lien de partage client</b><p>Bouton 🔗 sur chaque devis : génère un lien que ton client peut ouvrir pour voir son devis proprement, sans se connecter. Tu es notifié en direct dès qu'il l'ouvre — signal fort pour relancer tout de suite.</p><span class="tutoWhere">Liste des devis</span></div>
+        <div class="tutoItem"><b>Choisir le commercial</b><p>Tu peux maintenant t'assigner toi-même sur un devis ou une opportunité, même si tu n'étais pas celui qui l'a créé.</p></div>
+      </div>
+
+      <div class="tutoSection"><h3>💰 Mes ventes à facturer</h3>
+        <div class="tutoItem"><b>Comment ça marche</b><p>Tu es indépendant : coche tes ventes conclues, importe TA PROPRE facture (PDF ou photo), puis envoie ta demande de paiement. Impossible d'envoyer sans avoir joint ta facture.</p><span class="tutoWhere">Mon CA, en bas de page</span></div>
+      </div>
+
+      <div class="tutoSection"><h3>🎯 Conquête</h3>
+        <div class="tutoItem"><b>⭐ Tes outils les plus utilisés</b><p>Apparaît automatiquement en haut de la page une fois que tu as assez utilisé les outils — accès direct sans chercher parmi les 26.</p></div>
+        <div class="tutoItem"><b>🎓 Mon parcours</b><p>Check-list de démarrage si tu es nouveau (7 étapes progressives).</p></div>
+        <div class="tutoItem"><b>🗣️ Entraînement objections</b><p>Pratique tes réponses aux objections classiques avant un rendez-vous.</p></div>
+        <div class="tutoItem"><b>🎯 Ce qui marche</b><p>Vue d'ensemble des outils les plus utilisés par toute l'équipe.</p></div>
+      </div>
+    </div>
+
+    <div class="pg" id="pgTutoInstaller">
+      <div class="pgHead"><div><h1>📖 Tutoriel Installateur</h1><p class="sub">Tout ce qui a été ajouté récemment</p></div></div>
+
+      <div class="tutoIntro"><b>👋 Ce guide couvre les nouveautés récentes.</b><br><span style="font-size:12.5px;opacity:.85">Le reste du CRM fonctionne comme avant — ici, seulement ce qui a changé.</span></div>
+
+      <div class="tutoSection"><h3>📊 Mon tableau de bord (nouveau)</h3>
+        <div class="tutoItem"><b>Vue d'ensemble</b><p>Chantiers terminés ce mois, en cours, à venir cette semaine, montant gagné — tout en un coup d'œil à l'ouverture de l'app.</p><span class="tutoWhere">Nouveau dans le menu, tout en haut</span></div>
+        <div class="tutoItem"><b>Matériel à charger + État du stock</b><p>Repris directement dans ce nouveau tableau de bord, plus besoin d'aller les chercher ailleurs.</p></div>
+      </div>
+
+      <div class="tutoSection"><h3>🏠 Fiche installation</h3>
+        <div class="tutoItem"><b>⚡ Statut Consuel</b><p>Renseigne où en est l'attestation (À demander / Envoyée / Reçue). Concerne surtout les copropriétés — pas obligatoire en général pour une maison individuelle.</p></div>
+        <div class="tutoItem"><b>💬 Discussion du chantier</b><p>Un fil de messages propre à CE chantier, pour échanger avec le commercial et l'admin sans passer par la messagerie générale.</p></div>
+        <div class="tutoItem"><b>🎒 Matériel utilisé</b><p>Note ce que tu as consommé (câble, disjoncteurs...) — se déduit automatiquement de ton stock personnel une fois le chantier marqué Terminée.</p></div>
+        <div class="tutoItem"><b>🖨️ Imprimer l'ordre de mission / 📥 Télécharger en PDF</b><p>Toutes les infos du chantier sur un document propre à emporter, avant de partir sur place.</p></div>
+      </div>
+
+      <div class="tutoSection"><h3>📦 Mon stock personnel</h3>
+        <div class="tutoItem"><b>Ce qui t'a été confié</b><p>Visible directement dans Mon profil — les quantités baissent automatiquement à chaque chantier terminé où tu déclares du matériel utilisé.</p></div>
+      </div>
+
+      <div class="tutoSection"><h3>💰 Mes ventes à facturer</h3>
+        <div class="tutoItem"><b>Comment ça marche</b><p>Tu es indépendant : coche tes chantiers terminés, importe TA PROPRE facture (PDF ou photo), puis envoie ta demande de paiement. Impossible d'envoyer sans avoir joint ta facture.</p><span class="tutoWhere">Mon CA, en bas de page</span></div>
+      </div>
+
+      <div class="tutoSection"><h3>📍 Position en direct</h3>
+        <div class="tutoItem"><b>Partage volontaire</b><p>Active-le si tu veux que l'équipe te voie sur la carte pendant tes chantiers. Désactivable à tout moment.</p><span class="tutoWhere">Mon profil</span></div>
+      </div>
+    </div>
+
     <!-- ══════════ COMMUNITY MANAGER PAGES ══════════ -->
     <div class="pg" id="pgDashCM">
       <div class="pgHead"><div><h1>Tableau de bord digital</h1><p class="sub">Vue d'ensemble de votre activité réseaux sociaux</p></div></div>
@@ -2488,7 +2617,7 @@ var NAV_MAP={
     {s:'Installations'},{id:'pgInst',ico:'⚡',lbl:'Installations'},{id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},{id:'pgSAV',ico:'🔧',lbl:'SAV'},{id:'pgStock',ico:'📦',lbl:'Stock'},
     {s:'Équipe'},{id:'pgCommerciaux',ico:'💼',lbl:'Commerciaux'},{id:'pgProfils',ico:'👷',lbl:'Installateurs'},{id:'pgRH',ico:'👥',lbl:'RH'},{id:'pgRecrutement',ico:'🎓',lbl:'Recrutement'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
-    {s:'Réglages'},{id:'pgUsers',ico:'🔑',lbl:'Utilisateurs'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
+    {s:'Réglages'},{id:'pgUsers',ico:'🔑',lbl:'Utilisateurs'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'},{id:'pgTutoAdmin',ico:'📖',lbl:'Tutoriel'}
   ],
   dirtech:[
     {s:"Vue d'ensemble"},{id:'pgDashDT',ico:'📊',lbl:'Tableau de bord'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
@@ -2503,13 +2632,13 @@ var NAV_MAP={
     {s:'Vendre'},{id:'pgCarte',ico:'🗺️',lbl:'Carte'},{id:'pgConquete',ico:'🚀',lbl:'Conquête clients'},{id:'pgProspects',ico:'📇',lbl:'Mes prospects'},{id:'pgPipeline',ico:'🎯',lbl:'Mon pipeline'},{id:'pgDevis',ico:'📋',lbl:'Mes devis'},{id:'pgContacts',ico:'👥',lbl:'Mes contacts'},
     {s:'Outils'},{id:'pgCatalogue',ico:'🏷️',lbl:'Catalogue'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
-    {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
+    {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'},{id:'pgTutoCommercial',ico:'📖',lbl:'Tutoriel'}
   ],
   installer:[
     {s:'Mes chantiers'},{id:'pgDashInst',ico:'📊',lbl:'Tableau de bord'},{id:'pgMaJournee',ico:'☀️',lbl:'Ma journée'},{id:'pgInst',ico:'⚡',lbl:'Mes installations'},{id:'pgMonCA',ico:'💰',lbl:'Mon CA'},
     {id:'pgSAV',ico:'🔧',lbl:'SAV'},{id:'pgVisites',ico:'🛠️',lbl:'Visites techniques'},{id:'pgPlanning',ico:'📅',lbl:'Planning'},{id:'pgStock',ico:'📦',lbl:'Stock'},
     {s:'Communication'},{id:'pgChat',ico:'💬',lbl:'Messagerie'},
-    {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'}
+    {s:'Compte'},{id:'pgMonProfil',ico:'👤',lbl:'Mon profil'},{id:'pgTutoInstaller',ico:'📖',lbl:'Tutoriel'}
   ],
   cm:[
     {s:'Mon espace digital'},{id:'pgDashCM',ico:'📊',lbl:'Tableau de bord'},
@@ -2745,11 +2874,17 @@ function renderNotifPanel(){updateNotifDiag();var pb=g('notifPermBtn');if(pb){va
   order.forEach(function(lbl){
     html+='<div class="notifDayLbl">'+lbl+'</div>';
     groups[lbl].forEach(function(n){
-      var gi=(DB.notifications||[]).indexOf(n);var col=_NOTIF_COL[n.type]||'#242a56';
-      html+='<div class="notifItem'+(n.read?'':' unread')+'" style="animation-delay:'+(k*28)+'ms" onclick="clickNotif('+gi+')">'
-        +'<div class="notifIco" style="'+(n.read?'':('background:linear-gradient(135deg,'+col+',#171c3c)'))+'">'+n.ico+'</div>'
-        +'<div style="flex:1;min-width:0"><div class="notifTxt">'+n.txt+'</div><div class="notifTime">'+(n.author&&n.author!==(curUserObj?curUserObj.name:'')?('<span style="color:#8990a8;font-weight:600">'+n.author+'</span> · '):'')+fmtNotifTime(n.ts)+(n.link?' · <span style="color:#c79732;font-weight:700">Voir la fiche ›</span>':'')+'</div></div>'
-        +(n.read?'':'<div class="notifDot"></div>')+'</div>';
+      var gi=(DB.notifications||[]).indexOf(n);
+      // Extraire un montant en euros du texte s'il y en a un, pour le mettre en avant
+      var montantMatch=(n.txt||'').match(/[\d\s]+(?:[.,]\d+)?\s*€/);
+      var montantTxt=montantMatch?montantMatch[0].trim():null;
+      var texteSansMontant=montantMatch?n.txt.replace(montantMatch[0],'').replace(/\s+/g,' ').replace(/[—·:-]\s*$/,'').trim():n.txt;
+      html+='<div class="notifItem2 '+(n.read?'n-read':'n-unread')+'" style="animation:notifIn .38s ease forwards;animation-delay:'+(k*28)+'ms" onclick="clickNotif('+gi+')">'
+        +'<div class="n2top"><span class="n2ico">'+n.ico+'</span>'+(n.author&&n.author!==(curUserObj?curUserObj.name:'')?'<span class="n2who">'+n.author+'</span>':'')+'</div>'
+        +(montantTxt?'<div class="n2amt">'+montantTxt+'</div>':'')
+        +'<div class="n2txt">'+texteSansMontant+'</div>'
+        +'<div class="n2time">'+fmtNotifTime(n.ts)+(n.link?' · <span class="n2goto">Voir ›</span>':'')+'</div>'
+        +'</div>';
       k++;
     });
   });
@@ -2769,6 +2904,8 @@ function openFromNotif(link){
   else if(link.kind==='prospects'){nav('pgProspects');}
   else if(link.kind==='stock'){nav('pgStock');}
   else if(link.kind==='paiement'){voirDemandePaiement(link.id);}
+  else if(link.kind==='rappels'){nav(getRole()==='installer'?'pgDashInst':(getRole()==='commercial'?'pgDashComm':'pgDash'));}
+  else if(link.kind==='moncA'){nav('pgMonCA');}
   else if(link.kind==='users'){nav('pgUsers');}
   else if(link.kind==='install_celebrate'){
     idx=(DB.installations||[]).findIndex(function(i){return i.id===link.id;});
@@ -4358,7 +4495,7 @@ var _finCalOffset=0;
 function finCalNav(delta){_finCalOffset+=delta;renderFinCalendrier();}
 function _payItemsAll(){
   var items=[];
-  loadAccounts().filter(function(a){return a.status==='active'&&a.role==='commercial';}).forEach(function(u){
+  loadAccounts().filter(function(a){return a.status==='active'&&(a.role==='commercial'||a.peutVendre);}).forEach(function(u){
     var prime=(DB.commercialPrimes&&DB.commercialPrimes[u.id])||0;
     DB.devis.filter(function(d){if(d.commercialId&&d.commercialId!==u.id)return false;return d.statut==='Accepté';}).forEach(function(d){
       var mt=(d.primeCommercial!==undefined&&d.primeCommercial!=='')?(parseFloat(d.primeCommercial)||0):prime;if(!mt)return;
@@ -4463,7 +4600,7 @@ function checkPaieAlerte(){
   if(!DB.paieNotifLog)DB.paieNotifLog={};
   if(DB.paieNotifLog[key])return;
   DB.paieNotifLog[key]=true;
-  addNotif('pay','⏰ Paie le '+fmtD(d)+' — validez vos '+nb+' '+quoi+'(s) en attente pour être payé !','⏰',nom);
+  addNotif('pay','⏰ Paie le '+fmtD(d)+' — validez vos '+nb+' '+quoi+'(s) en attente pour être payé !','⏰',nom,{kind:'moncA'});
   save();
 }
 function _daysInMonth(y,m){return new Date(y,m+1,0).getDate();}
@@ -5019,7 +5156,7 @@ function renderPriorites(){
 function renderClassement(){
   var el=g('classementBox');if(!el)return;
   var now=new Date();var m=now.getMonth(),y=now.getFullYear();
-  var accounts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.role==='commercial'&&a.status==='active';});
+  var accounts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return (a.role==='commercial'||a.peutVendre)&&a.status==='active';});
   var scores=accounts.map(function(a){
     var ca=(DB.devis||[]).filter(function(d){if(d.commercialId&&d.commercialId!==a.id)return false;if(d.statut!=='Accepté')return false;var dt=new Date(d.date);return dt.getMonth()===m&&dt.getFullYear()===y;}).reduce(function(sm,d){return sm+(d.lignes||[]).reduce(function(s2,l){return s2+(l.qte||0)*(l.pu||0);},0);},0);
     return {name:a.name,ca:ca,me:(curUserObj&&a.id===curUserObj.id)};
@@ -5535,7 +5672,7 @@ function envoyerEventReminder(){
   checks.forEach(function(cb){
     var uid=cb.value;var name=cb.getAttribute('data-name');
     DB.taches.push({id:DB.nextId++,userId:uid,titre:titreFinal,date:date,priorite:'normale',fait:false,createdBy:(curUserObj?curUserObj.id:''),createdAt:new Date().toISOString()});
-    addNotif('event','🔔 Nouveau rappel'+(who?(' de '+who):'')+' : '+titreFinal+(date?(' — '+fmtD(date)):''),'🔔',name);
+    addNotif('event','🔔 Nouveau rappel'+(who?(' de '+who):'')+' : '+titreFinal+(date?(' — '+fmtD(date)):''),'🔔',name,{kind:'rappels'});
     n++;
   });
   save();var m=g('mEvtTemp');if(m)m.remove();
@@ -5586,7 +5723,7 @@ function _checkRdvJm1(){
       var txt='📅 Demain : RDV avec '+(p.nom||p.societe||'un prospect')+(p.visiteHeure?(' à '+p.visiteHeure):'')+(p.ville?(' — '+p.ville):'');
       if(!DB.taches)DB.taches=[];
       DB.taches.push({id:DB.nextId++,userId:uid,titre:txt,date:tKey,priorite:'haute',fait:false,createdBy:'auto',createdAt:new Date().toISOString()});
-      addNotif('visite',txt,'📅',who||'');
+      addNotif('visite',txt,'📅',who||'',{kind:'visite'});
       DB._rappelsRdvSent[sentKey]=true;changed=true;
     });
     if(changed&&typeof save==='function')save();
@@ -6557,7 +6694,7 @@ function _fleetPickSecteur(offset){var d=new Date();var idx=(d.getDate()+offset)
 function _runFleetProspectionDaily(){
   var today=new Date().toISOString().slice(0,10);
   if(DB._lastFleetProspectionDate===today)return;
-  var commerciaux=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.role==='commercial'&&a.status==='active';});
+  var commerciaux=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return (a.role==='commercial'||a.peutVendre)&&a.status==='active';});
   if(!commerciaux.length){DB._lastFleetProspectionDate=today;save();return;}
   var usedKeys={};
   (DB.prospects||[]).forEach(function(p){if(p.siret)usedKeys[p.siret]=true;});
@@ -7422,7 +7559,7 @@ function _reponseEntrainement(){
 function renderTopCommercial(){
   var el=g('topCommercial');if(!el)return;
   var now=new Date();var mois=now.getMonth(),an=now.getFullYear();
-  var accounts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return a.role==='commercial'&&a.status==='active';});
+  var accounts=(typeof loadAccounts==='function'?loadAccounts():[]).filter(function(a){return (a.role==='commercial'||a.peutVendre)&&a.status==='active';});
   if(!accounts.length){el.innerHTML='<div style="color:#fff;font-size:12.5px;opacity:.8">Aucun commercial pour l\'instant</div>';return;}
   var rows=accounts.map(function(a){
     var ca=(DB.devis||[]).filter(function(d){if(d.commercialId&&d.commercialId!==a.id)return false;if(d.statut!=='Accepté')return false;if(!d.date)return false;var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;}).reduce(function(sm,d){return sm+(d.lignes||[]).reduce(function(s2,l){return s2+(l.qte||0)*(l.pu||0);},0);},0);
@@ -7521,7 +7658,7 @@ function marquerDemandePayee(id){
   if(!d)return;
   d.statut='Payée';d.payeeLe=new Date().toISOString();d.payeePar=(curUserObj?curUserObj.name:'');
   save();
-  addNotif('pay','✅ Ta demande de paiement de '+fmtE(d.montantTotal)+' a été réglée','✅',d.par);
+  addNotif('pay','✅ Ta demande de paiement de '+fmtE(d.montantTotal)+' a été réglée','✅',d.par,{kind:'paiement',id:d.id});
   var m=g('mDemPayTemp');if(m)m.remove();
   toast('✅ Marqué comme payée');
 }
@@ -7609,10 +7746,10 @@ function renderMonCA(){var u=curUserObj;if(!u)return;var role=getRole();var uid=
 var html='<div class="myCACard"><div class="myCATitle">'+caCardTitle+'</div><div class="myCAVal">'+fmtE(caTotal)+'</div><div class="myCASubVal">'+caNbDossiers+' dossier(s) &middot; '+fmtE(caMonth)+' ce mois</div></div>';
 if(role==='installer'){html+=renderInstallerPay(nom,mois,an);}
 if(role==='commercial'){html+=renderCommercialPay(uid,mois,an);}if(objVal>0){html+='<div class="card" style="margin-bottom:16px"><div class="cardH"><h3>Objectif du mois</h3></div><div class="cardB"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:var(--muted)">Objectif</span><span style="font-size:13px;font-weight:600">'+fmtE(objVal)+'</span></div><div class="objBar"><div class="objBarF" style="width:'+pct+'%"></div></div><div style="display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)">'+fmtE(caMonth)+' atteint</span><span style="font-size:12px;font-weight:600;color:'+(pct>=100?'var(--green)':'var(--orange)')+'">'+pct+'%</span></div></div></div>';}html+='<div class="card"><div class="cardH"><h3>🏆 Classement</h3></div><div class="cardB"><div class="rankCard">'+ranking.slice(0,10).map(function(r,i){var pos=i+1;var cls=pos===1?'first':pos===2?'second':pos===3?'third':'';var isMe=r.id===uid;return '<div class="rankRow'+(isMe?' myRankRow':'')+'"><div class="rankPos '+cls+'">'+pos+'</div><div style="width:28px;height:28px;border-radius:50%;background:'+r.color+';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">'+r.avatar+'</div><div style="flex:1"><div style="font-size:13px;font-weight:'+(isMe?'700':'500')+'">'+r.name+(isMe?' (moi)':'')+'</div></div><div style="font-size:13px;font-weight:600;color:var(--green)">'+fmtE(r.ca)+'</div></div>';}).join('')+'</div></div></div>';el.innerHTML=html;}
-function buildRanking(role){var accounts=role==='commercial'?loadAccounts().filter(function(a){return a.status==='active'&&a.role==='commercial';}):loadAccounts().filter(function(a){return a.status==='active'&&(a.role==='installer'||a.role==='dirtech');});return accounts.map(function(u){var ca=role==='commercial'?DB.devis.filter(function(d){return (!d.commercialId||d.commercialId===u.id)&&d.statut==='Accepté';}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0):DB.installations.filter(function(i){return i.installateur===u.name&&i.statut==='Terminée';}).reduce(function(s,i){return s+(i.montant||0);},0);return {id:u.id,name:u.name,avatar:u.avatar||'?',color:u.color||'#888',ca:ca,role:u.role};}).sort(function(a,b){return b.ca-a.ca;});}
+function buildRanking(role){var accounts=role==='commercial'?loadAccounts().filter(function(a){return a.status==='active'&&(a.role==='commercial'||a.peutVendre);}):loadAccounts().filter(function(a){return a.status==='active'&&(a.role==='installer'||a.role==='dirtech');});return accounts.map(function(u){var ca=role==='commercial'?DB.devis.filter(function(d){return (!d.commercialId||d.commercialId===u.id)&&d.statut==='Accepté';}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0):DB.installations.filter(function(i){return i.installateur===u.name&&i.statut==='Terminée';}).reduce(function(s,i){return s+(i.montant||0);},0);return {id:u.id,name:u.name,avatar:u.avatar||'?',color:u.color||'#888',ca:ca,role:u.role};}).sort(function(a,b){return b.ca-a.ca;});}
 
 // ── OBJECTIFS ──
-function renderObjectifs(){var now=new Date();var allAccounts=loadAccounts().filter(function(a){return a.status==='active';});var commerciaux=allAccounts.filter(function(a){return a.role==='commercial';});function buildCards(list){var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">';list.forEach(function(u){var d=new Date(now.getFullYear(),now.getMonth(),1);var obj=DB.objectifs.find(function(o){return o.userId===u.id&&o.mois===d.getMonth()&&o.an===d.getFullYear();});var caM=calcCAForUser(u,d.getMonth(),d.getFullYear());var objVal=obj?obj.montant:0;var pct=objVal>0?Math.min(100,Math.round(caM/objVal*100)):0;html+='<div class="objCard"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div><div style="font-size:13px;font-weight:600;color:var(--navy)">'+u.name+'</div><div style="font-size:11px;color:var(--muted)">'+(ROLE_LABELS[u.role]||u.role)+' &middot; '+MO[d.getMonth()]+' '+d.getFullYear()+'</div></div><div style="display:flex;align-items:center;gap:6px"><span style="font-size:13px;font-weight:600;color:var(--green)">'+fmtE(caM)+'</span>'+(isAdmin()?'<button class="act" onclick="openObjModalFor(\''+u.id+'\',\''+u.name+'\','+d.getMonth()+','+d.getFullYear()+')">✏️</button>':'')+'</div></div>'+(objVal>0?'<div class="objBar"><div class="objBarF" style="width:'+pct+'%"></div></div><div style="display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--muted)">Obj: '+fmtE(objVal)+'</span><span style="font-size:11px;font-weight:600;color:'+(pct>=100?'var(--green)':'var(--orange)')+'">'+pct+'%</span></div>':'<div style="font-size:12px;color:var(--muted)">Aucun objectif défini</div>')+'</div>';});html+='</div>';return html;}var html='';if(commerciaux.length){html+='<div style="margin-bottom:20px"><div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:12px"><span style="background:var(--purple-bg);color:var(--purple);padding:3px 10px;border-radius:12px;font-size:11px">Commerciaux</span></div>'+buildCards(commerciaux)+'</div>';}else{html='<div style="text-align:center;padding:50px;color:var(--muted)"><div style="font-size:42px;margin-bottom:12px">🎯</div><p style="font-size:15px;font-weight:600;margin-bottom:6px">Aucun commercial enregistré</p><p style="font-size:13px">Les objectifs CA concernent uniquement les commerciaux.</p></div>';}g('objContent').innerHTML=html;}
+function renderObjectifs(){var now=new Date();var allAccounts=loadAccounts().filter(function(a){return a.status==='active';});var commerciaux=allAccounts.filter(function(a){return a.role==='commercial'||a.peutVendre;});function buildCards(list){var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">';list.forEach(function(u){var d=new Date(now.getFullYear(),now.getMonth(),1);var obj=DB.objectifs.find(function(o){return o.userId===u.id&&o.mois===d.getMonth()&&o.an===d.getFullYear();});var caM=calcCAForUser(u,d.getMonth(),d.getFullYear());var objVal=obj?obj.montant:0;var pct=objVal>0?Math.min(100,Math.round(caM/objVal*100)):0;html+='<div class="objCard"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div><div style="font-size:13px;font-weight:600;color:var(--navy)">'+u.name+'</div><div style="font-size:11px;color:var(--muted)">'+(ROLE_LABELS[u.role]||u.role)+' &middot; '+MO[d.getMonth()]+' '+d.getFullYear()+'</div></div><div style="display:flex;align-items:center;gap:6px"><span style="font-size:13px;font-weight:600;color:var(--green)">'+fmtE(caM)+'</span>'+(isAdmin()?'<button class="act" onclick="openObjModalFor(\''+u.id+'\',\''+u.name+'\','+d.getMonth()+','+d.getFullYear()+')">✏️</button>':'')+'</div></div>'+(objVal>0?'<div class="objBar"><div class="objBarF" style="width:'+pct+'%"></div></div><div style="display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--muted)">Obj: '+fmtE(objVal)+'</span><span style="font-size:11px;font-weight:600;color:'+(pct>=100?'var(--green)':'var(--orange)')+'">'+pct+'%</span></div>':'<div style="font-size:12px;color:var(--muted)">Aucun objectif défini</div>')+'</div>';});html+='</div>';return html;}var html='';if(commerciaux.length){html+='<div style="margin-bottom:20px"><div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:12px"><span style="background:var(--purple-bg);color:var(--purple);padding:3px 10px;border-radius:12px;font-size:11px">Commerciaux</span></div>'+buildCards(commerciaux)+'</div>';}else{html='<div style="text-align:center;padding:50px;color:var(--muted)"><div style="font-size:42px;margin-bottom:12px">🎯</div><p style="font-size:15px;font-weight:600;margin-bottom:6px">Aucun commercial enregistré</p><p style="font-size:13px">Les objectifs CA concernent uniquement les commerciaux.</p></div>';}g('objContent').innerHTML=html;}
 function calcCAForUser(u,mois,an){if(u.role==='commercial'){return DB.devis.filter(function(d){var dt=new Date(d.date);return (!d.commercialId||d.commercialId===u.id)&&d.statut==='Accepté'&&dt.getMonth()===mois&&dt.getFullYear()===an;}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);}if(u.role==='admin'){return DB.installations.filter(function(i){if(!i.dateFin)return false;var d=new Date(i.dateFin);return i.statut==='Terminée'&&d.getMonth()===mois&&d.getFullYear()===an;}).reduce(function(s,i){return s+(i.montant||0);},0);}return DB.installations.filter(function(i){if(!i.dateFin)return false;var d=new Date(i.dateFin);return i.installateur===u.name&&i.statut==='Terminée'&&d.getMonth()===mois&&d.getFullYear()===an;}).reduce(function(s,i){return s+(i.montant||0);},0);}
 var eObjUserId='',eObjUserName='',eObjMois=0,eObjAn=0;
 function openObjModal(){var now=new Date();openObjModalFor(curUserObj?curUserObj.id:'',curUserObj?curUserObj.name:'',now.getMonth(),now.getFullYear());}
@@ -7635,7 +7772,7 @@ function renderFinancePayroll(){
   var el=g('finPayroll');if(!el)return;
   var now=new Date(),mois=now.getMonth(),an=now.getFullYear();
   // Commerciaux
-  var commRows=loadAccounts().filter(function(a){return a.status==='active'&&a.role==='commercial';}).map(function(u){
+  var commRows=loadAccounts().filter(function(a){return a.status==='active'&&(a.role==='commercial'||a.peutVendre);}).map(function(u){
     var prime=(DB.commercialPrimes&&DB.commercialPrimes[u.id])||0;
     var ventesArr=DB.devis.filter(function(d){if(d.commercialId&&d.commercialId!==u.id)return false;if(d.statut!=='Accepté')return false;var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;});
     function primeFor(d){var p=d.primeCommercial;return (p!==undefined&&p!=='')?(parseFloat(p)||0):prime;}
@@ -7657,7 +7794,7 @@ function renderFinancePayroll(){
   var totalDu=allRows.reduce(function(s,r){return s+r.du;},0);
   var totalProj=allRows.reduce(function(s,r){return s+r.projete;},0);
   var payItems=[];
-  loadAccounts().filter(function(a){return a.status==='active'&&a.role==='commercial';}).forEach(function(u){
+  loadAccounts().filter(function(a){return a.status==='active'&&(a.role==='commercial'||a.peutVendre);}).forEach(function(u){
     var prime=(DB.commercialPrimes&&DB.commercialPrimes[u.id])||0;
     DB.devis.filter(function(d){if(d.commercialId&&d.commercialId!==u.id)return false;if(d.statut!=='Accepté')return false;var dt=new Date(d.date);return dt.getMonth()===mois&&dt.getFullYear()===an;}).forEach(function(d){
       var mt=(d.primeCommercial!==undefined&&d.primeCommercial!=='')?(parseFloat(d.primeCommercial)||0):prime;if(!mt)return;
@@ -7690,7 +7827,7 @@ function renderFinancePayroll(){
 }
 
 // ── COMMERCIAUX ──
-function renderCommerciaux(){var accounts=loadAccounts().filter(function(a){return a.status==='active'&&a.role==='commercial';});var grid=g('commerciauxGrid');if(!accounts.length){grid.innerHTML='<p style="color:var(--muted);font-size:13px;padding:20px">Aucun commercial actif.</p>';return;}grid.innerHTML=accounts.map(function(u){var myOpps=DB.opportunites.filter(function(o){return !o.commercialId||o.commercialId===u.id;});var myDevis=DB.devis.filter(function(d){return (!d.commercialId||d.commercialId===u.id)&&d.statut==='Accepté';});var caTotal=myDevis.reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);var pipeline=myOpps.filter(function(o){return o.etape!=='Gagné'&&o.etape!=='Perdu';}).reduce(function(s,o){return s+o.montant;},0);var txConv=myOpps.length>0?Math.round(myOpps.filter(function(o){return o.etape==='Gagné';}).length/myOpps.length*100):0;var now=new Date();var caMonth=myDevis.filter(function(d){var dt=new Date(d.date);return dt.getMonth()===now.getMonth()&&dt.getFullYear()===now.getFullYear();}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);return '<div class="pcard"><div class="pcardH"><div class="pcAv" style="background:'+(u.color||'#888')+'">'+u.avatar+'</div><div><div class="pcNm">'+u.name+'</div><div class="pcSp">Commercial</div></div></div><div class="pcardb"><div class="pcStats"><div class="pcSt"><div class="pcStV">'+myOpps.length+'</div><div class="pcStL">Opportunités</div></div><div class="pcSt"><div class="pcStV">'+txConv+'%</div><div class="pcStL">Conversion</div></div><div class="pcSt"><div class="pcStV">'+myDevis.length+'</div><div class="pcStL">Devis signés</div></div></div><div style="font-size:12px;color:var(--muted)">'+(u.email||'')+'</div><div style="font-size:12px;color:var(--muted);margin-top:2px">'+(u.tel||'')+'</div><div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">CA total</span><span style="font-weight:600;color:var(--green)">'+fmtE(caTotal)+'</span></div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">CA ce mois</span><span style="font-weight:600;color:var(--blue)">'+fmtE(caMonth)+'</span></div><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">Pipeline actif</span><span style="font-weight:600;color:var(--orange)">'+fmtE(pipeline)+'</span></div>'+(isAdmin()?'<div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px;padding-top:6px;border-top:1px dashed var(--border)"><span style="color:var(--muted)">Prime / vente</span><span style="font-weight:600;color:var(--navy)">'+fmtE((DB.commercialPrimes&&DB.commercialPrimes[u.id])||0)+' <button class="act" onclick="setCommercialPrime(\''+u.id+'\',\''+u.name+'\')" style="font-size:11px;padding:1px 6px">✏️</button></span></div>':'')+'</div></div></div>';}).join('');}
+function renderCommerciaux(){var accounts=loadAccounts().filter(function(a){return a.status==='active'&&(a.role==='commercial'||a.peutVendre);});var grid=g('commerciauxGrid');if(!accounts.length){grid.innerHTML='<p style="color:var(--muted);font-size:13px;padding:20px">Aucun commercial actif.</p>';return;}grid.innerHTML=accounts.map(function(u){var myOpps=DB.opportunites.filter(function(o){return !o.commercialId||o.commercialId===u.id;});var myDevis=DB.devis.filter(function(d){return (!d.commercialId||d.commercialId===u.id)&&d.statut==='Accepté';});var caTotal=myDevis.reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);var pipeline=myOpps.filter(function(o){return o.etape!=='Gagné'&&o.etape!=='Perdu';}).reduce(function(s,o){return s+o.montant;},0);var txConv=myOpps.length>0?Math.round(myOpps.filter(function(o){return o.etape==='Gagné';}).length/myOpps.length*100):0;var now=new Date();var caMonth=myDevis.filter(function(d){var dt=new Date(d.date);return dt.getMonth()===now.getMonth()&&dt.getFullYear()===now.getFullYear();}).reduce(function(s,d){return s+d.lignes.reduce(function(s2,l){return s2+l.qte*l.pu;},0);},0);return '<div class="pcard"><div class="pcardH"><div class="pcAv" style="background:'+(u.color||'#888')+'">'+u.avatar+'</div><div><div class="pcNm">'+u.name+'</div><div class="pcSp">Commercial</div></div></div><div class="pcardb"><div class="pcStats"><div class="pcSt"><div class="pcStV">'+myOpps.length+'</div><div class="pcStL">Opportunités</div></div><div class="pcSt"><div class="pcStV">'+txConv+'%</div><div class="pcStL">Conversion</div></div><div class="pcSt"><div class="pcStV">'+myDevis.length+'</div><div class="pcStL">Devis signés</div></div></div><div style="font-size:12px;color:var(--muted)">'+(u.email||'')+'</div><div style="font-size:12px;color:var(--muted);margin-top:2px">'+(u.tel||'')+'</div><div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">CA total</span><span style="font-weight:600;color:var(--green)">'+fmtE(caTotal)+'</span></div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">CA ce mois</span><span style="font-weight:600;color:var(--blue)">'+fmtE(caMonth)+'</span></div><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">Pipeline actif</span><span style="font-weight:600;color:var(--orange)">'+fmtE(pipeline)+'</span></div>'+(isAdmin()?'<div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px;padding-top:6px;border-top:1px dashed var(--border)"><span style="color:var(--muted)">Prime / vente</span><span style="font-weight:600;color:var(--navy)">'+fmtE((DB.commercialPrimes&&DB.commercialPrimes[u.id])||0)+' <button class="act" onclick="setCommercialPrime(\''+u.id+'\',\''+u.name+'\')" style="font-size:11px;padding:1px 6px">✏️</button></span></div>':'')+'</div></div></div>';}).join('');}
 function setCommercialPrime(uid,uname){
   var current=(DB.commercialPrimes&&DB.commercialPrimes[uid])||'';
   showModal('💶 Prime par vente — '+uname,
@@ -7862,11 +7999,12 @@ document.addEventListener('DOMContentLoaded',function(){
             var d=(DB.devis||[]).find(function(dd){return dd.id===v.devisId;});
             var commercialNom='';
             if(d&&d.commercialId){var acc=(typeof loadAccounts==='function'?loadAccounts():[]).find(function(a){return a.id===d.commercialId;});if(acc)commercialNom=acc.name;}
+            var montantDevisVu=d&&d.lignes?d.lignes.reduce(function(s,l){return s+(l.qte||0)*(l.pu||0);},0):0;
             var estLeMien=!d||!d.commercialId||d.commercialId===curUserObj.id||isAdmin();
             if(estLeMien){
               showBanner('🔥 Devis n°'+(v.numero||'')+' vient d\'être consulté par le client !','🔥');
-              if(commercialNom)addNotif('devis','🔥 Le client vient de consulter le devis n°'+(v.numero||''),'🔥',commercialNom,{kind:'devis',id:v.devisId});
-              addNotif('devis','🔥 Le client vient de consulter le devis n°'+(v.numero||''),'🔥','@admin',{kind:'devis',id:v.devisId});
+              if(commercialNom)addNotif('devis','🔥 Le client vient de consulter le devis n°'+(v.numero||'')+(montantDevisVu>0?(' — '+montantDevisVu.toLocaleString('fr-FR')+' €'):''),'🔥',commercialNom,{kind:'devis',id:v.devisId});
+              addNotif('devis','🔥 Le client vient de consulter le devis n°'+(v.numero||'')+(montantDevisVu>0?(' — '+montantDevisVu.toLocaleString('fr-FR')+' €'):''),'🔥','@admin',{kind:'devis',id:v.devisId});
             }
           });
         });
