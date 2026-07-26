@@ -1141,7 +1141,7 @@ table thead th{color:#5b6178;font-weight:700 !important;font-size:11.5px !import
           <span id="instCount" style="font-size:12px;color:var(--muted)"></span>
           <button class="btn bGhost" onclick="exportCSV()">CSV</button>
           <button class="btn bGhost" onclick="exportJSON()">JSON</button>
-          <label class="btn bGhost" style="cursor:pointer">Import<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+          
         </div>
       </div>
       <div class="tw"><table class="respCards">
@@ -7682,6 +7682,39 @@ function renderConqAccesRapide(){
   if(!top.length){zone.style.display='none';return;}
   zone.style.display='block';
   el.innerHTML=top.map(function(k){var inf=infos[k];return '<div class="conqCard" onclick="'+k+'()"><div class="conqIco" style="background:'+inf.bg+'">'+inf.ico+'</div><div class="conqT">'+inf.t+'</div><div class="conqD">'+inf.d+'</div></div>';}).join('');
+}
+function convertProspect(){
+  if(typeof eProspect==='undefined'||eProspect<0){toast('Enregistre d\'abord le prospect');return;}
+  var p=DB.prospects[eProspect];if(!p)return;
+  var prenom=g('mProsContactP')?g('mProsContactP').value.trim():'';
+  var nomF=g('mProsContactN')?g('mProsContactN').value.trim():'';
+  var fullName=(prenom+' '+nomF).trim()||p.nom||'';
+  if(!fullName){toast('Renseigne au moins un nom de contact');return;}
+  if(!confirm('Convertir « '+(p.nom||fullName)+' » en contact client ?'))return;
+  var row={id:DB.nextId++,prenom:prenom,nomFamille:nomF,nom:fullName,societe:p.nom||'',poste:'',email:g('mProsEmail')?g('mProsEmail').value:(p.email||''),tel:g('mProsTel')?g('mProsTel').value:(p.tel||''),type:'Client',statut:'Actif',adresse:'',ville:g('mProsVille')?g('mProsVille').value:(p.ville||''),notes:'Converti depuis un prospect le '+new Date().toLocaleDateString('fr-FR')};
+  DB.contacts.push(row);
+  p.statut='Qualifié';p.convertiLe=new Date().toISOString();
+  save();
+  toast('✅ Converti en contact client');
+  if(typeof closeProspectModal==='function')closeProspectModal();
+  if(typeof renderProspects==='function')renderProspects();
+}
+function exportCSV(){
+  var rows=DB.installations||[];
+  if(!rows.length){toast('Aucune installation à exporter');return;}
+  var cols=['Chantier','Client','Type','Installateur','Statut','DateDebut','DateFin','Montant','Activite'];
+  var q=function(v){v=(v==null?'':''+v).replace(/"/g,'""');return '"'+v+'"';};
+  var csv=cols.join(';')+'\r\n'+rows.map(function(i){return [i.chantier||'',i.client||'',i.type||'',i.installateur||'',i.statut||'',i.dateDebut||'',i.dateFin||'',i.montantTTC||i.montant||0,i.activite||'bornpower'].map(q).join(';');}).join('\r\n');
+  var blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='installations_bornpower.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast('✅ Export CSV téléchargé ('+rows.length+' installations)');
+}
+function exportJSON(){
+  var rows=DB.installations||[];
+  if(!rows.length){toast('Aucune installation à exporter');return;}
+  var blob=new Blob([JSON.stringify(rows,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='installations_bornpower.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast('✅ Export JSON téléchargé ('+rows.length+' installations)');
 }
 function renderCommercialPay(uid,mois,an){
   var prime=(DB.commercialPrimes&&DB.commercialPrimes[uid])||0;
